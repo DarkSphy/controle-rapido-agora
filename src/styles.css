@@ -30,6 +30,8 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -46,38 +48,47 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  /* #F9FAFB */
-  --background: oklch(0.985 0.002 247);
-  /* #111827 */
-  --foreground: oklch(0.21 0.034 264);
+  --radius: 0.875rem;
+
+  /* Backgrounds — soft off-white to match logo */
+  --background: oklch(0.985 0.005 200);
+  --foreground: oklch(0.32 0.04 240);
+
   --card: oklch(1 0 0);
   --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
-  /* #2563EB */
-  --primary: oklch(0.546 0.227 262);
-  --primary-foreground: oklch(0.99 0.005 247);
-  /* #1D4ED8 */
-  --primary-hover: oklch(0.488 0.228 263);
-  --secondary: oklch(0.965 0.008 247);
+
+  /* Primary — slate blue from logo wordmark "Controle" (#2C3E50-ish) */
+  --primary: oklch(0.38 0.045 245);
+  --primary-foreground: oklch(0.99 0.005 200);
+  --primary-hover: oklch(0.32 0.05 245);
+
+  /* Brand mint green from logo "Já" + check (#7FB69D-ish) */
+  --brand: oklch(0.74 0.07 165);
+  --brand-foreground: oklch(0.25 0.04 245);
+
+  --secondary: oklch(0.96 0.01 220);
   --secondary-foreground: var(--foreground);
-  --muted: oklch(0.965 0.008 247);
-  --muted-foreground: oklch(0.5 0.02 257);
-  --accent: oklch(0.95 0.02 262);
+  --muted: oklch(0.965 0.008 220);
+  --muted-foreground: oklch(0.5 0.02 240);
+  --accent: oklch(0.94 0.04 165);
   --accent-foreground: var(--primary);
-  /* #DC2626 */
-  --destructive: oklch(0.58 0.235 27);
-  --destructive-foreground: oklch(0.99 0.005 247);
-  /* #16A34A */
-  --success: oklch(0.62 0.18 145);
-  --success-foreground: oklch(0.99 0.005 247);
-  /* #EAB308 */
-  --warning: oklch(0.78 0.16 87);
-  --warning-foreground: oklch(0.21 0.034 264);
-  --border: oklch(0.92 0.01 255);
-  --input: oklch(0.92 0.01 255);
-  --ring: var(--primary);
+
+  --destructive: oklch(0.6 0.21 25);
+  --destructive-foreground: oklch(0.99 0.005 200);
+
+  /* Success uses brand green */
+  --success: oklch(0.66 0.11 165);
+  --success-foreground: oklch(0.99 0.005 200);
+
+  --warning: oklch(0.78 0.16 80);
+  --warning-foreground: oklch(0.32 0.06 80);
+
+  --border: oklch(0.9 0.01 220);
+  --input: oklch(0.92 0.01 220);
+  --ring: var(--brand);
+
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
@@ -92,7 +103,6 @@
   * {
     border-color: var(--color-border);
   }
-
   html, body {
     background-color: var(--color-background);
     color: var(--color-foreground);

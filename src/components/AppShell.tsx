@@ -1,31 +1,72 @@
-import { Link, Outlet, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle } from "lucide-react";
+import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut } from "lucide-react";
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/Logo";
+import { useAuth } from "@/lib/auth";
+import { actions } from "@/lib/store";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+const PUBLIC_ROUTES = ["/", "/auth"];
 
 const nav = [
-  { to: "/", label: "Resumo", icon: LayoutDashboard },
+  { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
   { to: "/produtos", label: "Produtos", icon: Package },
-  { to: "/movimentacoes", label: "Movimentações", icon: ArrowLeftRight },
+  { to: "/movimentacoes", label: "Histórico", icon: ArrowLeftRight },
   { to: "/reposicao", label: "Reposição", icon: AlertTriangle },
   { to: "/balcao", label: "Balcão", icon: ShoppingBag },
 ] as const;
 
 export function AppShell() {
   const loc = useLocation();
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+  const isPublic = PUBLIC_ROUTES.includes(loc.pathname);
+
+  // Load data when authenticated
+  useEffect(() => {
+    if (user) {
+      actions.loadAll();
+    } else {
+      actions.reset();
+    }
+  }, [user]);
+
+  // Redirect protected routes when not authenticated
+  useEffect(() => {
+    if (!loading && !user && !isPublic) {
+      navigate({ to: "/auth" });
+    }
+  }, [loading, user, isPublic, navigate]);
+
+  if (isPublic) {
+    return <Outlet />;
+  }
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen grid place-items-center text-muted-foreground text-sm">
+        Carregando...
+      </div>
+    );
+  }
+
+  async function logout() {
+    await supabase.auth.signOut();
+    toast.success("Sessão encerrada");
+    navigate({ to: "/" });
+  }
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Sidebar (desktop) */}
-      <aside className="hidden md:flex w-60 shrink-0 flex-col border-r border-border bg-sidebar">
-        <div className="px-6 py-6">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-xl bg-primary text-primary-foreground grid place-items-center font-bold">C</div>
-            <div>
-              <div className="font-semibold leading-none">ControleJá</div>
-              <div className="text-xs text-muted-foreground mt-1">Estoque simples</div>
-            </div>
+      <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-border bg-sidebar">
+        <div className="px-5 py-5">
+          <Link to="/dashboard">
+            <Logo />
           </Link>
         </div>
-        <nav className="px-3 flex flex-col gap-1">
+        <nav className="px-3 flex flex-col gap-1 flex-1">
           {nav.map((n) => {
             const active = loc.pathname === n.to;
             const Icon = n.icon;
@@ -34,7 +75,7 @@ export function AppShell() {
                 key={n.to}
                 to={n.to}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
                   active
                     ? "bg-accent text-accent-foreground font-medium"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted",
@@ -46,21 +87,30 @@ export function AppShell() {
             );
           })}
         </nav>
+        <div className="p-3 border-t border-border">
+          <div className="px-3 py-2 text-xs text-muted-foreground truncate">{user.email}</div>
+          <button
+            onClick={logout}
+            className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
+          >
+            <LogOut className="h-4 w-4" /> Sair
+          </button>
+        </div>
       </aside>
 
-      {/* Mobile top bar */}
       <header className="md:hidden flex items-center justify-between px-4 h-14 border-b border-border bg-card">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary text-primary-foreground grid place-items-center font-bold text-sm">C</div>
-          <span className="font-semibold">ControleJá</span>
+        <Link to="/dashboard">
+          <Logo size="sm" />
         </Link>
+        <button onClick={logout} className="text-muted-foreground hover:text-foreground p-2">
+          <LogOut className="h-4 w-4" />
+        </button>
       </header>
 
       <main className="flex-1 min-w-0 pb-20 md:pb-8">
         <Outlet />
       </main>
 
-      {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card border-t border-border flex justify-around h-16">
         {nav.map((n) => {
           const active = loc.pathname === n.to;
@@ -71,7 +121,7 @@ export function AppShell() {
               to={n.to}
               className={cn(
                 "flex flex-col items-center justify-center gap-1 flex-1 text-[11px]",
-                active ? "text-primary" : "text-muted-foreground",
+                active ? "text-brand" : "text-muted-foreground",
               )}
             >
               <Icon className="h-5 w-5" />
