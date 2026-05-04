@@ -14,7 +14,164 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      movements: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          product_name: string
+          quantity: number
+          type: string
+          user_id: string
+          variation_id: string | null
+          variation_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          product_name: string
+          quantity: number
+          type: string
+          user_id: string
+          variation_id?: string | null
+          variation_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          product_name?: string
+          quantity?: number
+          type?: string
+          user_id?: string
+          variation_id?: string | null
+          variation_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movements_variation_id_fkey"
+            columns: ["variation_id"]
+            isOneToOne: false
+            referencedRelation: "variations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          cost: number
+          created_at: string
+          id: string
+          image: string | null
+          margin: number
+          min_stock: number
+          name: string
+          stock: number
+          updated_at: string
+          usage: number
+          user_id: string
+        }
+        Insert: {
+          cost?: number
+          created_at?: string
+          id?: string
+          image?: string | null
+          margin?: number
+          min_stock?: number
+          name: string
+          stock?: number
+          updated_at?: string
+          usage?: number
+          user_id: string
+        }
+        Update: {
+          cost?: number
+          created_at?: string
+          id?: string
+          image?: string | null
+          margin?: number
+          min_stock?: number
+          name?: string
+          stock?: number
+          updated_at?: string
+          usage?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      variations: {
+        Row: {
+          cost: number
+          created_at: string
+          id: string
+          margin: number
+          name: string
+          product_id: string
+          stock: number
+          user_id: string
+        }
+        Insert: {
+          cost?: number
+          created_at?: string
+          id?: string
+          margin?: number
+          name: string
+          product_id: string
+          stock?: number
+          user_id: string
+        }
+        Update: {
+          cost?: number
+          created_at?: string
+          id?: string
+          margin?: number
+          name?: string
+          product_id?: string
+          stock?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "variations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
