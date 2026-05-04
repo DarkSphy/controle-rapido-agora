@@ -10,6 +10,21 @@ export type Variation = {
   margin: number;
 };
 
+export type Supplier = {
+  id: string;
+  name: string;
+  phone?: string;
+  createdAt: number;
+  updatedAt: number;
+};
+
+export type Category = {
+  id: string;
+  name: string;
+  createdAt: number;
+  updatedAt: number;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -21,6 +36,29 @@ export type Product = {
   variations: Variation[];
   usage: number;
   createdAt: number;
+  supplierId?: string;
+  categoryId?: string;
+};
+
+export type PriceHistory = {
+  id: string;
+  productId: string;
+  supplierId?: string;
+  purchasePrice: number;
+  createdAt: number;
+};
+
+export type Kit = {
+  id: string;
+  name: string;
+  createdAt: number;
+  updatedAt: number;
+};
+
+export type KitItem = {
+  kitId: string;
+  productId: string;
+  quantity: number;
 };
 
 export type Movement = {
@@ -37,10 +75,15 @@ export type Movement = {
 type State = {
   products: Product[];
   movements: Movement[];
+  suppliers: Supplier[];
+  categories: Category[];
+  priceHistory: PriceHistory[];
+  kits: Kit[];
+  kitItems: KitItem[];
   loaded: boolean;
 };
 
-let state: State = { products: [], movements: [], loaded: false };
+let state: State = { products: [], movements: [], suppliers: [], categories: [], priceHistory: [], kits: [], kitItems: [], loaded: false };
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 const setState = (patch: Partial<State>) => {
@@ -53,7 +96,7 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 const getSnapshot = () => state;
-const serverSnap: State = { products: [], movements: [], loaded: false };
+const serverSnap: State = { products: [], movements: [], suppliers: [], categories: [], priceHistory: [], kits: [], kitItems: [], loaded: false };
 const getServer = () => serverSnap;
 
 export function useStore<T>(selector: (s: State) => T): T {
@@ -71,9 +114,17 @@ function rowToProduct(p: any, vars: any[]): Product {
     minStock: p.min_stock,
     usage: p.usage,
     createdAt: new Date(p.created_at).getTime(),
+    supplierId: p.supplier_id ?? undefined,
+    categoryId: p.category_id ?? undefined,
     variations: vars
       .filter((v) => v.product_id === p.id)
-      .map((v) => ({ id: v.id, name: v.name, stock: v.stock, cost: Number(v.cost), margin: Number(v.margin) })),
+      .map((v) => ({
+        id: v.id,
+        name: v.name,
+        stock: v.stock,
+        cost: Number(v.cost),
+        margin: Number(v.margin),
+      })),
   };
 }
 
@@ -90,20 +141,96 @@ function rowToMovement(m: any): Movement {
   };
 }
 
+function rowToSupplier(s: any): Supplier {
+  return {
+    id: s.id,
+    name: s.name,
+    phone: s.phone ?? undefined,
+    createdAt: new Date(s.created_at).getTime(),
+    updatedAt: new Date(s.updated_at).getTime(),
+  };
+}
+
+function rowToCategory(c: any): Category {
+  return {
+    id: c.id,
+    name: c.name,
+    createdAt: new Date(c.created_at).getTime(),
+    updatedAt: new Date(c.updated_at).getTime(),
+  };
+}
+
+function rowToPriceHistory(ph: any): PriceHistory {
+  return {
+    id: ph.id,
+    productId: ph.product_id,
+    supplierId: ph.supplier_id ?? undefined,
+    purchasePrice: Number(ph.purchase_price),
+    createdAt: new Date(ph.created_at).getTime(),
+  };
+}
+
+function rowToKit(k: any): Kit {
+  return {
+    id: k.id,
+    name: k.name,
+    createdAt: new Date(k.created_at).getTime(),
+    updatedAt: new Date(k.updated_at).getTime(),
+  };
+}
+
+function rowToKitItem(ki: any): KitItem {
+  return {
+    kitId: ki.kit_id,
+    productId: ki.product_id,
+    quantity: ki.quantity,
+  };
+}
+
 export const actions = {
   async loadAll() {
-    const [{ data: prods }, { data: vars }, { data: movs }] = await Promise.all([
+    const [
+      { data: prods },
+      { data: vars },
+      { data: movs },
+      { data: sups },
+      { data: cats },
+      { data: phist },
+      { data: kits },
+      { data: kitItems },
+    ] = await Promise.all([
       supabase.from("products").select("*").order("created_at", { ascending: false }),
       supabase.from("variations").select("*"),
       supabase.from("movements").select("*").order("created_at", { ascending: false }).limit(500),
+      supabase.from("suppliers").select("*"),
+      supabase.from("categories").select("*"),
+      supabase.from("price_history").select("*"),
+      supabase.from("kits").select("*"),
+      supabase.from("kit_items").select("*"),
     ]);
+
     const products = (prods ?? []).map((p) => rowToProduct(p, vars ?? []));
     const movements = (movs ?? []).map(rowToMovement);
-    setState({ products, movements, loaded: true });
+    const suppliers = (sups ?? []).map(rowToSupplier);
+    const categories = (cats ?? []).map(rowToCategory);
+    const priceHistory = (phist ?? []).map(rowToPriceHistory);
+    const kitsList = (kits ?? []).map(rowToKit);
+    const kitItemsList = (kitItems ?? []).map(rowToKitItem);
+
+    setState({
+      products,
+      movements,
+      suppliers,
+      categories,
+      priceHistory,
+      kits: kitsList,
+      kitItems: kitItemsList,
+      loaded: true,
+    });
   },
 
   reset() {
-    setState({ products: [], movements: [], loaded: false });
+    setState({ products: [], movements: [], suppliers: [], categories: [], priceHistory: [], kits: [], kitItems: [], loaded: false });
   },
 
   async addProduct(p: Omit<Product, "id" | "usage" | "createdAt" | "variations"> & { variations?: Omit<Variation, "id">[] }) {
@@ -119,6 +246,8 @@ export const actions = {
         margin: p.margin,
         stock: p.stock,
         min_stock: p.minStock,
+        supplier_id: (p as any).supplierId,
+        category_id: (p as any).categoryId,
       })
       .select()
       .single();
@@ -152,6 +281,8 @@ export const actions = {
     if (patch.margin !== undefined) update.margin = patch.margin;
     if (patch.stock !== undefined) update.stock = patch.stock;
     if (patch.minStock !== undefined) update.min_stock = patch.minStock;
+    if ((patch as any).supplierId !== undefined) update.supplier_id = (patch as any).supplierId;
+    if ((patch as any).categoryId !== undefined) update.category_id = (patch as any).categoryId;
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("products").update(update).eq("id", id);
       if (error) return toast.error(error.message);
@@ -161,7 +292,6 @@ export const actions = {
     if (patch.variations) {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) return;
-      // simple sync: delete all then re-insert
       await supabase.from("variations").delete().eq("product_id", id);
       if (patch.variations.length > 0) {
         const { data: inserted } = await supabase
@@ -200,6 +330,8 @@ export const actions = {
               ...(patch.margin !== undefined && { margin: patch.margin }),
               ...(patch.stock !== undefined && { stock: patch.stock }),
               ...(patch.minStock !== undefined && { minStock: patch.minStock }),
+              ...(patch as any).supplierId !== undefined && { supplierId: (patch as any).supplierId },
+              ...(patch as any).categoryId !== undefined && { categoryId: (patch as any).categoryId },
               ...(newVars !== undefined && { variations: newVars }),
             }
           : p,
@@ -213,7 +345,86 @@ export const actions = {
     setState({ products: state.products.filter((p) => p.id !== id) });
   },
 
-  async move(args: { productId: string; variationId?: string; quantity: number; type: "in" | "out" }) {
+  // Supplier CRUD
+  async addSupplier(s: { name: string; phone?: string }) {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return toast.error("Faça login");
+    const { data: row, error } = await supabase
+      .from("suppliers")
+      .insert({
+        user_id: user.user.id,
+        name: s.name,
+        phone: s.phone ?? null,
+      })
+      .select()
+      .single();
+    if (error || !row) return toast.error(error?.message ?? "Erro ao salvar fornecedor");
+    const supplier = rowToSupplier(row);
+    setState({ suppliers: [supplier, ...state.suppliers] });
+  },
+
+  async updateSupplier(id: string, patch: Partial<{ name: string; phone: string }>) {
+    const update: any = {};
+    if (patch.name !== undefined) update.name = patch.name;
+    if (patch.phone !== undefined) update.phone = patch.phone;
+    if (Object.keys(update).length > 0) {
+      const { error } = await supabase.from("suppliers").update(update).eq("id", id);
+      if (error) return toast.error(error.message);
+    }
+    setState({
+      suppliers: state.suppliers.map((s) => (s.id === id ? { ...s, ...patch } : s)),
+    });
+  },
+
+  async deleteSupplier(id: string) {
+    const { error } = await supabase.from("suppliers").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    setState({ suppliers: state.suppliers.filter((s) => s.id !== id) });
+  },
+
+  // Category CRUD
+  async addCategory(c: { name: string }) {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return toast.error("Faça login");
+    const { data: row, error } = await supabase
+      .from("categories")
+      .insert({
+        user_id: user.user.id,
+        name: c.name,
+      })
+      .select()
+      .single();
+    if (error || !row) return toast.error(error?.message ?? "Erro ao salvar categoria");
+    const category = rowToCategory(row);
+    setState({ categories: [category, ...state.categories] });
+  },
+
+  async updateCategory(id: string, patch: Partial<{ name: string }>) {
+    const update: any = {};
+    if (patch.name !== undefined) update.name = patch.name;
+    if (Object.keys(update).length > 0) {
+      const { error } = await supabase.from("categories").update(update).eq("id", id);
+      if (error) return toast.error(error.message);
+    }
+    setState({
+      categories: state.categories.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+    });
+  },
+
+  async deleteCategory(id: string) {
+    const { error } = await supabase.from("categories").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    setState({ categories: state.categories.filter((c) => c.id !== id) });
+  },
+
+  async move(args: {
+    productId: string;
+    variationId?: string;
+    quantity: number;
+    type: "in" | "out";
+    purchasePrice?: number;
+    supplierId?: string;
+  }) {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) return toast.error("Faça login");
     const product = state.products.find((p) => p.id === args.productId);
@@ -239,8 +450,12 @@ export const actions = {
       updatedProduct = { ...product, usage: product.usage + 1, stock: newStock };
     }
 
-    if (args.variationId) {
-      await supabase.from("products").update({ usage: product.usage + 1 }).eq("id", product.id);
+    if (args.type === "in" && args.purchasePrice !== undefined) {
+      await supabase.from("price_history").insert({
+        product_id: product.id,
+        supplier_id: args.supplierId ?? null,
+        purchase_price: args.purchasePrice,
+      });
     }
 
     const { data: mRow } = await supabase
