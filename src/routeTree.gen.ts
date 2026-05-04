@@ -9,8 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReposicaoRouteImport } from './routes/reposicao'
+import { Route as ProdutosRouteImport } from './routes/produtos'
+import { Route as MovimentacoesRouteImport } from './routes/movimentacoes'
+import { Route as BalcaoRouteImport } from './routes/balcao'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ReposicaoRoute = ReposicaoRouteImport.update({
+  id: '/reposicao',
+  path: '/reposicao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProdutosRoute = ProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MovimentacoesRoute = MovimentacoesRouteImport.update({
+  id: '/movimentacoes',
+  path: '/movimentacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BalcaoRoute = BalcaoRouteImport.update({
+  id: '/balcao',
+  path: '/balcao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +43,78 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/balcao': typeof BalcaoRoute
+  '/movimentacoes': typeof MovimentacoesRoute
+  '/produtos': typeof ProdutosRoute
+  '/reposicao': typeof ReposicaoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/balcao': typeof BalcaoRoute
+  '/movimentacoes': typeof MovimentacoesRoute
+  '/produtos': typeof ProdutosRoute
+  '/reposicao': typeof ReposicaoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/balcao': typeof BalcaoRoute
+  '/movimentacoes': typeof MovimentacoesRoute
+  '/produtos': typeof ProdutosRoute
+  '/reposicao': typeof ReposicaoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/balcao' | '/movimentacoes' | '/produtos' | '/reposicao'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/balcao' | '/movimentacoes' | '/produtos' | '/reposicao'
+  id:
+    | '__root__'
+    | '/'
+    | '/balcao'
+    | '/movimentacoes'
+    | '/produtos'
+    | '/reposicao'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BalcaoRoute: typeof BalcaoRoute
+  MovimentacoesRoute: typeof MovimentacoesRoute
+  ProdutosRoute: typeof ProdutosRoute
+  ReposicaoRoute: typeof ReposicaoRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reposicao': {
+      id: '/reposicao'
+      path: '/reposicao'
+      fullPath: '/reposicao'
+      preLoaderRoute: typeof ReposicaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produtos': {
+      id: '/produtos'
+      path: '/produtos'
+      fullPath: '/produtos'
+      preLoaderRoute: typeof ProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/movimentacoes': {
+      id: '/movimentacoes'
+      path: '/movimentacoes'
+      fullPath: '/movimentacoes'
+      preLoaderRoute: typeof MovimentacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/balcao': {
+      id: '/balcao'
+      path: '/balcao'
+      fullPath: '/balcao'
+      preLoaderRoute: typeof BalcaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +127,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BalcaoRoute: BalcaoRoute,
+  MovimentacoesRoute: MovimentacoesRoute,
+  ProdutosRoute: ProdutosRoute,
+  ReposicaoRoute: ReposicaoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
