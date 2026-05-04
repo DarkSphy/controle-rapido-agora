@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
+import { AuthProvider } from "@/lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
@@ -25,16 +26,8 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ControleJá — Estoque simples para seu negócio" },
+      { title: "ControleJá — Seu estoque. Seu negócio. No controle." },
       { name: "description", content: "Controle de estoque rápido e intuitivo para pequenos empreendedores." },
-      { property: "og:title", content: "ControleJá — Estoque simples para seu negócio" },
-      { name: "twitter:title", content: "ControleJá — Estoque simples para seu negócio" },
-      { property: "og:description", content: "Controle de estoque rápido e intuitivo para pequenos empreendedores." },
-      { name: "twitter:description", content: "Controle de estoque rápido e intuitivo para pequenos empreendedores." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/oxVc2daSBoYzI2Q8t1we28ZHRNv2/social-images/social-1777933913953-ChatGPT_Image_4_de_mai._de_2026,_19_31_13.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/oxVc2daSBoYzI2Q8t1we28ZHRNv2/social-images/social-1777933913953-ChatGPT_Image_4_de_mai._de_2026,_19_31_13.webp" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -64,9 +57,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <>
+    <AuthProvider>
       <AppShell />
       <Toaster richColors position="top-center" />
-    </>
+    </AuthProvider>
   );
 }
