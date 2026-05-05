@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin } from "@/lib/store";
-import { TrendingUp, TrendingDown, AlertCircle, Package, BarChart3, Settings2 } from "lucide-react";
+import { 
+  TrendingUp, TrendingDown, AlertCircle, Package, BarChart3, Settings2, 
+  ShoppingBasket, Truck, Lightbulb 
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BulkAdjustDialog } from "@/components/BulkAdjustDialog";
