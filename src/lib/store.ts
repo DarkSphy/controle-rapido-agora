@@ -103,6 +103,28 @@ export function useStore<T>(selector: (s: State) => T): T {
   return useSyncExternalStore(subscribe, () => selector(getSnapshot()), () => selector(getServer()));
 }
 
+export function productEffectiveStock(p: Product): number {
+  if (p.variations && p.variations.length > 0) {
+    return p.variations.reduce((sum, v) => sum + (v.stock ?? 0), 0);
+  }
+  return p.stock ?? 0;
+}
+
+export function stockStatus(stock: number, minStock: number): "ok" | "low" | "empty" {
+  if (stock <= 0) return "empty";
+  if (stock <= minStock) return "low";
+  return "ok";
+}
+
+export function priceFromCostMargin(cost: number, margin: number): number {
+  return cost * (1 + (margin ?? 0) / 100);
+}
+
+const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+export function formatBRL(value: number): string {
+  return brl.format(value ?? 0);
+}
+
 function rowToProduct(p: any, vars: any[]): Product {
   return {
     id: p.id,
