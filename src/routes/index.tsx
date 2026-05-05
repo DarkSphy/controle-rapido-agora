@@ -202,30 +202,32 @@ function Landing() {
           <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-brand text-brand-foreground text-xs font-bold uppercase tracking-wider">
             Oferta de lançamento
           </span>
-          <div className="text-center">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Comece com tudo já no primeiro mês
-            </h2>
-            <div className="mt-8 flex flex-col items-center gap-3">
-              <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">1º mês</div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-5xl md:text-6xl font-extrabold text-primary">R$97</span>
+            <div className="text-center">
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+                Oferta de Ativação Imediata
+              </h2>
+              <div className="mt-8 flex flex-col items-center gap-3">
+                <div className="text-sm text-brand-foreground uppercase tracking-widest font-bold">Primeiro mês</div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl md:text-6xl font-extrabold text-primary">R$97</span>
+                </div>
+                <p className="text-sm font-semibold text-muted-foreground max-w-[200px] leading-relaxed">
+                  Com ativação imediata + suporte prioritário
+                </p>
               </div>
-              <div className="text-sm text-brand-foreground font-semibold">implantação inclusa</div>
-            </div>
-            <div className="my-8 h-px bg-border" />
-            <div className="flex flex-col items-center gap-1">
-              <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">A partir do 2º mês</div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl md:text-4xl font-bold">R$39,90</span>
-                <span className="text-muted-foreground">/mês</span>
+              <div className="my-8 h-px bg-border" />
+              <div className="flex flex-col items-center gap-1">
+                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Depois</div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl md:text-4xl font-bold">R$39,90</span>
+                  <span className="text-muted-foreground">/mês</span>
+                </div>
               </div>
-            </div>
-            <Button asChild size="lg" className="mt-8 h-12 px-6 text-base w-full sm:w-auto">
-              <Link to="/auth" search={{ mode: "register" }}>
-                Começar agora e organizar meu estoque <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+              <Button asChild size="lg" className="mt-8 h-14 px-8 text-lg font-bold w-full sm:w-auto shadow-[var(--shadow-glow)]">
+                <Link to="/auth" search={{ mode: "register" }}>
+                  Garantir ativação agora <ArrowRight className="h-5 w-5" />
+                </Link>
+              </Button>
             <div className="mt-4">
               <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="text-sm text-[#1ebe5a] font-semibold inline-flex items-center gap-1.5 hover:underline">
                 <MessageCircle className="h-4 w-4" /> Tirar dúvidas no WhatsApp
