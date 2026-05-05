@@ -7,6 +7,7 @@ import { useStore, actions, formatBRL, priceFromCostMargin } from "@/lib/store";
 import { SearchBar, searchProducts } from "@/components/SearchBar";
 import { Trash2, Plus, Minus, ShoppingCart, User, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 type CartItem = {
   productId: string;
@@ -28,6 +29,9 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
   const [q, setQ] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customerId, setCustomerId] = useState<string>("");
+  const [isNewCustomer, setIsNewCustomer] = useState(false);
+  const [newCustomerName, setNewCustomerName] = useState("");
+  const [newCustomerPhone, setNewCustomerPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("dinheiro");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -82,13 +86,35 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
     if (cart.length === 0) return;
     setIsSubmitting(true);
     try {
+      let finalCustomerId = customerId;
+
+      if (isNewCustomer) {
+        if (!newCustomerName) {
+          setIsSubmitting(false);
+          return toast.error("Nome do cliente é obrigatório");
+        }
+        const newCustomer = await actions.addCustomer({ 
+          name: newCustomerName, 
+          phone: newCustomerPhone || undefined 
+        });
+        if (newCustomer) {
+          finalCustomerId = newCustomer.id;
+        } else {
+          setIsSubmitting(false);
+          return; // Error handled in action
+        }
+      }
+
       await actions.addSale(
-        { customerId: customerId || undefined, totalAmount: total, paymentMethod },
+        { customerId: finalCustomerId || undefined, totalAmount: total, paymentMethod },
         cart.map(i => ({ productId: i.productId, quantity: i.quantity, unitPrice: i.price }))
       );
       setCart([]);
       setQ("");
       setCustomerId("");
+      setIsNewCustomer(false);
+      setNewCustomerName("");
+      setNewCustomerPhone("");
       onOpenChange(false);
     } finally {
       setIsSubmitting(false);
@@ -186,14 +212,46 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
               </Label>
               <select 
                 className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-brand"
-                value={customerId}
-                onChange={e => setCustomerId(e.target.value)}
+                value={isNewCustomer ? "new" : customerId}
+                onChange={e => {
+                  if (e.target.value === "new") {
+                    setIsNewCustomer(true);
+                    setCustomerId("");
+                  } else {
+                    setIsNewCustomer(false);
+                    setCustomerId(e.target.value);
+                  }
+                }}
               >
                 <option value="">Consumidor Final</option>
+                <option value="new">+ Novo Cliente</option>
                 {customers.map(c => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
+
+              {isNewCustomer && (
+                <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-top-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Nome do Cliente</Label>
+                    <Input 
+                      placeholder="Nome completo" 
+                      value={newCustomerName} 
+                      onChange={e => setNewCustomerName(e.target.value)}
+                      className="h-9 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Telefone (Opcional)</Label>
+                    <Input 
+                      placeholder="(00) 00000-0000" 
+                      value={newCustomerPhone} 
+                      onChange={e => setNewCustomerPhone(e.target.value)}
+                      className="h-9 text-sm"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <Label className="flex items-center gap-2">

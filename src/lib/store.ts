@@ -709,10 +709,18 @@ export const actions = {
   // Customer CRUD
   async addCustomer(c: { name: string; phone?: string }) {
     const { data: user } = await supabase.auth.getUser();
-    if (!user.user) return toast.error("Faça login");
+    if (!user.user) {
+      toast.error("Faça login");
+      return null;
+    }
     const { data: row, error } = await supabase.from("customers").insert({ user_id: user.user.id, ...c }).select().single();
-    if (error || !row) return toast.error(error?.message ?? "Erro ao salvar cliente");
-    setState({ customers: [rowToCustomer(row), ...state.customers] });
+    if (error || !row) {
+      toast.error(error?.message ?? "Erro ao salvar cliente");
+      return null;
+    }
+    const newCustomer = rowToCustomer(row);
+    setState({ customers: [newCustomer, ...state.customers] });
+    return newCustomer;
   },
 
   async updateCustomer(id: string, patch: Partial<{ name: string; phone: string }>) {
