@@ -32,6 +32,9 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
   const [isNewCustomer, setIsNewCustomer] = useState(false);
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerPhone, setNewCustomerPhone] = useState("");
+  const [newCustomerEmail, setNewCustomerEmail] = useState("");
+  const [newCustomerCpf, setNewCustomerCpf] = useState("");
+  const [newCustomerAddress, setNewCustomerAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("dinheiro");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -95,7 +98,10 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
         }
         const newCustomer = await actions.addCustomer({ 
           name: newCustomerName, 
-          phone: newCustomerPhone || undefined 
+          phone: newCustomerPhone || undefined,
+          email: newCustomerEmail || undefined,
+          cpf: newCustomerCpf || undefined,
+          address: newCustomerAddress || undefined
         });
         if (newCustomer) {
           finalCustomerId = newCustomer.id;
@@ -115,6 +121,9 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
       setIsNewCustomer(false);
       setNewCustomerName("");
       setNewCustomerPhone("");
+      setNewCustomerEmail("");
+      setNewCustomerCpf("");
+      setNewCustomerAddress("");
       onOpenChange(false);
     } finally {
       setIsSubmitting(false);
@@ -241,12 +250,41 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
                       className="h-9 text-sm"
                     />
                   </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase font-bold text-muted-foreground">Telefone</Label>
+                      <Input 
+                        placeholder="(00) 00000-0000" 
+                        value={newCustomerPhone} 
+                        onChange={e => setNewCustomerPhone(e.target.value)}
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase font-bold text-muted-foreground">CPF</Label>
+                      <Input 
+                        placeholder="000.000.000-00" 
+                        value={newCustomerCpf} 
+                        onChange={e => setNewCustomerCpf(e.target.value)}
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                  </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Telefone (Opcional)</Label>
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">E-mail</Label>
                     <Input 
-                      placeholder="(00) 00000-0000" 
-                      value={newCustomerPhone} 
-                      onChange={e => setNewCustomerPhone(e.target.value)}
+                      placeholder="email@exemplo.com" 
+                      value={newCustomerEmail} 
+                      onChange={e => setNewCustomerEmail(e.target.value)}
+                      className="h-9 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Endereço</Label>
+                    <Input 
+                      placeholder="Rua, número, bairro..." 
+                      value={newCustomerAddress} 
+                      onChange={e => setNewCustomerAddress(e.target.value)}
                       className="h-9 text-sm"
                     />
                   </div>

@@ -27,6 +27,9 @@ function ClientesPage() {
   
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [address, setAddress] = useState("");
 
   const filtered = customers.filter(c => 
     c.name.toLowerCase().includes(q.toLowerCase()) || 
@@ -36,16 +39,20 @@ function ClientesPage() {
   function resetForm() {
     setName("");
     setPhone("");
+    setEmail("");
+    setCpf("");
+    setAddress("");
     setEditing(null);
   }
 
   async function handleSave() {
     if (!name) return toast.error("Nome é obrigatório");
+    const data = { name, phone, email, cpf, address };
     if (editing) {
-      await actions.updateCustomer(editing.id, { name, phone });
+      await actions.updateCustomer(editing.id, data);
       toast.success("Cliente atualizado");
     } else {
-      await actions.addCustomer({ name, phone });
+      await actions.addCustomer(data);
       toast.success("Cliente cadastrado");
     }
     setOpen(false);
@@ -105,6 +112,9 @@ function ClientesPage() {
                       setEditing(c);
                       setName(c.name);
                       setPhone(c.phone || "");
+                      setEmail(c.email || "");
+                      setCpf(c.cpf || "");
+                      setAddress(c.address || "");
                       setOpen(true);
                     }}>
                       <Edit2 className="h-4 w-4" />
@@ -145,9 +155,23 @@ function ClientesPage() {
               <Label>Nome Completo</Label>
               <Input value={name} onChange={e => setName(e.target.value)} placeholder="Ex: João Silva" />
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Telefone / WhatsApp</Label>
+                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="(11) 99999-9999" />
+              </div>
+              <div className="space-y-2">
+                <Label>CPF</Label>
+                <Input value={cpf} onChange={e => setCpf(e.target.value)} placeholder="000.000.000-00" />
+              </div>
+            </div>
             <div className="space-y-2">
-              <Label>Telefone / WhatsApp</Label>
-              <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Ex: (11) 99999-9999" />
+              <Label>E-mail</Label>
+              <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="joao@exemplo.com" type="email" />
+            </div>
+            <div className="space-y-2">
+              <Label>Endereço Completo</Label>
+              <Input value={address} onChange={e => setAddress(e.target.value)} placeholder="Rua, número, bairro, cidade..." />
             </div>
           </div>
           <DialogFooter>

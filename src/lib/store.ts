@@ -77,6 +77,9 @@ export type Customer = {
   id: string;
   name: string;
   phone?: string;
+  email?: string;
+  cpf?: string;
+  address?: string;
   createdAt: number;
 };
 
@@ -266,6 +269,9 @@ function rowToCustomer(c: any): Customer {
     id: c.id,
     name: c.name,
     phone: c.phone ?? undefined,
+    email: c.email ?? undefined,
+    cpf: c.cpf ?? undefined,
+    address: c.address ?? undefined,
     createdAt: new Date(c.created_at).getTime(),
   };
 }
@@ -707,7 +713,7 @@ export const actions = {
   },
 
   // Customer CRUD
-  async addCustomer(c: { name: string; phone?: string }) {
+  async addCustomer(c: { name: string; phone?: string; email?: string; cpf?: string; address?: string }) {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) {
       toast.error("Faça login");
@@ -723,7 +729,7 @@ export const actions = {
     return newCustomer;
   },
 
-  async updateCustomer(id: string, patch: Partial<{ name: string; phone: string }>) {
+  async updateCustomer(id: string, patch: Partial<{ name: string; phone: string; email: string; cpf: string; address: string }>) {
     await supabase.from("customers").update(patch).eq("id", id);
     setState({ customers: state.customers.map(c => c.id === id ? { ...c, ...patch } : c) });
   },
