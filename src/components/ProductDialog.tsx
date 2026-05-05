@@ -3,9 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Product, Variation, actions, formatBRL, priceFromCostMargin } from "@/lib/store";
+import { Product, Variation, actions, formatBRL, priceFromCostMargin, useStore } from "@/lib/store";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Share2, History } from "lucide-react";
 
 type Draft = {
   name: string;
@@ -14,6 +14,8 @@ type Draft = {
   margin: string;
   stock: string;
   minStock: string;
+  categoryId?: string;
+  supplierId?: string;
   variations: (Omit<Variation, "id"> & { id?: string })[];
 };
 
@@ -23,6 +25,8 @@ const empty: Draft = {
   margin: "50",
   stock: "0",
   minStock: "0",
+  categoryId: "",
+  supplierId: "",
   variations: [],
 };
 
@@ -36,6 +40,12 @@ export function ProductDialog({
   onOpenChange: (v: boolean) => void;
 }) {
   const [d, setD] = useState<Draft>(empty);
+  const [tab, setTab] = useState<"general" | "history">("general");
+  const { categories, suppliers, priceHistory } = useStore(s => ({ 
+    categories: s.categories, 
+    suppliers: s.suppliers,
+    priceHistory: s.priceHistory.filter(h => h.productId === product?.id)
+  }));
 
   useEffect(() => {
     if (open) {
@@ -47,11 +57,14 @@ export function ProductDialog({
           margin: String(product.margin),
           stock: String(product.stock),
           minStock: String(product.minStock),
+          categoryId: product.categoryId ?? "",
+          supplierId: product.supplierId ?? "",
           variations: product.variations,
         });
       } else {
         setD(empty);
       }
+      setTab("general");
     }
   }, [open, product]);
 
@@ -82,6 +95,8 @@ export function ProductDialog({
       margin,
       stock: parseInt(d.stock) || 0,
       minStock: parseInt(d.minStock) || 0,
+      categoryId: d.categoryId || undefined,
+      supplierId: d.supplierId || undefined,
       variations: d.variations.map((v) => ({
         id: v.id ?? Math.random().toString(36).slice(2, 10),
         name: v.name,
@@ -100,6 +115,12 @@ export function ProductDialog({
     onOpenChange(false);
   }
 
+  function share() {
+    if (!product) return;
+    const text = `*${product.name}*\nPreço: ${formatBRL(priceFromCostMargin(product.cost, product.margin))}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  }
+
   function onImage(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -115,24 +136,61 @@ export function ProductDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+        <DialogHeader className="flex-row items-center justify-between space-y-0 pb-2">
           <DialogTitle>{product ? "Editar produto" : "Novo produto"}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          <div className="flex gap-3 items-start">
-            <label className="h-16 w-16 rounded-lg border border-dashed border-border grid place-items-center cursor-pointer overflow-hidden bg-muted">
-              {d.image ? (
-                <img src={d.image} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-xs text-muted-foreground">Foto</span>
-              )}
-              <input type="file" accept="image/*" className="hidden" onChange={onImage} />
-            </label>
-            <div className="flex-1 space-y-2">
-              <Label htmlFor="n">Nome</Label>
-              <Input id="n" value={d.name} onChange={(e) => setD({ ...d, name: e.target.value })} placeholder="Ex: Camiseta básica" autoFocus />
+          {product && (
+            <div className="flex gap-1">
+              <Button variant="ghost" size="icon" onClick={() => setTab(tab === "general" ? "history" : "general")}>
+                <History className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={share}>
+                <Share2 className="h-4 w-4" />
+              </Button>
             </div>
-          </div>
+          )}
+        </DialogHeader>
+
+        {tab === "general" ? (
+          <div className="space-y-4">
+            <div className="flex gap-3 items-start">
+              <label className="h-16 w-16 rounded-lg border border-dashed border-border grid place-items-center cursor-pointer overflow-hidden bg-muted">
+                {d.image ? (
+                  <img src={d.image} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-xs text-muted-foreground">Foto</span>
+                )}
+                <input type="file" accept="image/*" className="hidden" onChange={onImage} />
+              </label>
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="n">Nome</Label>
+                <Input id="n" value={d.name} onChange={(e) => setD({ ...d, name: e.target.value })} placeholder="Ex: Camiseta básica" autoFocus />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Categoria</Label>
+                <select
+                  value={d.categoryId}
+                  onChange={(e) => setD({ ...d, categoryId: e.target.value })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                >
+                  <option value="">Sem categoria</option>
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label>Fornecedor</Label>
+                <select
+                  value={d.supplierId}
+                  onChange={(e) => setD({ ...d, supplierId: e.target.value })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                >
+                  <option value="">Sem fornecedor</option>
+                  {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+              </div>
+            </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-2">
@@ -208,6 +266,31 @@ export function ProductDialog({
             </div>
           </div>
         </div>
+      ) : (
+          <div className="space-y-4 py-4">
+            <h3 className="font-semibold text-sm">Histórico de preços de compra</h3>
+            {priceHistory.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhum histórico disponível.</p>}
+            <div className="space-y-2">
+              {priceHistory.map((h, i) => {
+                const prev = priceHistory[i + 1];
+                const diff = prev ? h.purchasePrice - prev.purchasePrice : 0;
+                return (
+                  <div key={h.id} className="flex items-center justify-between text-sm py-2.5 border-b border-border last:border-0">
+                    <div>
+                      <div className="font-bold">{formatBRL(h.purchasePrice)}</div>
+                      <div className="text-[10px] text-muted-foreground uppercase">{new Date(h.createdAt).toLocaleString("pt-BR")}</div>
+                    </div>
+                    {diff !== 0 && (
+                      <div className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", diff > 0 ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success")}>
+                        {diff > 0 ? "↑" : "↓"} {formatBRL(Math.abs(diff))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         <DialogFooter className="flex-row justify-between sm:justify-between">
           {product ? (
             <Button

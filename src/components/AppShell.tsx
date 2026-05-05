@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut, Truck } from "lucide-react";
+import { LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut, Truck, Tag, Box, BarChart3 } from "lucide-react";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -13,16 +13,19 @@ const PUBLIC_ROUTES = ["/", "/auth"];
 const nav = [
   { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
   { to: "/produtos", label: "Produtos", icon: Package },
+  { to: "/categories", label: "Categorias", icon: Tag },
   { to: "/suppliers", label: "Fornecedores", icon: Truck },
+  { to: "/kits", label: "Kits", icon: Box },
   { to: "/movimentacoes", label: "Histórico", icon: ArrowLeftRight },
   { to: "/reposicao", label: "Reposição", icon: AlertTriangle },
+  { to: "/reports", label: "Relatórios", icon: BarChart3, adminOnly: true },
   { to: "/balcao", label: "Balcão", icon: ShoppingBag },
 ] as const;
 
 export function AppShell() {
   const loc = useLocation();
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, role, loading } = useAuth();
   const isPublic = PUBLIC_ROUTES.includes(loc.pathname);
 
   // Load data when authenticated
@@ -68,7 +71,7 @@ export function AppShell() {
           </Link>
         </div>
         <nav className="px-3 flex flex-col gap-1 flex-1">
-          {nav.map((n) => {
+          {nav.filter(n => !n.adminOnly || role === "admin").map((n) => {
             const active = loc.pathname === n.to;
             const Icon = n.icon;
             return (
@@ -89,7 +92,8 @@ export function AppShell() {
           })}
         </nav>
         <div className="p-3 border-t border-border">
-          <div className="px-3 py-2 text-xs text-muted-foreground truncate">{user.email}</div>
+          <div className="px-3 py-1 text-xs text-muted-foreground truncate">{user.email}</div>
+          <div className="px-3 pb-2 text-[10px] text-brand-foreground uppercase font-bold">{role}</div>
           <button
             onClick={logout}
             className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -113,7 +117,7 @@ export function AppShell() {
       </main>
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card border-t border-border flex justify-around h-16">
-        {nav.map((n) => {
+        {nav.filter(n => !n.adminOnly || role === "admin").slice(0, 5).map((n) => {
           const active = loc.pathname === n.to;
           const Icon = n.icon;
           return (

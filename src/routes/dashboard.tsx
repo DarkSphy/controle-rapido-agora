@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin } from "@/lib/store";
-import { TrendingUp, TrendingDown, AlertCircle, Package } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertCircle, Package, BarChart3, Settings2 } from "lucide-react";
+import { useState } from "react";
+import { BulkAdjustDialog } from "@/components/BulkAdjustDialog";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -14,8 +16,12 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function Dashboard() {
-  const products = useStore((s) => s.products);
-  const movements = useStore((s) => s.movements);
+  const { products, movements, categories } = useStore((s) => ({
+    products: s.products,
+    movements: s.movements,
+    categories: s.categories,
+  }));
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const today = useMemo(() => {
     const start = new Date();
@@ -70,6 +76,40 @@ function Dashboard() {
           ))}
         </Card>
       </div>
+
+      <div className="mt-8 grid md:grid-cols-3 gap-4">
+        <Card title="Categorias" empty="Sem categorias." link="/categories" linkLabel="Gerenciar">
+          {categories.slice(0, 5).map(c => {
+            const count = products.filter(p => p.categoryId === c.id).length;
+            return (
+              <div key={c.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                <span className="text-sm">{c.name}</span>
+                <span className="text-xs font-bold bg-muted px-2 py-0.5 rounded-full">{count} itens</span>
+              </div>
+            );
+          })}
+        </Card>
+
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h2 className="font-semibold mb-4">Relatórios</h2>
+          <Button asChild variant="outline" className="w-full justify-start gap-2 mb-2">
+            <Link to="/reports">
+              <BarChart3 className="h-4 w-4" /> Ver performance e vendas
+            </Link>
+          </Button>
+          <p className="text-[10px] text-muted-foreground uppercase">Análise de mais vendidos e produtos parados.</p>
+        </div>
+
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h2 className="font-semibold mb-4">Ações rápidas</h2>
+          <Button variant="outline" className="w-full justify-start gap-2 mb-2" onClick={() => setBulkOpen(true)}>
+            <Settings2 className="h-4 w-4" /> Ajuste de preço em massa
+          </Button>
+          <p className="text-[10px] text-muted-foreground uppercase">Aumente ou reduza margens por categoria.</p>
+        </div>
+      </div>
+
+      <BulkAdjustDialog open={bulkOpen} onOpenChange={setBulkOpen} />
     </div>
   );
 }

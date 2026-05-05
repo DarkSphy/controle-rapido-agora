@@ -440,6 +440,66 @@ export const actions = {
     setState({ categories: state.categories.filter((c) => c.id !== id) });
   },
 
+  // Bulk Price Adjustment
+  async bulkAdjustPrices(categoryId: string | null, percentage: number) {
+    const filtered = categoryId ? state.products.filter((p) => p.categoryId === categoryId) : state.products;
+    if (filtered.length === 0) return toast.error("Nenhum produto encontrado");
+
+    const updates = filtered.map(async (p) => {
+      const newMargin = p.margin + percentage;
+      return supabase.from("products").update({ margin: newMargin }).eq("id", p.id);
+    });
+
+    await Promise.all(updates);
+    setState({
+      products: state.products.map((p) => {
+        if (!categoryId || p.categoryId === categoryId) {
+          return { ...p, margin: p.margin + percentage };
+        }
+        return p;
+      }),
+    });
+    toast.success("Preços ajustados com sucesso");
+  },
+
+  // Kit CRUD
+  async addKit(name: string, items: KitItem[]) {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return toast.error("Faça login");
+    const { data: row, error } = await supabase.from("kits").insert({ user_id: user.user.id, name }).select().single();
+    if (error || !row) return toast.error(error?.message ?? "Erro ao salvar kit");
+    
+    if (items.length > 0) {
+      await supabase.from("kit_items").insert(items.map(i => ({ ...i, kit_id: row.id })));
+    }
+    
+    const kit = rowToKit(row);
+    setState({ 
+      kits: [kit, ...state.kits],
+      kitItems: [...state.kitItems, ...items.map(i => ({ ...i, kitId: row.id }))]
+    });
+  },
+
+  async updateKit(id: string, name: string, items: KitItem[]) {
+    await supabase.from("kits").update({ name }).eq("id", id);
+    await supabase.from("kit_items").delete().eq("kit_id", id);
+    if (items.length > 0) {
+      await supabase.from("kit_items").insert(items.map(i => ({ kit_id: id, product_id: i.productId, quantity: i.quantity })));
+    }
+    setState({
+      kits: state.kits.map((k) => (k.id === id ? { ...k, name } : k)),
+      kitItems: [...state.kitItems.filter(ki => ki.kitId !== id), ...items.map(i => ({ ...i, kitId: id }))]
+    });
+  },
+
+  async deleteKit(id: string) {
+    await supabase.from("kits").delete().eq("id", id);
+    setState({ 
+      kits: state.kits.filter((k) => k.id !== id),
+      kitItems: state.kitItems.filter(ki => ki.kitId !== id)
+    });
+  },
+
   async move(args: {
     productId: string;
     variationId?: string;
@@ -447,9 +507,23 @@ export const actions = {
     type: "in" | "out";
     purchasePrice?: number;
     supplierId?: string;
+    isKit?: boolean;
   }) {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) return toast.error("Faça login");
+
+    if (args.isKit) {
+      const kitItems = state.kitItems.filter(ki => ki.kitId === args.productId);
+      for (const item of kitItems) {
+        await actions.move({
+          productId: item.productId,
+          quantity: item.quantity * args.quantity,
+          type: args.type,
+        });
+      }
+      return;
+    }
+
     const product = state.products.find((p) => p.id === args.productId);
     if (!product) return;
     const qty = Math.abs(args.quantity);
@@ -479,6 +553,11 @@ export const actions = {
         supplier_id: args.supplierId ?? null,
         purchase_price: args.purchasePrice,
       });
+      // Also update product cost if it's the main product entry
+      if (!args.variationId) {
+        await supabase.from("products").update({ cost: args.purchasePrice }).eq("id", product.id);
+        updatedProduct.cost = args.purchasePrice;
+      }
     }
 
     const { data: mRow } = await supabase
@@ -498,6 +577,9 @@ export const actions = {
     setState({
       products: state.products.map((p) => (p.id === product.id ? updatedProduct : p)),
       movements: mRow ? [rowToMovement(mRow), ...state.movements] : state.movements,
+      priceHistory: args.type === "in" && args.purchasePrice !== undefined 
+        ? [rowToPriceHistory({ product_id: product.id, supplier_id: args.supplierId, purchase_price: args.purchasePrice, created_at: new Date() }), ...state.priceHistory]
+        : state.priceHistory
     });
   },
 };

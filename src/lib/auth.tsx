@@ -5,29 +5,43 @@ import { supabase } from "@/integrations/supabase/client";
 type AuthCtx = {
   user: User | null;
   session: Session | null;
+  role: "admin" | "operator" | null;
   loading: boolean;
 };
 
-const Ctx = createContext<AuthCtx>({ user: null, session: null, loading: true });
+const Ctx = createContext<AuthCtx>({ user: null, session: null, role: null, loading: true });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
+  const [role, setRole] = useState<"admin" | "operator" | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_e, s) => {
       setSession(s);
+      if (s?.user) {
+        const { data } = await supabase.from("profiles").select("role").eq("id", s.user.id).single();
+        setRole(data?.role ?? "operator");
+      } else {
+        setRole(null);
+      }
       setLoading(false);
     });
-    supabase.auth.getSession().then(({ data }) => {
+    
+    supabase.auth.getSession().then(async ({ data }) => {
       setSession(data.session);
+      if (data.session?.user) {
+        const { data: profile } = await supabase.from("profiles").select("role").eq("id", data.session.user.id).single();
+        setRole(profile?.role ?? "operator");
+      }
       setLoading(false);
     });
+
     return () => sub.subscription.unsubscribe();
   }, []);
 
   return (
-    <Ctx.Provider value={{ user: session?.user ?? null, session, loading }}>
+    <Ctx.Provider value={{ user: session?.user ?? null, session, role, loading }}>
       {children}
     </Ctx.Provider>
   );
