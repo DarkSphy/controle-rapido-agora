@@ -232,7 +232,7 @@ export const actions = {
       supabase.from("kit_items").select("*"),
     ]);
 
-    const products = (prods ?? []).map((p) => rowToProduct(p, vars ?? []));
+    const products = (prods ?? []).map((p: any) => rowToProduct(p, vars ?? []));
     const movements = (movs ?? []).map(rowToMovement);
     const suppliers = (sups ?? []).map(rowToSupplier);
     const categories = (cats ?? []).map(rowToCategory);
