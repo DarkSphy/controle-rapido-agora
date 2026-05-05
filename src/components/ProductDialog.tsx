@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -274,7 +274,7 @@ export function ProductDialog({
             <h3 className="font-semibold text-sm">Histórico de preços de compra</h3>
             {priceHistory.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Nenhum histórico disponível.</p>}
             <div className="space-y-2">
-              {priceHistory.map((h, i) => {
+              {priceHistory.map((h: any, i: number) => {
                 const prev = priceHistory[i + 1];
                 const diff = prev ? h.purchasePrice - prev.purchasePrice : 0;
                 return (
