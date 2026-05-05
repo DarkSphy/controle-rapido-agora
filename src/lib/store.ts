@@ -479,18 +479,4 @@ export const actions = {
   },
 };
 
-export function priceFromCostMargin(cost: number, margin: number) {
-  return cost * (1 + margin / 100);
-}
-export function productEffectiveStock(p: Product) {
-  if (p.variations.length > 0) return p.variations.reduce((s, v) => s + v.stock, 0);
-  return p.stock;
-}
-export function stockStatus(stock: number, min: number): "ok" | "low" | "empty" {
-  if (stock <= 0) return "empty";
-  if (stock <= min) return "low";
-  return "ok";
-}
-export function formatBRL(v: number) {
-  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
+
