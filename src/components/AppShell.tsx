@@ -10,7 +10,8 @@ import { toast } from "sonner";
 
 const PUBLIC_ROUTES = ["/", "/auth"];
 
-const nav = [
+type NavItem = { to: string; label: string; icon: any; adminOnly?: boolean };
+const nav: NavItem[] = [
   { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
   { to: "/produtos", label: "Produtos", icon: Package },
   { to: "/categories", label: "Categorias", icon: Tag },
@@ -20,7 +21,7 @@ const nav = [
   { to: "/reposicao", label: "Reposição", icon: AlertTriangle },
   { to: "/reports", label: "Relatórios", icon: BarChart3, adminOnly: true },
   { to: "/balcao", label: "Balcão", icon: ShoppingBag },
-] as const;
+];
 
 export function AppShell() {
   const loc = useLocation();

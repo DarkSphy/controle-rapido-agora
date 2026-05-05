@@ -17,24 +17,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange(async (_e, s) => {
+    // Set up listener FIRST — never await inside the callback (deadlock risk)
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
+      setLoading(false);
       if (s?.user) {
-        const { data } = await supabase.from("profiles").select("role").eq("id", s.user.id).single();
-        setRole(data?.role ?? "operator");
+        // Defer Supabase calls outside the callback
+        setTimeout(async () => {
+          const { data } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", s.user.id)
+            .maybeSingle();
+          setRole((data as any)?.role ?? "operator");
+        }, 0);
       } else {
         setRole(null);
       }
-      setLoading(false);
     });
-    
-    supabase.auth.getSession().then(async ({ data }) => {
+
+    // THEN check existing session
+    supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
-      if (data.session?.user) {
-        const { data: profile } = await supabase.from("profiles").select("role").eq("id", data.session.user.id).single();
-        setRole(profile?.role ?? "operator");
-      }
       setLoading(false);
+      if (data.session?.user) {
+        setTimeout(async () => {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", data.session!.user.id)
+            .maybeSingle();
+          setRole((profile as any)?.role ?? "operator");
+        }, 0);
+      }
     });
 
     return () => sub.subscription.unsubscribe();
