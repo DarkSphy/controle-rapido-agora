@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase as supabaseTyped } from "@/integrations/supabase/client";
+const supabase: any = supabaseTyped;
 import { toast } from "sonner";
 
 export type Variation = {
