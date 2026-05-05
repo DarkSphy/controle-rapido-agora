@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Product, Variation, actions, formatBRL, priceFromCostMargin, useStore } from "@/lib/store";
 import { toast } from "sonner";
 import { Plus, Trash2, Share2, History } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Draft = {
   name: string;
@@ -41,11 +42,13 @@ export function ProductDialog({
 }) {
   const [d, setD] = useState<Draft>(empty);
   const [tab, setTab] = useState<"general" | "history">("general");
-  const { categories, suppliers, priceHistory } = useStore(s => ({ 
-    categories: s.categories, 
-    suppliers: s.suppliers,
-    priceHistory: s.priceHistory.filter(h => h.productId === product?.id)
-  }));
+  const categories = useStore(s => s.categories);
+  const suppliers = useStore(s => s.suppliers);
+  const allHistory = useStore(s => s.priceHistory);
+  const priceHistory = useMemo(() => 
+    allHistory.filter(h => h.productId === product?.id),
+    [allHistory, product?.id]
+  );
 
   useEffect(() => {
     if (open) {

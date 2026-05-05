@@ -16,10 +16,8 @@ export const Route = createFileRoute("/reposicao")({
 });
 
 function RestockPage() {
-  const { products, movements } = useStore((s) => ({
-    products: s.products,
-    movements: s.movements,
-  }));
+  const products = useStore((s) => s.products);
+  const movements = useStore((s) => s.movements);
 
   const list = useMemo(() => {
     const fifteenDaysAgo = Date.now() - 15 * 24 * 60 * 60 * 1000;

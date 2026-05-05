@@ -9,10 +9,8 @@ export const Route = createFileRoute("/reports")({
 });
 
 function ReportsPage() {
-  const { products, movements } = useStore((s) => ({
-    products: s.products,
-    movements: s.movements,
-  }));
+  const products = useStore((s) => s.products);
+  const movements = useStore((s) => s.movements);
 
   const bestSellers = useMemo(() => {
     const counts: Record<string, number> = {};

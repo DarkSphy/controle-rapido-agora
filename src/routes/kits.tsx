@@ -13,11 +13,9 @@ export const Route = createFileRoute("/kits")({
 });
 
 function KitsPage() {
-  const { kits, kitItems, products } = useStore((s) => ({
-    kits: s.kits,
-    kitItems: s.kitItems,
-    products: s.products,
-  }));
+  const kits = useStore((s) => s.kits);
+  const kitItems = useStore((s) => s.kitItems);
+  const products = useStore((s) => s.products);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Kit | null>(null);
   const [name, setName] = useState("");

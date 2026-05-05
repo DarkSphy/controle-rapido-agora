@@ -13,10 +13,8 @@ export const Route = createFileRoute("/categories")({
 });
 
 function CategoriesPage() {
-  const { categories, products } = useStore((s) => ({
-    categories: s.categories,
-    products: s.products,
-  }));
+  const categories = useStore((s) => s.categories);
+  const products = useStore((s) => s.products);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [name, setName] = useState("");

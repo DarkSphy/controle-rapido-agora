@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin } from "@/lib/store";
 import { TrendingUp, TrendingDown, AlertCircle, Package, BarChart3, Settings2 } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { BulkAdjustDialog } from "@/components/BulkAdjustDialog";
 
 export const Route = createFileRoute("/dashboard")({
@@ -16,11 +17,9 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function Dashboard() {
-  const { products, movements, categories } = useStore((s) => ({
-    products: s.products,
-    movements: s.movements,
-    categories: s.categories,
-  }));
+  const products = useStore((s) => s.products);
+  const movements = useStore((s) => s.movements);
+  const categories = useStore((s) => s.categories);
   const [bulkOpen, setBulkOpen] = useState(false);
 
   const today = useMemo(() => {
