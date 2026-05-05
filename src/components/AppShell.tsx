@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut, Truck } from "lucide-react";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -13,6 +13,7 @@ const PUBLIC_ROUTES = ["/", "/auth"];
 const nav = [
   { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
   { to: "/produtos", label: "Produtos", icon: Package },
+  { to: "/suppliers", label: "Fornecedores", icon: Truck },
   { to: "/movimentacoes", label: "Histórico", icon: ArrowLeftRight },
   { to: "/reposicao", label: "Reposição", icon: AlertTriangle },
   { to: "/balcao", label: "Balcão", icon: ShoppingBag },
