@@ -1,5 +1,8 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut, Truck, Tag, Box, BarChart3 } from "lucide-react";
+import { 
+  LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut, 
+  Truck, Tag, Box, BarChart3, DollarSign, Users, Lightbulb, ShoppingBasket 
+} from "lucide-react";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -13,13 +16,18 @@ const PUBLIC_ROUTES = ["/", "/auth"];
 type NavItem = { to: string; label: string; icon: any; adminOnly?: boolean };
 const nav: NavItem[] = [
   { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
+  { to: "/vendas", label: "Vendas", icon: ShoppingBasket },
+  { to: "/compras", label: "Compras", icon: Truck },
+  { to: "/financeiro", label: "Financeiro", icon: DollarSign },
   { to: "/produtos", label: "Produtos", icon: Package },
   { to: "/categories", label: "Categorias", icon: Tag },
   { to: "/suppliers", label: "Fornecedores", icon: Truck },
+  { to: "/clientes", label: "Clientes", icon: Users },
   { to: "/kits", label: "Kits", icon: Box },
+  { to: "/reports", label: "Relatórios", icon: BarChart3, adminOnly: true },
+  { to: "/insights", label: "Insights", icon: Lightbulb },
   { to: "/movimentacoes", label: "Histórico", icon: ArrowLeftRight },
   { to: "/reposicao", label: "Reposição", icon: AlertTriangle },
-  { to: "/reports", label: "Relatórios", icon: BarChart3, adminOnly: true },
   { to: "/balcao", label: "Balcão", icon: ShoppingBag },
 ];
 

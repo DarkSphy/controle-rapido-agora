@@ -20,56 +20,69 @@ function Dashboard() {
   const products = useStore((s) => s.products);
   const movements = useStore((s) => s.movements);
   const categories = useStore((s) => s.categories);
+  const sales = useStore((s) => s.sales);
+  const purchases = useStore((s) => s.purchases);
   const [bulkOpen, setBulkOpen] = useState(false);
 
   const today = useMemo(() => {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
     const t = start.getTime();
-    const todayMoves = movements.filter((m) => m.date >= t);
-    const ins = todayMoves.filter((m) => m.type === "in").reduce((s, m) => s + m.quantity, 0);
-    const outs = todayMoves.filter((m) => m.type === "out").reduce((s, m) => s + m.quantity, 0);
-    return { ins, outs, count: todayMoves.length };
-  }, [movements]);
+    
+    const todaySales = sales.filter(s => s.createdAt >= t).reduce((sum, s) => sum + s.totalAmount, 0);
+    const todayPurchases = purchases.filter(p => p.createdAt >= t).reduce((sum, p) => sum + p.totalAmount, 0);
+    
+    return { sales: todaySales, purchases: todayPurchases };
+  }, [sales, purchases]);
 
   const empty = products.filter((p) => productEffectiveStock(p) <= 0);
-  const low = products.filter((p) => {
-    const s = productEffectiveStock(p);
-    return s > 0 && s <= p.minStock;
-  });
   const totalValue = products.reduce((sum, p) => sum + productEffectiveStock(p) * priceFromCostMargin(p.cost, p.margin), 0);
 
   return (
     <div className="px-4 md:px-8 py-6 md:py-10 max-w-6xl mx-auto">
-      <header className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Resumo do dia</h1>
-        <p className="text-muted-foreground mt-1">
-          {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}
-        </p>
+      <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Resumo do dia</h1>
+          <p className="text-muted-foreground mt-1 lowercase">
+            {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button asChild className="gap-2 h-11 px-5">
+            <Link to="/vendas">
+              <ShoppingBasket className="h-4 w-4" /> Nova Venda
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="gap-2 h-11 px-5">
+            <Link to="/compras">
+              <Truck className="h-4 w-4" /> Nova Compra
+            </Link>
+          </Button>
+        </div>
       </header>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
-        <Stat icon={TrendingUp} label="Entradas hoje" value={today.ins} accent="brand" />
-        <Stat icon={TrendingDown} label="Saídas hoje" value={today.outs} accent="primary" />
+        <Stat icon={TrendingUp} label="Vendas hoje" value={formatBRL(today.sales)} accent="brand" small />
+        <Stat icon={TrendingDown} label="Gasto hoje" value={formatBRL(today.purchases)} accent="primary" small />
         <Stat icon={AlertCircle} label="Estoque zerado" value={empty.length} accent="destructive" />
         <Stat icon={Package} label="Valor em estoque" value={formatBRL(totalValue)} accent="default" small />
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
         <Card title="Estoque crítico" empty="Tudo certo!" link="/reposicao" linkLabel="Ver reposição">
-          {[...empty, ...low].slice(0, 5).map((p) => (
+          {products.filter(p => productEffectiveStock(p) <= p.minStock).slice(0, 5).map((p) => (
             <Row key={p.id} name={p.name} value={productEffectiveStock(p)} status={productEffectiveStock(p) <= 0 ? "empty" : "low"} />
           ))}
         </Card>
-        <Card title="Movimentações recentes" empty="Sem movimentos hoje." link="/movimentacoes" linkLabel="Ver tudo">
-          {movements.slice(0, 5).map((m) => (
-            <div key={m.id} className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
+        <Card title="Últimas vendas" empty="Sem vendas registradas." link="/vendas" linkLabel="Ver todas">
+          {sales.slice(0, 5).map((s) => (
+            <div key={s.id} className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
               <div className="min-w-0">
-                <div className="font-medium truncate">{m.productName}{m.variationName ? ` — ${m.variationName}` : ""}</div>
-                <div className="text-xs text-muted-foreground">{new Date(m.date).toLocaleString("pt-BR")}</div>
+                <div className="font-medium truncate">{formatBRL(s.totalAmount)}</div>
+                <div className="text-xs text-muted-foreground uppercase font-bold tracking-widest">{s.paymentMethod || "Venda"}</div>
               </div>
-              <div className={`text-sm font-semibold tabular-nums ${m.type === "in" ? "text-success" : "text-destructive"}`}>
-                {m.type === "in" ? "+" : "−"}{m.quantity}
+              <div className="text-[10px] text-muted-foreground">
+                {new Date(s.createdAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
               </div>
             </div>
           ))}
@@ -77,26 +90,25 @@ function Dashboard() {
       </div>
 
       <div className="mt-8 grid md:grid-cols-3 gap-4">
-        <Card title="Categorias" empty="Sem categorias." link="/categories" linkLabel="Gerenciar">
-          {categories.slice(0, 5).map(c => {
-            const count = products.filter(p => p.categoryId === c.id).length;
-            return (
-              <div key={c.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                <span className="text-sm">{c.name}</span>
-                <span className="text-xs font-bold bg-muted px-2 py-0.5 rounded-full">{count} itens</span>
-              </div>
-            );
-          })}
-        </Card>
+        <div className="rounded-xl border border-border bg-card p-5 relative overflow-hidden group hover:border-brand/50 transition-all">
+          <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-brand/10 group-hover:scale-110 transition-transform" />
+          <h2 className="font-bold mb-1 flex items-center gap-2">
+            <Lightbulb className="h-4 w-4 text-brand" /> Insights
+          </h2>
+          <p className="text-xs text-muted-foreground mb-4">Veja sugestões inteligentes para seu negócio.</p>
+          <Button asChild variant="link" className="p-0 h-auto text-brand text-xs font-bold uppercase tracking-widest">
+            <Link to="/insights">Ver recomendações →</Link>
+          </Button>
+        </div>
 
         <div className="rounded-xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-4">Relatórios</h2>
+          <h2 className="font-semibold mb-4">Financeiro</h2>
           <Button asChild variant="outline" className="w-full justify-start gap-2 mb-2">
-            <Link to="/reports">
-              <BarChart3 className="h-4 w-4" /> Ver performance e vendas
+            <Link to="/financeiro">
+              <BarChart3 className="h-4 w-4" /> Fluxo de caixa e lucro
             </Link>
           </Button>
-          <p className="text-[10px] text-muted-foreground uppercase">Análise de mais vendidos e produtos parados.</p>
+          <p className="text-[10px] text-muted-foreground uppercase">Acompanhe entradas e saídas detalhadas.</p>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-5">

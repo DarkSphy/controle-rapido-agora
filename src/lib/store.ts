@@ -73,6 +73,44 @@ export type Movement = {
   date: number;
 };
 
+export type Customer = {
+  id: string;
+  name: string;
+  phone?: string;
+  createdAt: number;
+};
+
+export type Sale = {
+  id: string;
+  customerId?: string;
+  totalAmount: number;
+  paymentMethod?: string;
+  createdAt: number;
+};
+
+export type SaleItem = {
+  id: string;
+  saleId: string;
+  productId: string;
+  quantity: number;
+  unitPrice: number;
+};
+
+export type Purchase = {
+  id: string;
+  supplierId?: string;
+  totalAmount: number;
+  createdAt: number;
+};
+
+export type PurchaseItem = {
+  id: string;
+  purchaseId: string;
+  productId: string;
+  quantity: number;
+  unitPrice: number;
+};
+
 type State = {
   products: Product[];
   movements: Movement[];
@@ -81,10 +119,19 @@ type State = {
   priceHistory: PriceHistory[];
   kits: Kit[];
   kitItems: KitItem[];
+  customers: Customer[];
+  sales: Sale[];
+  saleItems: SaleItem[];
+  purchases: Purchase[];
+  purchaseItems: PurchaseItem[];
   loaded: boolean;
 };
 
-let state: State = { products: [], movements: [], suppliers: [], categories: [], priceHistory: [], kits: [], kitItems: [], loaded: false };
+let state: State = { 
+  products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
+  kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
+  purchases: [], purchaseItems: [], loaded: false 
+};
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 const setState = (patch: Partial<State>) => {
@@ -97,7 +144,11 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 const getSnapshot = () => state;
-const serverSnap: State = { products: [], movements: [], suppliers: [], categories: [], priceHistory: [], kits: [], kitItems: [], loaded: false };
+const serverSnap: State = { 
+  products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
+  kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
+  purchases: [], purchaseItems: [], loaded: false 
+};
 const getServer = () => serverSnap;
 
 export function useStore<T>(selector: (s: State) => T): T {
@@ -210,6 +261,54 @@ function rowToKitItem(ki: any): KitItem {
   };
 }
 
+function rowToCustomer(c: any): Customer {
+  return {
+    id: c.id,
+    name: c.name,
+    phone: c.phone ?? undefined,
+    createdAt: new Date(c.created_at).getTime(),
+  };
+}
+
+function rowToSale(s: any): Sale {
+  return {
+    id: s.id,
+    customerId: s.customer_id ?? undefined,
+    totalAmount: Number(s.total_amount),
+    paymentMethod: s.payment_method ?? undefined,
+    createdAt: new Date(s.created_at).getTime(),
+  };
+}
+
+function rowToSaleItem(si: any): SaleItem {
+  return {
+    id: si.id,
+    saleId: si.sale_id,
+    productId: si.product_id,
+    quantity: si.quantity,
+    unitPrice: Number(si.unit_price),
+  };
+}
+
+function rowToPurchase(p: any): Purchase {
+  return {
+    id: p.id,
+    supplierId: p.supplier_id ?? undefined,
+    totalAmount: Number(p.total_amount),
+    createdAt: new Date(p.created_at).getTime(),
+  };
+}
+
+function rowToPurchaseItem(pi: any): PurchaseItem {
+  return {
+    id: pi.id,
+    purchaseId: pi.purchase_id,
+    productId: pi.product_id,
+    quantity: pi.quantity,
+    unitPrice: Number(pi.unit_price),
+  };
+}
+
 export const actions = {
   async loadAll() {
     const [
@@ -221,6 +320,11 @@ export const actions = {
       { data: phist },
       { data: kits },
       { data: kitItems },
+      { data: customers },
+      { data: sales },
+      { data: saleItems },
+      { data: purchases },
+      { data: purchaseItems },
     ] = await Promise.all([
       supabase.from("products").select("*").order("created_at", { ascending: false }),
       supabase.from("variations").select("*"),
@@ -230,6 +334,11 @@ export const actions = {
       supabase.from("price_history").select("*"),
       supabase.from("kits").select("*"),
       supabase.from("kit_items").select("*"),
+      supabase.from("customers").select("*"),
+      supabase.from("sales").select("*").order("created_at", { ascending: false }),
+      supabase.from("sale_items").select("*"),
+      supabase.from("purchases").select("*").order("created_at", { ascending: false }),
+      supabase.from("purchase_items").select("*"),
     ]);
 
     const products = (prods ?? []).map((p: any) => rowToProduct(p, vars ?? []));
@@ -239,6 +348,11 @@ export const actions = {
     const priceHistory = (phist ?? []).map(rowToPriceHistory);
     const kitsList = (kits ?? []).map(rowToKit);
     const kitItemsList = (kitItems ?? []).map(rowToKitItem);
+    const customersList = (customers ?? []).map(rowToCustomer);
+    const salesList = (sales ?? []).map(rowToSale);
+    const saleItemsList = (saleItems ?? []).map(rowToSaleItem);
+    const purchasesList = (purchases ?? []).map(rowToPurchase);
+    const purchaseItemsList = (purchaseItems ?? []).map(rowToPurchaseItem);
 
     setState({
       products,
@@ -248,12 +362,21 @@ export const actions = {
       priceHistory,
       kits: kitsList,
       kitItems: kitItemsList,
+      customers: customersList,
+      sales: salesList,
+      saleItems: saleItemsList,
+      purchases: purchasesList,
+      purchaseItems: purchaseItemsList,
       loaded: true,
     });
   },
 
   reset() {
-    setState({ products: [], movements: [], suppliers: [], categories: [], priceHistory: [], kits: [], kitItems: [], loaded: false });
+    setState({ 
+      products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
+      kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
+      purchases: [], purchaseItems: [], loaded: false 
+    });
   },
 
   async addProduct(p: Omit<Product, "id" | "usage" | "createdAt" | "variations"> & { variations?: Omit<Variation, "id">[] }) {
@@ -581,6 +704,88 @@ export const actions = {
         ? [rowToPriceHistory({ product_id: product.id, supplier_id: args.supplierId, purchase_price: args.purchasePrice, created_at: new Date() }), ...state.priceHistory]
         : state.priceHistory
     });
+  },
+
+  // Customer CRUD
+  async addCustomer(c: { name: string; phone?: string }) {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return toast.error("Faça login");
+    const { data: row, error } = await supabase.from("customers").insert({ user_id: user.user.id, ...c }).select().single();
+    if (error || !row) return toast.error(error?.message ?? "Erro ao salvar cliente");
+    setState({ customers: [rowToCustomer(row), ...state.customers] });
+  },
+
+  async updateCustomer(id: string, patch: Partial<{ name: string; phone: string }>) {
+    await supabase.from("customers").update(patch).eq("id", id);
+    setState({ customers: state.customers.map(c => c.id === id ? { ...c, ...patch } : c) });
+  },
+
+  async deleteCustomer(id: string) {
+    await supabase.from("customers").delete().eq("id", id);
+    setState({ customers: state.customers.filter(c => c.id !== id) });
+  },
+
+  // Sales Integration
+  async addSale(s: { customerId?: string; totalAmount: number; paymentMethod?: string }, items: Omit<SaleItem, "id" | "saleId">[]) {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return;
+    
+    const { data: saleRow, error } = await supabase.from("sales").insert({
+      user_id: user.user.id,
+      customer_id: s.customerId || null,
+      total_amount: s.totalAmount,
+      payment_method: s.paymentMethod
+    }).select().single();
+    
+    if (error || !saleRow) return toast.error("Erro ao registrar venda");
+    
+    const itemRows = items.map(i => ({ ...i, sale_id: saleRow.id, product_id: i.productId, unit_price: i.unitPrice }));
+    const { data: siRows } = await supabase.from("sale_items").insert(itemRows).select();
+    
+    // Deduct stock
+    for (const item of items) {
+      await actions.move({ productId: item.productId, quantity: item.quantity, type: "out" });
+    }
+    
+    setState({
+      sales: [rowToSale(saleRow), ...state.sales],
+      saleItems: [...(siRows ?? []).map(rowToSaleItem), ...state.saleItems]
+    });
+    toast.success("Venda finalizada com sucesso");
+  },
+
+  // Purchase Integration
+  async addPurchase(p: { supplierId?: string; totalAmount: number }, items: Omit<PurchaseItem, "id" | "purchaseId">[]) {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return;
+    
+    const { data: purRow, error } = await supabase.from("purchases").insert({
+      user_id: user.user.id,
+      supplier_id: p.supplierId || null,
+      total_amount: p.totalAmount
+    }).select().single();
+    
+    if (error || !purRow) return toast.error("Erro ao registrar compra");
+    
+    const itemRows = items.map(i => ({ ...i, purchase_id: purRow.id, product_id: i.productId, unit_price: i.unitPrice }));
+    const { data: piRows } = await supabase.from("purchase_items").insert(itemRows).select();
+    
+    // Add stock and price history
+    for (const item of items) {
+      await actions.move({ 
+        productId: item.productId, 
+        quantity: item.quantity, 
+        type: "in", 
+        purchasePrice: item.unitPrice, 
+        supplierId: p.supplierId 
+      });
+    }
+    
+    setState({
+      purchases: [rowToPurchase(purRow), ...state.purchases],
+      purchaseItems: [...(piRows ?? []).map(rowToPurchaseItem), ...state.purchaseItems]
+    });
+    toast.success("Compra registrada com sucesso");
   },
 };
 
