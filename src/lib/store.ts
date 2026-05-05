@@ -317,34 +317,44 @@ function rowToPurchaseItem(pi: any): PurchaseItem {
 
 export const actions = {
   async loadAll() {
+    const fetchTable = async (table: string, query: any = null) => {
+      const q = query || supabase.from(table).select("*");
+      const { data, error } = await q;
+      if (error) {
+        console.error(`Erro ao buscar tabela ${table}:`, error);
+        return [];
+      }
+      return data || [];
+    };
+
     const [
-      { data: prods },
-      { data: vars },
-      { data: movs },
-      { data: sups },
-      { data: cats },
-      { data: phist },
-      { data: kits },
-      { data: kitItems },
-      { data: customers },
-      { data: sales },
-      { data: saleItems },
-      { data: purchases },
-      { data: purchaseItems },
+      prods,
+      vars,
+      movs,
+      sups,
+      cats,
+      phist,
+      kits,
+      kitItems,
+      customers,
+      sales,
+      saleItems,
+      purchases,
+      purchaseItems,
     ] = await Promise.all([
-      supabase.from("products").select("*").order("created_at", { ascending: false }),
-      supabase.from("variations").select("*"),
-      supabase.from("movements").select("*").order("created_at", { ascending: false }).limit(500),
-      supabase.from("suppliers").select("*"),
-      supabase.from("categories").select("*"),
-      supabase.from("price_history").select("*"),
-      supabase.from("kits").select("*"),
-      supabase.from("kit_items").select("*"),
-      supabase.from("customers").select("*"),
-      supabase.from("sales").select("*").order("created_at", { ascending: false }),
-      supabase.from("sale_items").select("*"),
-      supabase.from("purchases").select("*").order("created_at", { ascending: false }),
-      supabase.from("purchase_items").select("*"),
+      fetchTable("products", supabase.from("products").select("*").order("created_at", { ascending: false })),
+      fetchTable("variations"),
+      fetchTable("movements", supabase.from("movements").select("*").order("created_at", { ascending: false }).limit(500)),
+      fetchTable("suppliers"),
+      fetchTable("categories"),
+      fetchTable("price_history"),
+      fetchTable("kits"),
+      fetchTable("kit_items"),
+      fetchTable("customers"),
+      fetchTable("sales", supabase.from("sales").select("*").order("created_at", { ascending: false })),
+      fetchTable("sale_items"),
+      fetchTable("purchases", supabase.from("purchases").select("*").order("created_at", { ascending: false })),
+      fetchTable("purchase_items"),
     ]);
 
     const products = (prods ?? []).map((p: any) => rowToProduct(p, vars ?? []));
