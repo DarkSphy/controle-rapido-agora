@@ -19,6 +19,7 @@ function ComprasPage() {
   const purchases = useStore((s) => s.purchases);
   const purchaseItems = useStore((s) => s.purchaseItems);
   const suppliers = useStore((s) => s.suppliers);
+  const products = useStore((s) => s.products);
   const [open, setOpen] = useState(false);
 
   return (
@@ -81,7 +82,7 @@ function ComprasPage() {
                 {/* Micro list of items */}
                 <div className="mt-4 pt-4 border-t border-border/50 flex flex-wrap gap-2">
                   {items.slice(0, 3).map(i => {
-                    const prod = useStore.getState().products.find(pr => pr.id === i.productId);
+                    const prod = products.find((pr) => pr.id === i.productId);
                     return (
                       <span key={i.id} className="text-[10px] bg-muted px-2 py-1 rounded-md text-muted-foreground border border-border/50">
                         {i.quantity}x {prod?.name || "Produto"}
