@@ -197,44 +197,71 @@ function Landing() {
       </section>
 
       {/* Oferta */}
-      <section className="px-5 md:px-10 py-16 md:py-24 max-w-3xl mx-auto w-full">
-        <div className="relative rounded-3xl border-2 border-brand bg-card p-8 md:p-10 shadow-2xl overflow-hidden">
-          <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-brand text-brand-foreground text-xs font-bold uppercase tracking-wider">
-            Oferta de lançamento
-          </span>
-            <div className="text-center">
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-                Oferta de Ativação Imediata
-              </h2>
-              <div className="mt-8 flex flex-col items-center gap-3">
-                <div className="text-sm text-brand-foreground uppercase tracking-widest font-bold">Primeiro mês</div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl md:text-6xl font-extrabold text-primary">R$97</span>
-                </div>
-                <p className="text-sm font-semibold text-muted-foreground max-w-[200px] leading-relaxed">
-                  Com ativação imediata + suporte prioritário
-                </p>
-              </div>
-              <div className="my-8 h-px bg-border" />
-              <div className="flex flex-col items-center gap-1">
-                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Depois</div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl md:text-4xl font-bold">R$39,90</span>
-                  <span className="text-muted-foreground">/mês</span>
-                </div>
-              </div>
-              <Button asChild size="lg" className="mt-8 h-14 px-8 text-lg font-bold w-full sm:w-auto shadow-[var(--shadow-glow)]">
-                <Link to="/auth" search={{ mode: "register" }}>
-                  Garantir ativação agora <ArrowRight className="h-5 w-5" />
-                </Link>
-              </Button>
-            <div className="mt-4">
-              <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="text-sm text-[#1ebe5a] font-semibold inline-flex items-center gap-1.5 hover:underline">
-                <MessageCircle className="h-4 w-4" /> Tirar dúvidas no WhatsApp
-              </a>
+      <section className="px-5 md:px-10 py-16 md:py-24 max-w-5xl mx-auto w-full">
+        <div className="text-center mb-10">
+          <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Plano único</span>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">Sem taxas escondidas</h2>
+          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+            Tudo incluso. Você sabe exatamente o que paga, do primeiro mês em diante.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-5 items-stretch">
+          {/* Primeiro mês */}
+          <div className="relative rounded-3xl border-2 border-brand bg-card p-7 md:p-8 shadow-2xl flex flex-col">
+            <span className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-brand text-brand-foreground text-[10px] font-bold uppercase tracking-wider">
+              Mais escolhido
+            </span>
+            <div className="text-xs uppercase tracking-widest font-bold text-brand-foreground">Primeiro mês</div>
+            <div className="mt-3 flex items-baseline gap-1">
+              <span className="text-5xl md:text-6xl font-extrabold text-primary">R$139,90</span>
             </div>
+            <p className="text-sm text-muted-foreground mt-2">Pagamento único de início</p>
+
+            <ul className="mt-6 space-y-3 text-sm flex-1">
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Ativação imediata da conta</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Suporte no cadastro dos seus produtos</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> 7 dias de teste — ou seu dinheiro de volta</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Atendimento prioritário no WhatsApp</li>
+            </ul>
+
+            <Button asChild size="lg" className="mt-7 h-12 text-base font-bold w-full shadow-[var(--shadow-glow)]">
+              <Link to="/auth" search={{ mode: "register" }}>
+                Começar agora <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
+
+          {/* Mensalidade */}
+          <div className="relative rounded-3xl border border-border bg-card p-7 md:p-8 shadow-lg flex flex-col">
+            <div className="text-xs uppercase tracking-widest font-bold text-muted-foreground">A partir do 2º mês</div>
+            <div className="mt-3 flex items-baseline gap-1">
+              <span className="text-5xl md:text-6xl font-extrabold">R$39,90</span>
+              <span className="text-muted-foreground text-lg">/mês</span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">Mensalidade fixa, sem reajuste surpresa</p>
+
+            <ul className="mt-6 space-y-3 text-sm flex-1">
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Estoque, vendas e relatórios ilimitados</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Acesso no celular e no computador</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Atualizações novas todo mês</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Cancele quando quiser, sem multa</li>
+            </ul>
+
+            <a
+              href={WA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-7 inline-flex items-center justify-center gap-2 h-12 rounded-md border border-[#25D366] text-[#1ebe5a] font-semibold hover:bg-[#25D366]/10 transition-colors"
+            >
+              <MessageCircle className="h-4 w-4" /> Tirar dúvidas no WhatsApp
+            </a>
           </div>
         </div>
+
+        <p className="text-center text-xs text-muted-foreground mt-6">
+          Sem fidelidade • Sem taxa de cancelamento • Garantia de 7 dias
+        </p>
       </section>
 
       <footer className="px-5 md:px-10 py-8 border-t border-border/60 text-center text-sm text-muted-foreground">
