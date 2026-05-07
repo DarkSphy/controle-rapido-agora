@@ -1,0 +1,1 @@
+Fix `addSale` and `addPurchase` in `src/lib/store.ts` to send only valid snake_case columns to Supabase (currently extra camelCase fields cause the insert to fail silently, so finished sales show "0 itens"). Also surface the insert error via toast.
