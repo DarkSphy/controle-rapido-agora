@@ -797,8 +797,14 @@ export const actions = {
     
     if (error || !purRow) return toast.error("Erro ao registrar compra");
     
-    const itemRows = items.map(i => ({ ...i, purchase_id: purRow.id, product_id: i.productId, unit_price: i.unitPrice }));
-    const { data: piRows } = await supabase.from("purchase_items").insert(itemRows).select();
+    const itemRows = items.map(i => ({
+      purchase_id: purRow.id,
+      product_id: i.productId,
+      quantity: i.quantity,
+      unit_price: i.unitPrice,
+    }));
+    const { data: piRows, error: piError } = await supabase.from("purchase_items").insert(itemRows).select();
+    if (piError) toast.error("Erro ao salvar itens da compra");
     
     // Add stock and price history
     for (const item of items) {
