@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { actions } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
