@@ -26,6 +26,7 @@ import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as BalcaoRouteImport } from './routes/balcao'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const VendasRoute = VendasRouteImport.update({
@@ -113,6 +114,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
+  id: '/return',
+  path: '/return',
+  getParentRoute: () => CheckoutRoute,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -125,7 +131,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/balcao': typeof BalcaoRoute
   '/categories': typeof CategoriesRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
   '/dashboard': typeof DashboardRoute
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/reposicao': typeof ReposicaoRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -145,7 +152,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/balcao': typeof BalcaoRoute
   '/categories': typeof CategoriesRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
   '/dashboard': typeof DashboardRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/reposicao': typeof ReposicaoRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -166,7 +174,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/balcao': typeof BalcaoRoute
   '/categories': typeof CategoriesRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
   '/dashboard': typeof DashboardRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/reposicao': typeof ReposicaoRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/reposicao'
     | '/suppliers'
     | '/vendas'
+    | '/checkout/return'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/reposicao'
     | '/suppliers'
     | '/vendas'
+    | '/checkout/return'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/reposicao'
     | '/suppliers'
     | '/vendas'
+    | '/checkout/return'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -249,7 +261,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BalcaoRoute: typeof BalcaoRoute
   CategoriesRoute: typeof CategoriesRoute
-  CheckoutRoute: typeof CheckoutRoute
+  CheckoutRoute: typeof CheckoutRouteWithChildren
   ClientesRoute: typeof ClientesRoute
   ComprasRoute: typeof ComprasRoute
   DashboardRoute: typeof DashboardRoute
@@ -386,6 +398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/return': {
+      id: '/checkout/return'
+      path: '/return'
+      fullPath: '/checkout/return'
+      preLoaderRoute: typeof CheckoutReturnRouteImport
+      parentRoute: typeof CheckoutRoute
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -396,12 +415,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface CheckoutRouteChildren {
+  CheckoutReturnRoute: typeof CheckoutReturnRoute
+}
+
+const CheckoutRouteChildren: CheckoutRouteChildren = {
+  CheckoutReturnRoute: CheckoutReturnRoute,
+}
+
+const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
+  CheckoutRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   BalcaoRoute: BalcaoRoute,
   CategoriesRoute: CategoriesRoute,
-  CheckoutRoute: CheckoutRoute,
+  CheckoutRoute: CheckoutRouteWithChildren,
   ClientesRoute: ClientesRoute,
   ComprasRoute: ComprasRoute,
   DashboardRoute: DashboardRoute,
