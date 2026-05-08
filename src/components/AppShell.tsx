@@ -7,11 +7,12 @@ import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { actions } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const PUBLIC_ROUTES = ["/", "/auth"];
+const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return"];
 
 type NavItem = { to: string; label: string; icon: any; adminOnly?: boolean };
 const nav: NavItem[] = [
@@ -35,27 +36,26 @@ export function AppShell() {
   const loc = useLocation();
   const navigate = useNavigate();
   const { user, role, loading } = useAuth();
+  const { isActive, loading: subLoading } = useSubscription();
   const isPublic = PUBLIC_ROUTES.includes(loc.pathname);
 
-  // Load data when authenticated
   useEffect(() => {
-    if (user) {
-      actions.loadAll();
-    } else {
-      actions.reset();
-    }
+    if (user) actions.loadAll();
+    else actions.reset();
   }, [user]);
 
-  // Redirect protected routes when not authenticated
   useEffect(() => {
-    if (!loading && !user && !isPublic) {
-      navigate({ to: "/auth" });
-    }
+    if (!loading && !user && !isPublic) navigate({ to: "/auth" });
   }, [loading, user, isPublic, navigate]);
 
-  if (isPublic) {
-    return <Outlet />;
-  }
+  // Gate: usuário logado mas SEM assinatura ativa → /checkout
+  useEffect(() => {
+    if (!loading && !subLoading && user && !isActive && !isPublic) {
+      navigate({ to: "/checkout" });
+    }
+  }, [loading, subLoading, user, isActive, isPublic, navigate]);
+
+  if (isPublic) return <Outlet />;
 
   if (loading || !user) {
     return (
