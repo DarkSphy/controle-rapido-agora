@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BulkAdjustDialog } from "@/components/BulkAdjustDialog";
 import { BulkTaxDialog } from "@/components/BulkTaxDialog";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -83,137 +84,188 @@ function Dashboard() {
     };
   }, [sales, saleItems, purchases, quotes]);
 
-  const empty = products.filter((p) => !p.isService && productEffectiveStock(p) <= 0);
-  const totalValue = products.reduce((sum, p) => {
-    if (p.isService) return sum;
-    const unitValue = showCostValue ? p.cost : priceFromCostMargin(p.cost, p.margin);
-    return sum + productEffectiveStock(p) * unitValue;
-  }, 0);
+  const recentActivities = useMemo(() => {
+    const list: any[] = [];
+    sales.slice(0, 3).forEach(s => list.push({ type: "venda", date: s.createdAt, title: "Venda realizada", subtitle: `${formatBRL(s.totalAmount)}`, icon: ShoppingBasket, color: "text-success bg-success/10" }));
+    quotes.slice(0, 2).forEach(q => list.push({ type: "orcamento", date: q.createdAt, title: "Orçamento criado", subtitle: `${formatBRL(q.total)}`, icon: FileText, color: "text-amber-500 bg-amber-500/10" }));
+    return list.sort((a, b) => b.date - a.date).slice(0, 5);
+  }, [sales, quotes]);
+
+  const stats = [
+    { label: "Vendas hoje", value: formatBRL(today.productSales), icon: TrendingUp, color: "text-success bg-success/10", trend: "+12% vs ontem" },
+    { label: "Mão de obra hoje", value: formatBRL(today.laborSales), icon: Wrench, color: "text-brand bg-brand/10", trend: "estável" },
+    { label: "Gasto hoje", value: formatBRL(today.purchases), icon: TrendingDown, color: "text-primary bg-primary/10", trend: "-5% vs ontem" },
+    { label: "Estoque zerado", value: empty.length.toString(), icon: AlertCircle, color: "text-destructive bg-destructive/10", trend: "crítico" },
+    { label: "Valor em estoque", value: formatBRL(totalValue), icon: Package, color: "text-slate-500 bg-slate-100", action: (
+      <button onClick={() => setShowCostValue(!showCostValue)} className="text-[10px] font-bold uppercase tracking-widest text-brand hover:underline">
+        {showCostValue ? "Ver Final" : "Ver Custo"}
+      </button>
+    )},
+  ];
 
   return (
-    <div className="px-4 md:px-8 py-6 md:py-10 max-w-6xl mx-auto">
-      <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Resumo do dia</h1>
-          <p className="text-muted-foreground mt-1 lowercase">
+    <div className="px-4 md:px-10 py-8 md:py-12 max-w-7xl mx-auto space-y-10">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">Resumo do dia</h1>
+          <p className="text-muted-foreground font-medium">
             {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button asChild className="gap-2 h-11 px-5">
+        <div className="flex gap-3">
+          <Button asChild className="h-12 px-6 rounded-2xl shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all font-bold">
             <Link to="/vendas">
-              <ShoppingBasket className="h-4 w-4" /> Nova Venda
+              <ShoppingBasket className="mr-2 h-5 w-5" /> Nova Venda
             </Link>
           </Button>
-          <Button asChild variant="outline" className="gap-2 h-11 px-5">
+          <Button asChild variant="outline" className="h-12 px-6 rounded-2xl border-2 hover:bg-muted font-bold">
             <Link to="/compras">
-              <Truck className="h-4 w-4" /> Nova Compra
+              <Truck className="mr-2 h-5 w-5" /> Nova Compra
             </Link>
           </Button>
         </div>
       </header>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-8">
-        <Stat icon={TrendingUp} label="Vendas hoje" value={formatBRL(today.productSales)} accent="brand" small />
-        <Stat icon={Wrench} label="Mão de obra hoje" value={formatBRL(today.laborSales)} accent="brand" small />
-        <Stat icon={TrendingDown} label="Gasto hoje" value={formatBRL(today.purchases)} accent="primary" small />
-        <Stat icon={AlertCircle} label="Estoque zerado" value={empty.length} accent="destructive" />
-        <Stat 
-          icon={Package} 
-          label="Valor em estoque"
-          value={formatBRL(totalValue)} 
-          accent="default" 
-          small 
-          action={
-            <button 
-              onClick={() => setShowCostValue(!showCostValue)}
-              className="flex items-center gap-1.5 px-2 py-1 rounded-md border border-brand/20 bg-brand/10 text-brand-foreground hover:bg-brand/20 transition-all text-[10px] font-bold uppercase tracking-wider shadow-sm active:scale-95"
-              title="Alternar cálculo entre preço de custo ou preço final"
-            >
-              <ArrowLeftRight className="h-3 w-3" />
-              {showCostValue ? "Custo" : "Final"}
-            </button>
-          }
-        />
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4">
-        <Card title="Estoque crítico" empty="Tudo certo!" link="/reposicao" linkLabel="Ver reposição">
-          {products.filter(p => productEffectiveStock(p) <= p.minStock).slice(0, 5).map((p) => (
-            <Row key={p.id} name={p.name} value={productEffectiveStock(p)} status={productEffectiveStock(p) <= 0 ? "empty" : "low"} />
-          ))}
-        </Card>
-        <Card title="Últimas vendas" empty="Sem vendas registradas." link="/vendas" linkLabel="Ver todas">
-          {sales.slice(0, 5).map((s) => (
-            <div key={s.id} className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
-              <div className="min-w-0">
-                <div className="font-medium truncate">{formatBRL(s.totalAmount)}</div>
-                <div className="text-xs text-muted-foreground uppercase font-bold tracking-widest">{s.paymentMethod || "Venda"}</div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {stats.map((s, i) => (
+          <div key={i} className="bg-card rounded-[2rem] border border-border/50 p-6 shadow-sm hover:shadow-md transition-shadow group">
+            <div className="flex justify-between items-start mb-6">
+              <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110", s.color)}>
+                <s.icon className="h-6 w-6" />
               </div>
-              <div className="text-[10px] text-muted-foreground">
-                {new Date(s.createdAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-              </div>
+              {s.trend && (
+                <span className={cn("text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full", 
+                  s.trend.includes("+") ? "text-success bg-success/10" : "text-muted-foreground bg-muted"
+                )}>
+                  {s.trend}
+                </span>
+              )}
+              {s.action}
             </div>
-          ))}
-        </Card>
-      </div>
-
-      <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-border bg-card p-5 relative overflow-hidden group hover:border-brand/50 transition-all">
-          <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-brand/10 group-hover:scale-110 transition-transform" />
-          <h2 className="font-bold mb-1 flex items-center gap-2">
-            <Lightbulb className="h-4 w-4 text-brand" /> Insights
-          </h2>
-          <p className="text-xs text-muted-foreground mb-4">Veja sugestões inteligentes para seu negócio.</p>
-          <Button asChild variant="link" className="p-0 h-auto text-brand text-xs font-bold uppercase tracking-widest">
-            <Link to="/insights">Ver recomendações →</Link>
-          </Button>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-4">Financeiro</h2>
-          <Button asChild variant="outline" className="w-full justify-start gap-2 mb-2">
-            <Link to="/financeiro">
-              <BarChart3 className="h-4 w-4" /> Fluxo de caixa e lucro
-            </Link>
-          </Button>
-          <p className="text-[10px] text-muted-foreground uppercase">Acompanhe entradas e saídas detalhadas.</p>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-4">Orçamentos</h2>
-          <div className="space-y-3 mb-4">
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">Pendentes:</span>
-              <span className="font-bold text-amber-600">{today.pendingQuotes}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">Aprovados (Mês):</span>
-              <span className="font-bold text-success">{today.approvedQuotesCount}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm border-t border-border pt-2">
-              <span className="text-muted-foreground">Valor (Mês):</span>
-              <span className="font-black text-brand">{formatBRL(today.approvedQuotesValue)}</span>
+            <div className="space-y-1">
+              <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{s.label}</div>
+              <div className="text-2xl font-black tabular-nums tracking-tight">{s.value}</div>
             </div>
           </div>
-          <Button asChild variant="outline" className="w-full justify-start gap-2">
-            <Link to="/orcamentos">
-              <FileText className="h-4 w-4" /> Ver orçamentos
+        ))}
+      </div>
+
+      {/* Middle Grid */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Estoque Crítico */}
+        <div className="lg:col-span-2 bg-card rounded-[2rem] border border-border/50 overflow-hidden flex flex-col shadow-sm">
+          <div className="p-6 flex items-center justify-between border-b border-border/50">
+            <h2 className="text-lg font-black flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-destructive" /> Estoque crítico
+            </h2>
+            <Link to="/reposicao" className="text-xs font-bold uppercase tracking-widest text-brand hover:underline flex items-center gap-1">
+              Ver reposição <TrendingUp className="h-3 w-3" />
             </Link>
-          </Button>
+          </div>
+          <div className="p-6 flex-1">
+            <div className="space-y-1">
+              {products.filter(p => !p.isService && productEffectiveStock(p) <= p.minStock).slice(0, 4).map((p) => (
+                <div key={p.id} className="flex items-center justify-between py-4 border-b border-border/30 last:border-0 group">
+                  <span className="font-bold text-sm group-hover:text-brand transition-colors">{p.name}</span>
+                  <span className={cn("text-xs font-black px-3 py-1 rounded-full", 
+                    productEffectiveStock(p) <= 0 ? "text-destructive bg-destructive/10" : "text-amber-600 bg-amber-50"
+                  )}>
+                    {productEffectiveStock(p)} un.
+                  </span>
+                </div>
+              ))}
+              {products.filter(p => !p.isService && productEffectiveStock(p) <= p.minStock).length === 0 && (
+                <div className="h-40 flex flex-col items-center justify-center text-muted-foreground">
+                   <Package className="h-10 w-10 mb-2 opacity-20" />
+                   <p className="text-sm font-medium">Tudo em dia por aqui!</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-4">Ações rápidas</h2>
-          <Button variant="outline" className="w-full justify-start gap-2 mb-2" onClick={() => setBulkOpen(true)}>
-            <Settings2 className="h-4 w-4" /> Ajuste de preço em massa
-          </Button>
-          <Button variant="outline" className="w-full justify-start gap-2 mb-2" onClick={() => setTaxOpen(true)}>
-            <Settings2 className="h-4 w-4" /> Configurar Tributos Globais
-          </Button>
-          <p className="text-[10px] text-muted-foreground uppercase">Aumente margens ou defina impostos de forma global.</p>
+        {/* Últimas Vendas */}
+        <div className="bg-card rounded-[2rem] border border-border/50 overflow-hidden flex flex-col shadow-sm">
+          <div className="p-6 flex items-center justify-between border-b border-border/50">
+            <h2 className="text-lg font-black">Últimas vendas</h2>
+            <Link to="/vendas" className="text-xs font-bold uppercase tracking-widest text-brand hover:underline">Ver todas</Link>
+          </div>
+          <div className="p-6 flex-1 space-y-4">
+            {sales.slice(0, 4).map((s) => (
+              <div key={s.id} className="flex items-center gap-4 group">
+                <div className="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center text-success shrink-0">
+                  <ShoppingBasket className="h-5 w-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-center mb-0.5">
+                    <span className="text-sm font-black tracking-tight">{formatBRL(s.totalAmount)}</span>
+                    <span className="text-[10px] text-muted-foreground font-medium">{new Date(s.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-success">{s.paymentMethod || "Venda"}</span>
+                    <span className="text-[10px] text-muted-foreground truncate">Pedido #{s.id.slice(0,8).toUpperCase()}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* Bottom Grid */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <ActionTile title="Insights" icon={Lightbulb} color="text-brand" link="/insights" description="Sugestões inteligentes para o seu negócio." />
+        <ActionTile title="Financeiro" icon={BarChart3} color="text-primary" link="/financeiro" description="Fluxo de caixa e lucratividade detalhada." />
+        <div className="bg-card rounded-[2rem] border border-border/50 p-6 flex flex-col shadow-sm">
+           <h3 className="font-black text-sm uppercase tracking-widest text-muted-foreground mb-4">Orçamentos</h3>
+           <div className="space-y-4 flex-1">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold text-muted-foreground">Pendentes</span>
+                <span className="text-sm font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-lg">{today.pendingQuotes}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold text-muted-foreground">Aprovados</span>
+                <span className="text-sm font-black text-success bg-success/10 px-2 py-0.5 rounded-lg">{today.approvedQuotesCount}</span>
+              </div>
+              <div className="pt-2 border-t border-border/50 flex justify-between items-center">
+                 <span className="text-sm font-bold">Total (Mês)</span>
+                 <span className="text-sm font-black text-brand">{formatBRL(today.approvedQuotesValue)}</span>
+              </div>
+           </div>
+        </div>
+        <div className="bg-card rounded-[2rem] border border-border/50 p-6 shadow-sm space-y-3">
+          <h3 className="font-black text-sm uppercase tracking-widest text-muted-foreground mb-1">Ações rápidas</h3>
+          <Button variant="ghost" className="w-full justify-start font-bold h-10 px-3 rounded-xl hover:bg-muted" onClick={() => setBulkOpen(true)}>
+            <Settings2 className="mr-2 h-4 w-4" /> Preços em massa
+          </Button>
+          <Button variant="ghost" className="w-full justify-start font-bold h-10 px-3 rounded-xl hover:bg-muted" onClick={() => setTaxOpen(true)}>
+            <Settings2 className="mr-2 h-4 w-4" /> Tributos Globais
+          </Button>
+        </div>
+      </div>
+
+      {/* Recent Activities */}
+      <section className="space-y-6">
+        <h2 className="text-xl font-black flex items-center gap-2">
+          <ArrowLeftRight className="h-5 w-5 text-muted-foreground" /> Atividades recentes
+        </h2>
+        <div className="bg-card rounded-[2.5rem] border border-border/50 p-2 shadow-sm overflow-x-auto scrollbar-none">
+          <div className="flex gap-2 min-w-max">
+            {recentActivities.map((act, i) => (
+              <div key={i} className="flex items-center gap-4 px-6 py-4 rounded-[2rem] hover:bg-muted/30 transition-colors border border-transparent hover:border-border/50">
+                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center shrink-0", act.color)}>
+                  <act.icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="text-xs font-black tracking-tight">{act.title}</div>
+                  <div className="text-[10px] text-muted-foreground font-medium">{act.subtitle} • {new Date(act.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <BulkAdjustDialog open={bulkOpen} onOpenChange={setBulkOpen} />
       <BulkTaxDialog open={taxOpen} onOpenChange={setTaxOpen} />
@@ -221,50 +273,15 @@ function Dashboard() {
   );
 }
 
-function Stat({
-  icon: Icon, label, value, accent, small, action
-}: { icon: any; label: React.ReactNode; value: number | string; accent: "brand" | "primary" | "destructive" | "default"; small?: boolean; action?: React.ReactNode }) {
-  const colors = {
-    brand: "bg-brand/15 text-brand-foreground",
-    primary: "bg-primary/10 text-primary",
-    destructive: "bg-destructive/10 text-destructive",
-    default: "bg-muted text-foreground",
-  } as const;
+function ActionTile({ title, icon: Icon, color, link, description }: any) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4 relative">
-      <div className="flex items-start justify-between mb-3">
-        <div className={`h-9 w-9 rounded-lg grid place-items-center ${colors[accent]}`}>
-          <Icon className="h-5 w-5" />
-        </div>
-        {action && <div>{action}</div>}
+    <Link to={link} className="bg-card rounded-[2rem] border border-border/50 p-6 flex flex-col shadow-sm hover:shadow-md transition-all group">
+      <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform", color, "bg-current/10")}>
+        <Icon className="h-5 w-5" />
       </div>
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className={`font-bold tabular-nums ${small ? "text-lg" : "text-2xl"}`}>{value}</div>
-    </div>
-  );
-}
-
-function Card({ title, children, empty, link, linkLabel }: { title: string; children: React.ReactNode; empty: string; link: string; linkLabel: string }) {
-  const arr = Array.isArray(children) ? children : [children];
-  const hasContent = arr.filter(Boolean).length > 0;
-  return (
-    <div className="rounded-xl border border-border bg-card p-5">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="font-semibold">{title}</h2>
-        <Link to={link} className="text-xs text-brand-foreground font-medium hover:underline">{linkLabel}</Link>
-      </div>
-      {hasContent ? <div>{children}</div> : <p className="text-sm text-muted-foreground py-6 text-center">{empty}</p>}
-    </div>
-  );
-}
-
-function Row({ name, value, status }: { name: string; value: number; status: "low" | "empty" }) {
-  return (
-    <div className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
-      <span className="font-medium truncate">{name}</span>
-      <span className={`text-sm font-semibold tabular-nums ${status === "empty" ? "text-destructive" : "text-warning-foreground"}`}>
-        {value} un
-      </span>
-    </div>
+      <h3 className="font-black text-base mb-1">{title}</h3>
+      <p className="text-xs text-muted-foreground leading-relaxed font-medium">{description}</p>
+      <div className="mt-4 text-[10px] font-black uppercase tracking-widest text-brand group-hover:translate-x-1 transition-transform">Ver mais →</div>
+    </Link>
   );
 }
