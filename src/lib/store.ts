@@ -784,6 +784,16 @@ export const actions = {
     toast.success("Venda finalizada com sucesso");
   },
 
+  async deleteSale(id: string) {
+    const { error } = await supabase.from("sales").delete().eq("id", id);
+    if (error) return toast.error("Erro ao excluir venda");
+    setState({
+      sales: state.sales.filter(s => s.id !== id),
+      saleItems: state.saleItems.filter(si => si.saleId !== id),
+    });
+    toast.success("Venda excluída");
+  },
+
   // Purchase Integration
   async addPurchase(p: { supplierId?: string; totalAmount: number }, items: Omit<PurchaseItem, "id" | "purchaseId">[]) {
     const { data: user } = await supabase.auth.getUser();
