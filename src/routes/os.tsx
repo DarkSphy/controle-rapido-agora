@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Plus, Edit2, Wrench, Search } from "lucide-react";
+import { Plus, Edit2, Wrench, Search, Trash2, Printer, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useStore, ServiceOrder, formatBRL } from "@/lib/store";
+import { useStore, actions, ServiceOrder, formatBRL } from "@/lib/store";
 import { OSDialog } from "@/components/OSDialog";
 import { cn } from "@/lib/utils";
+import { generateOSPDF } from "@/lib/osReceipt";
 
 export const Route = createFileRoute("/os")({
   head: () => ({
@@ -43,6 +44,63 @@ function OSPage() {
       case "Finalizada": return "bg-success/10 text-success border-success/20";
       case "Cancelada": return "bg-destructive/10 text-destructive border-destructive/20";
       default: return "bg-muted text-muted-foreground border-border";
+    }
+  }
+
+  const products = useStore((s) => s.products);
+  const bs = useStore((s) => s.businessSettings);
+
+  function handlePrint(o: ServiceOrder) {
+    const customer = customers.find((c) => c.id === o.customerId);
+    const myItems = items.filter(i => i.orderId === o.id).map(item => {
+      let name = "Item";
+      if (item.productId) {
+        const p = products.find(p => p.id === item.productId);
+        if (p) {
+          name = p.name;
+          if (item.variationId) {
+            const v = p.variations?.find(v => v.id === item.variationId);
+            if (v) name = `${p.name} — ${v.name}`;
+          }
+        }
+      }
+      return { 
+        name, 
+        quantity: item.quantity, 
+        unitPrice: item.unitPrice 
+      };
+    });
+
+    const partsTotal = myItems.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0);
+
+    generateOSPDF({
+      osId: o.id,
+      date: new Date(o.createdAt),
+      customerName: customer?.name,
+      customerPhone: customer?.phone,
+      customerEmail: customer?.email,
+      type: o.type,
+      description: o.description,
+      status: o.status,
+      items: myItems,
+      serviceValue: o.serviceValue,
+      total: partsTotal + o.serviceValue,
+      businessName: bs?.name,
+      businessPhone: bs?.phone,
+      businessEmail: bs?.email,
+      businessAddress: bs?.address,
+    });
+  }
+
+  function handleApprove(o: ServiceOrder) {
+    if (confirm("Tem certeza que deseja finalizar esta OS? Isso dará baixa no estoque e lançará o valor no financeiro.")) {
+      actions.updateServiceOrder(o.id, { status: "Finalizada" });
+    }
+  }
+
+  function handleDelete(id: string) {
+    if (confirm("Excluir esta ordem de serviço definitivamente?")) {
+      actions.deleteServiceOrder(id);
     }
   }
 
@@ -96,9 +154,22 @@ function OSPage() {
                     <h3 className="font-semibold text-lg truncate" title={o.type}>{o.type}</h3>
                     <div className="text-sm text-muted-foreground truncate">{customer?.name || "Sem cliente vinculado"}</div>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 bg-muted/50 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { setEditing(o); setEditOpen(true); }}>
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-brand bg-muted/50" onClick={() => handlePrint(o)} title="Imprimir PDF">
+                      <Printer className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-brand bg-muted/50" onClick={() => { setEditing(o); setEditOpen(true); }} title="Editar OS">
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    {o.status !== "Finalizada" && (
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-success bg-muted/50" onClick={() => handleApprove(o)} title="Finalizar OS">
+                        <CheckCircle2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive bg-muted/50" onClick={() => handleDelete(o.id)} title="Excluir OS">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="mt-auto pt-4 border-t border-border flex justify-between items-end">

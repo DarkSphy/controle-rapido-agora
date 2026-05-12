@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 type Draft = {
   customerId: string;
   status: "Pendente" | "Aprovado" | "Recusado" | "Expirado";
+  laborValue: string;
   discount: string;
   validityDate: string;
   notes: string;
@@ -32,6 +33,7 @@ type DraftItem = {
 const empty: Draft = {
   customerId: "",
   status: "Pendente",
+  laborValue: "0",
   discount: "0",
   validityDate: "",
   notes: "",
@@ -172,8 +174,9 @@ export function QuoteDialog({
 
   async function save() {
     const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity, 0);
+    const labor = parseFloat(d.laborValue) || 0;
     const discount = parseFloat(d.discount) || 0;
-    const total = subtotal - discount;
+    const total = subtotal + labor - discount;
 
     const payloadItems = items.map(i => ({
       productId: i.productId,
@@ -188,6 +191,7 @@ export function QuoteDialog({
       await actions.updateQuote(quote.id, {
         customerId: d.customerId || undefined,
         status: d.status,
+        laborValue: labor,
         subtotal,
         discount,
         total,
@@ -199,6 +203,7 @@ export function QuoteDialog({
       await actions.addQuote({
         customerId: d.customerId || undefined,
         status: d.status,
+        laborValue: labor,
         subtotal,
         discount,
         total,
@@ -211,8 +216,9 @@ export function QuoteDialog({
   }
 
   const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity, 0);
+  const labor = parseFloat(d.laborValue) || 0;
   const discount = parseFloat(d.discount) || 0;
-  const totalAmount = subtotal - discount;
+  const totalAmount = subtotal + labor - discount;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -459,11 +465,24 @@ export function QuoteDialog({
                   <span>{formatBRL(subtotal)}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground font-semibold">Mão de Obra (R$)</span>
+                  {!isApproved ? (
+                    <Input 
+                      type="number" 
+                      className="w-24 h-7 text-xs text-right font-semibold" 
+                      value={d.laborValue} 
+                      onChange={(e) => setD({ ...d, laborValue: e.target.value })}
+                    />
+                  ) : (
+                    <span>{formatBRL(labor)}</span>
+                  )}
+                </div>
+                <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Desconto (R$)</span>
                   {!isApproved ? (
                     <Input 
                       type="number" 
-                      className="w-24 h-7 text-xs text-right" 
+                      className="w-24 h-7 text-xs text-right text-destructive" 
                       value={d.discount} 
                       onChange={(e) => setD({ ...d, discount: e.target.value })}
                     />

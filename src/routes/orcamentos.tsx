@@ -102,6 +102,7 @@ function OrcamentosPage() {
       notes: quote.notes,
       items,
       subtotal: quote.subtotal,
+      laborValue: quote.laborValue,
       discount: quote.discount,
       total: quote.total,
       businessName: bs?.name,
@@ -138,6 +139,7 @@ function OrcamentosPage() {
     });
 
     msg += `\n*Subtotal:* ${formatBRL(quote.subtotal)}\n`;
+    if (quote.laborValue > 0) msg += `*Mão de Obra:* ${formatBRL(quote.laborValue)}\n`;
     if (quote.discount > 0) msg += `*Desconto:* -${formatBRL(quote.discount)}\n`;
     msg += `*Total:* ${formatBRL(quote.total)}\n`;
 

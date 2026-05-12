@@ -72,6 +72,7 @@ export type Movement = {
   type: "in" | "out";
   quantity: number;
   date: number;
+  reason?: string;
 };
 
 export type Customer = {
@@ -140,6 +141,7 @@ export type Quote = {
   id: string;
   customerId?: string;
   status: "Pendente" | "Aprovado" | "Recusado" | "Expirado";
+  laborValue: number;
   subtotal: number;
   discount: number;
   total: number;
@@ -291,6 +293,7 @@ function rowToMovement(m: any): Movement {
     type: m.type,
     quantity: m.quantity,
     date: new Date(m.created_at).getTime(),
+    reason: m.reason ?? undefined,
   };
 }
 
@@ -421,6 +424,7 @@ function rowToQuote(q: any): Quote {
     id: q.id,
     customerId: q.customer_id ?? undefined,
     status: q.status as any,
+    laborValue: Number(q.labor_value || 0),
     subtotal: Number(q.subtotal),
     discount: Number(q.discount),
     total: Number(q.total),
@@ -829,6 +833,7 @@ export const actions = {
     purchasePrice?: number;
     supplierId?: string;
     isKit?: boolean;
+    reason?: string;
   }) {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) return toast.error("Faça login");
@@ -840,6 +845,7 @@ export const actions = {
           productId: item.productId,
           quantity: item.quantity * args.quantity,
           type: args.type,
+          reason: args.reason,
         });
       }
       return;
@@ -896,6 +902,7 @@ export const actions = {
         variation_name: variationName ?? null,
         type: args.type,
         quantity: qty,
+        reason: args.reason ?? null,
       })
       .select()
       .single();
@@ -961,7 +968,7 @@ export const actions = {
     
     // Deduct stock
     for (const item of items) {
-      await actions.move({ productId: item.productId, variationId: item.variationId, quantity: item.quantity, type: "out" });
+      await actions.move({ productId: item.productId, variationId: item.variationId, quantity: item.quantity, type: "out", reason: "Venda Direta" });
     }
     
     setState({
@@ -1105,7 +1112,7 @@ export const actions = {
             
             // Deduct stock
             for (const item of currentItems) {
-              await actions.move({ productId: item.productId, variationId: item.variationId, quantity: item.quantity, type: "out" });
+              await actions.move({ productId: item.productId, variationId: item.variationId, quantity: item.quantity, type: "out", reason: "Serviço (OS Finalizada)" });
             }
           }
           
@@ -1176,6 +1183,7 @@ export const actions = {
       customer_id: q.customerId || null,
       status: q.status || "Pendente",
       subtotal: q.subtotal,
+      labor_value: q.laborValue,
       discount: q.discount,
       total: q.total,
       validity_date: q.validityDate || null,
@@ -1217,6 +1225,7 @@ export const actions = {
     if (patch.customerId !== undefined) update.customer_id = patch.customerId || null;
     if (patch.status !== undefined) update.status = patch.status;
     if (patch.subtotal !== undefined) update.subtotal = patch.subtotal;
+    if (patch.laborValue !== undefined) update.labor_value = patch.laborValue;
     if (patch.discount !== undefined) update.discount = patch.discount;
     if (patch.total !== undefined) update.total = patch.total;
     if (patch.validityDate !== undefined) update.validity_date = patch.validityDate || null;
@@ -1298,7 +1307,7 @@ export const actions = {
       await supabase.from("sale_items").insert(itemRows);
       
       for (const item of validItems) {
-        await actions.move({ productId: item.productId!, variationId: item.variationId, quantity: item.quantity, type: "out" });
+        await actions.move({ productId: item.productId!, variationId: item.variationId, quantity: item.quantity, type: "out", reason: "Venda via Orçamento" });
       }
     }
 
@@ -1327,11 +1336,13 @@ export const actions = {
       unitPrice: i.unitPrice,
     }));
 
+    const finalServiceValue = serviceVal + (quote.laborValue || 0) - quote.discount;
+
     await actions.addServiceOrder({
       customerId: quote.customerId,
       type: "Orçamento Convertido",
       description: quote.notes,
-      serviceValue: serviceVal - quote.discount // applying discount to service value to match total
+      serviceValue: finalServiceValue
     }, prodItems);
 
     await actions.updateQuote(id, { status: "Aprovado" });

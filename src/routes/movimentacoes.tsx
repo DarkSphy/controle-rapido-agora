@@ -86,8 +86,13 @@ function MovementsPage() {
                         <div className="font-medium truncate">
                           {m.productName}{m.variationName ? ` — ${m.variationName}` : ""}
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {new Date(m.date).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                        <div className="text-xs text-muted-foreground flex gap-2">
+                          <span>{new Date(m.date).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span>
+                          {m.reason && (
+                            <span className="px-1.5 py-0.5 bg-muted rounded-md text-[10px] leading-none flex items-center font-medium">
+                              {m.reason}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

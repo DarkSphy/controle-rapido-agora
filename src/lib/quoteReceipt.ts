@@ -12,6 +12,7 @@ type Args = {
   paymentConditions?: string;
   notes?: string;
   items: Item[];
+  laborValue: number;
   subtotal: number;
   discount: number;
   total: number;
@@ -135,6 +136,12 @@ export function generateQuotePDF(a: Args) {
   doc.text("Subtotal:", 150, y);
   doc.text(formatBRL(a.subtotal), right - 5, y, { align: "right" });
   y += 6;
+
+  if (a.laborValue > 0) {
+    doc.text("Mão de Obra:", 150, y);
+    doc.text(formatBRL(a.laborValue), right - 5, y, { align: "right" });
+    y += 6;
+  }
   
   if (a.discount > 0) {
     doc.setTextColor(220, 38, 38); // red
