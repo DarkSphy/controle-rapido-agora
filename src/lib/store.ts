@@ -1065,7 +1065,7 @@ export const actions = {
     return order;
   },
 
-  async updateServiceOrder(id: string, patch: Partial<{ customerId: string; type: string; description: string; serviceValue: number; status: "Aberta" | "Em andamento" | "Finalizada" | "Cancelada" }>, items?: Omit<ServiceOrderItem, "id" | "orderId">[]) {
+  async updateServiceOrder(id: string, patch: Partial<{ customerId: string; type: string; description: string; serviceValue: number; status: "Aberta" | "Em andamento" | "Finalizada" | "Cancelada", paymentMethod?: string }>, items?: Omit<ServiceOrderItem, "id" | "orderId">[]) {
     const order = state.serviceOrders.find(o => o.id === id);
     if (!order) return;
 
@@ -1093,7 +1093,7 @@ export const actions = {
           user_id: user.user.id,
           customer_id: patch.customerId !== undefined ? patch.customerId : order.customerId,
           total_amount: totalAmount,
-          payment_method: "Dinheiro" // default generic for OS
+          payment_method: patch.paymentMethod || "Dinheiro" // Set via UI
         }).select().single();
 
         if (saleRow && !saleErr) {

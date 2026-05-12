@@ -16,6 +16,7 @@ type Draft = {
   description: string;
   serviceValue: string;
   status: "Aberta" | "Em andamento" | "Finalizada" | "Cancelada";
+  paymentMethod: string;
 };
 
 type DraftItem = {
@@ -33,6 +34,7 @@ const empty: Draft = {
   description: "",
   serviceValue: "0",
   status: "Aberta",
+  paymentMethod: "Dinheiro",
 };
 
 export function OSDialog({
@@ -153,7 +155,8 @@ export function OSDialog({
         type: d.type,
         description: d.description,
         serviceValue,
-        status: d.status
+        status: d.status,
+        paymentMethod: d.paymentMethod
       }, payloadItems);
     } else {
       await actions.addServiceOrder({
@@ -284,6 +287,23 @@ export function OSDialog({
                   </div>
                 )}
               </div>
+
+              {order && !isFinalized && d.status === "Finalizada" && (
+                <div className="space-y-2 pt-2 border-t border-border mt-4">
+                  <Label>Forma de Pagamento</Label>
+                  <select
+                    value={d.paymentMethod}
+                    onChange={(e) => setD({ ...d, paymentMethod: e.target.value })}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                  >
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="PIX">PIX</option>
+                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                    <option value="Cartão de Débito">Cartão de Débito</option>
+                    <option value="Transferência">Transferência</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             <div className="space-y-4">

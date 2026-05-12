@@ -7,6 +7,7 @@ import { useStore, actions, ServiceOrder, formatBRL } from "@/lib/store";
 import { OSDialog } from "@/components/OSDialog";
 import { cn } from "@/lib/utils";
 import { generateOSPDF } from "@/lib/osReceipt";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/os")({
   head: () => ({
@@ -92,9 +93,18 @@ function OSPage() {
     });
   }
 
+  const [finalizingOS, setFinalizingOS] = useState<ServiceOrder | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState("Dinheiro");
+
   function handleApprove(o: ServiceOrder) {
-    if (confirm("Tem certeza que deseja finalizar esta OS? Isso dará baixa no estoque e lançará o valor no financeiro.")) {
-      actions.updateServiceOrder(o.id, { status: "Finalizada" });
+    setFinalizingOS(o);
+    setPaymentMethod("Dinheiro");
+  }
+
+  function confirmFinalize() {
+    if (finalizingOS) {
+      actions.updateServiceOrder(finalizingOS.id, { status: "Finalizada", paymentMethod });
+      setFinalizingOS(null);
     }
   }
 
@@ -189,6 +199,39 @@ function OSPage() {
       )}
 
       <OSDialog order={editing} open={editOpen} onOpenChange={setEditOpen} />
+      
+      <Dialog open={!!finalizingOS} onOpenChange={(o) => !o && setFinalizingOS(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Finalizar Ordem de Serviço</DialogTitle>
+            <DialogDescription>
+              Isso dará baixa no estoque das peças e lançará o valor total no seu financeiro.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Forma de Pagamento</label>
+              <select
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+              >
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="PIX">PIX</option>
+                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                <option value="Cartão de Débito">Cartão de Débito</option>
+                <option value="Transferência">Transferência</option>
+              </select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setFinalizingOS(null)}>Cancelar</Button>
+            <Button onClick={confirmFinalize}>Confirmar e Finalizar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

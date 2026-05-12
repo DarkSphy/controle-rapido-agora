@@ -25,10 +25,17 @@ function FinanceiroPage() {
 
     sales.forEach(s => {
       const myItems = saleItems.filter(si => si.saleId === s.id);
-      const itemsTotal = myItems.reduce((sum, si) => sum + (si.unitPrice * si.quantity), 0);
+      let partsTotal = 0;
+
+      myItems.forEach(si => {
+        const p = products.find(prod => prod.id === si.productId);
+        if (!p?.isService) {
+          partsTotal += (si.unitPrice * si.quantity);
+        }
+      });
       
-      productSales += Math.min(s.totalAmount, itemsTotal);
-      laborSales += Math.max(0, s.totalAmount - itemsTotal);
+      productSales += Math.min(s.totalAmount, partsTotal);
+      laborSales += Math.max(0, s.totalAmount - partsTotal);
     });
 
     const totalSales = productSales + laborSales;

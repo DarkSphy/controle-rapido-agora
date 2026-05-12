@@ -44,10 +44,17 @@ function Dashboard() {
 
     todaySalesList.forEach(s => {
       const myItems = saleItems.filter(si => si.saleId === s.id);
-      const itemsTotal = myItems.reduce((sum, si) => sum + (si.unitPrice * si.quantity), 0);
+      let partsTotal = 0;
+
+      myItems.forEach(si => {
+        const p = products.find(prod => prod.id === si.productId);
+        if (!p?.isService) {
+          partsTotal += (si.unitPrice * si.quantity);
+        }
+      });
       
-      const pVal = Math.min(s.totalAmount, itemsTotal);
-      const lVal = Math.max(0, s.totalAmount - itemsTotal);
+      const pVal = Math.min(s.totalAmount, partsTotal);
+      const lVal = Math.max(0, s.totalAmount - partsTotal);
       
       productSales += pVal;
       laborSales += lVal;

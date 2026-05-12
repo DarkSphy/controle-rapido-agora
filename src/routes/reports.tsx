@@ -18,8 +18,11 @@ function ReportsPage() {
       counts[m.productId] = (counts[m.productId] || 0) + m.quantity;
     });
     return Object.entries(counts)
-      .map(([id, qty]) => ({ product: products.find(p => p.id === id), qty }))
-      .filter(item => item.product)
+      .map(([id, qty]) => {
+        const product = products.find(p => p.id === id);
+        return { product, qty };
+      })
+      .filter(item => item.product && !item.product.isService)
       .sort((a, b) => b.qty - a.qty)
       .slice(0, 10);
   }, [movements, products]);
@@ -28,7 +31,7 @@ function ReportsPage() {
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     const recentlyMoved = new Set(movements.filter(m => m.date > thirtyDaysAgo).map(m => m.productId));
     return products
-      .filter(p => !recentlyMoved.has(p.id) && productEffectiveStock(p) > 0)
+      .filter(p => !p.isService && !recentlyMoved.has(p.id) && productEffectiveStock(p) > 0)
       .sort((a, b) => productEffectiveStock(b) - productEffectiveStock(a))
       .slice(0, 10);
   }, [movements, products]);

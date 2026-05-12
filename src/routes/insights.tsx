@@ -26,7 +26,7 @@ function InsightsPage() {
     const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
 
     // 1. Low stock items
-    const critical = products.filter(p => productEffectiveStock(p) <= p.minStock && productEffectiveStock(p) > 0);
+    const critical = products.filter(p => !p.isService && productEffectiveStock(p) <= p.minStock && productEffectiveStock(p) > 0);
     critical.forEach(p => {
       list.push({
         type: "warning",
@@ -42,23 +42,26 @@ function InsightsPage() {
     const counts = new Map<string, number>();
     recentMovements.forEach(m => counts.set(m.productId, (counts.get(m.productId) || 0) + m.quantity));
     
-    const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+    // Sort and filter out services
+    const sorted = Array.from(counts.entries())
+      .map(([id, qty]) => ({ id, qty, prod: products.find(p => p.id === id) }))
+      .filter(item => item.prod && !item.prod.isService)
+      .sort((a, b) => b.qty - a.qty);
+
     if (sorted.length > 0) {
-      const topId = sorted[0][0];
-      const topProd = products.find(p => p.id === topId);
-      if (topProd) {
-        list.push({
-          type: "success",
-          title: "Alta demanda detectada",
-          message: `"${topProd.name}" é o seu produto mais vendido nos últimos 30 dias (${sorted[0][1]} unidades).`,
-          icon: TrendingUp,
-          link: "/reports"
-        });
-      }
+      const topProd = sorted[0].prod!;
+      list.push({
+        type: "success",
+        title: "Alta demanda detectada",
+        message: `"${topProd.name}" é o seu produto mais vendido nos últimos 30 dias (${sorted[0].qty} unidades).`,
+        icon: TrendingUp,
+        link: "/reports"
+      });
     }
 
     // 3. Stagnant products (no "out" movement in last 30 days)
     const stagnant = products.filter(p => {
+      if (p.isService) return false;
       const hasOut = movements.some(m => m.productId === p.id && m.type === "out" && m.date > thirtyDaysAgo);
       return !hasOut && productEffectiveStock(p) > 0;
     });
