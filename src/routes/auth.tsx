@@ -18,7 +18,7 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Entrar — ControleJá" },
-      { name: "description", content: "Acesse sua conta ControleJá ou crie uma nova grátis." },
+      { name: "description", content: "Acesse sua conta ControleJá ou crie uma nova." },
     ],
   }),
   component: AuthPage,
@@ -118,7 +118,7 @@ function AuthPage() {
             {mode === "login" ? "Entrar na sua conta" : "Criar sua conta"}
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
-            {mode === "login" ? "Bem-vindo de volta!" : "É grátis e leva menos de 1 minuto."}
+            {mode === "login" ? "Bem-vindo de volta!" : "Leva menos de 1 minuto."}
           </p>
 
           <Button
