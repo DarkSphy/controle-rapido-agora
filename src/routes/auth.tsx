@@ -61,7 +61,7 @@ function AuthPage() {
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Link>
         <div>
-          <Logo size="lg" showText={false} className="mb-6" />
+          <Logo size="lg" className="mb-6" />
           <h1 className="text-4xl font-extrabold tracking-tight leading-tight">
             Seu estoque.<br />Seu negócio.<br /><span className="text-brand">No controle.</span>
           </h1>
