@@ -17,7 +17,7 @@ type Draft = {
   minStock: string;
   categoryId?: string;
   supplierId?: string;
-  variations: (Omit<Variation, "id"> & { id?: string })[];
+  variations: { id?: string; name: string; stock: string; cost: string; margin: string }[];
 };
 
 const empty: Draft = {
@@ -62,7 +62,12 @@ export function ProductDialog({
           minStock: String(product.minStock),
           categoryId: product.categoryId ?? "",
           supplierId: product.supplierId ?? "",
-          variations: product.variations,
+          variations: product.variations.map(v => ({ 
+            ...v, 
+            stock: String(v.stock), 
+            cost: String(v.cost), 
+            margin: String(v.margin) 
+          })),
         });
       } else {
         setD(empty);
@@ -71,7 +76,7 @@ export function ProductDialog({
     }
   }, [open, product]);
 
-  function setVar(idx: number, patch: Partial<Variation>) {
+  function setVar(idx: number, patch: Partial<{ name: string; stock: string; cost: string; margin: string }>) {
     setD((prev) => ({
       ...prev,
       variations: prev.variations.map((v, i) => (i === idx ? { ...v, ...patch } : v)),
@@ -80,7 +85,7 @@ export function ProductDialog({
   function addVar() {
     setD((p) => ({
       ...p,
-      variations: [...p.variations, { name: "", stock: 0, cost: parseFloat(p.cost) || 0, margin: parseFloat(p.margin) || 0 }],
+      variations: [...p.variations, { name: "", stock: "0", cost: p.cost || "0", margin: p.margin || "0" }],
     }));
   }
   function removeVar(i: number) {
@@ -251,15 +256,15 @@ export function ProductDialog({
                   </div>
                   <div>
                     <Label className="text-xs">Estoque</Label>
-                    <Input type="number" value={v.stock} onChange={(e) => setVar(i, { stock: Number(e.target.value) })} />
+                    <Input type="number" value={v.stock} onChange={(e) => setVar(i, { stock: e.target.value })} />
                   </div>
                   <div>
                     <Label className="text-xs">Custo</Label>
-                    <Input type="number" step="0.01" value={v.cost} onChange={(e) => setVar(i, { cost: Number(e.target.value) })} />
+                    <Input type="number" step="0.01" value={v.cost} onChange={(e) => setVar(i, { cost: e.target.value })} />
                   </div>
                   <div>
                     <Label className="text-xs">Margem%</Label>
-                    <Input type="number" value={v.margin} onChange={(e) => setVar(i, { margin: Number(e.target.value) })} />
+                    <Input type="number" value={v.margin} onChange={(e) => setVar(i, { margin: e.target.value })} />
                   </div>
                   <Button type="button" variant="ghost" size="icon" onClick={() => removeVar(i)}>
                     <Trash2 className="h-4 w-4 text-destructive" />
