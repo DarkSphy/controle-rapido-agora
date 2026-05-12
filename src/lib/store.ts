@@ -476,6 +476,7 @@ export const actions = {
       purchaseItems,
       serviceOrders,
       serviceOrderItems,
+      quotes,
       quoteItems,
       businessSettingsData,
     ] = await Promise.all([
@@ -494,6 +495,7 @@ export const actions = {
       fetchTable("purchase_items"),
       fetchTable("service_orders", supabase.from("service_orders").select("*").order("created_at", { ascending: false })),
       fetchTable("service_order_items"),
+      fetchTable("quotes", supabase.from("quotes").select("*").order("created_at", { ascending: false })),
       fetchTable("quote_items"),
       fetchTable("business_settings", supabase.from("business_settings").select("*").limit(1)),
     ]);
