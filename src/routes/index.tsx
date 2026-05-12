@@ -5,21 +5,23 @@ import { Button } from "@/components/ui/button";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
 import {
   Package, Zap, Smartphone, ShoppingBag, AlertTriangle, ArrowRight, Check,
-  Plus, ArrowLeftRight, BarChart3, Store, ShoppingCart, Shirt, Wrench, Boxes,
+  Plus, ArrowLeftRight, BarChart3, Store, ShoppingCart, Shirt, Wrench,
   ShieldCheck, Headphones, XCircle, Sparkles, MessageCircle, Star,
+  Users, TrendingUp, Receipt, Tag, ChevronDown, Minus, FileText, Boxes,
 } from "lucide-react";
+import { useState } from "react";
 
 const WA_URL =
   "https://wa.me/5531973175882?text=" +
-  encodeURIComponent("Olá, vim pela página do ControleJá e gostaria de saber mais.");
+  encodeURIComponent("Olá, vim pela página do ControleJá e gostaria de contratar.");
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ControleJá — Controle de estoque simples para pequenos negócios" },
-      { name: "description", content: "Cadastre produtos, registre entradas e saídas, e nunca mais perca uma venda. Simples, rápido, no celular ou no desktop." },
+      { title: "ControleJá — Gestão simples de estoque e vendas para sua loja" },
+      { name: "description", content: "Controle estoque, vendas, compras e clientes em um só lugar. Simples, rápido, no celular ou no computador. Plano único a partir de R$39,90/mês." },
       { property: "og:title", content: "ControleJá — Seu estoque. Seu negócio. No controle." },
-      { property: "og:description", content: "Controle de estoque sem complicação para lojistas e prestadores de serviço." },
+      { property: "og:description", content: "Sistema de gestão simples para pequenos negócios. Comece hoje mesmo." },
     ],
   }),
   component: Landing,
@@ -30,8 +32,15 @@ function Landing() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top bar */}
-      <header className="px-5 md:px-10 py-4 flex items-center justify-between border-b border-border/60 bg-background/80 backdrop-blur sticky top-0 z-20">
+      <header className="px-5 md:px-10 py-3 flex items-center justify-between border-b border-border/60 bg-background/85 backdrop-blur-md sticky top-0 z-30">
         <Logo />
+        <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-foreground/80">
+          <a href="#funcionalidades" className="hover:text-brand-foreground transition-colors">Funcionalidades</a>
+          <a href="#para-quem" className="hover:text-brand-foreground transition-colors">Para quem é</a>
+          <a href="#planos" className="hover:text-brand-foreground transition-colors">Planos</a>
+          <a href="#duvidas" className="hover:text-brand-foreground transition-colors">Dúvidas</a>
+          <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="hover:text-brand-foreground transition-colors">Contato</a>
+        </nav>
         <div className="flex items-center gap-2">
           {user ? (
             <Button asChild>
@@ -42,8 +51,8 @@ function Landing() {
               <Button asChild variant="ghost" className="hidden sm:inline-flex">
                 <Link to="/auth">Entrar</Link>
               </Button>
-              <Button asChild>
-                <Link to="/auth" search={{ mode: "register" }}>Começar grátis</Link>
+              <Button asChild className="shadow-md">
+                <Link to="/auth" search={{ mode: "register" }}>Assinar agora</Link>
               </Button>
             </>
           )}
@@ -51,24 +60,34 @@ function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="relative px-5 md:px-10 py-14 md:py-24 max-w-6xl mx-auto w-full">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+      <section className="relative px-5 md:px-10 pt-12 md:pt-20 pb-16 md:pb-24 overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-brand/10 via-background to-background" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] -z-10 rounded-full bg-brand/15 blur-3xl translate-x-1/3 -translate-y-1/3" />
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand/15 text-brand-foreground text-xs font-semibold mb-5">
-              <Sparkles className="h-3.5 w-3.5" /> Ideal para pequenos negócios
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand/15 text-brand-foreground text-xs font-bold mb-5 border border-brand/30">
+              <Sparkles className="h-3.5 w-3.5" /> Planos a partir de R$39,90/mês
             </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.05]">
-              Seu estoque.<br />
-              Seu negócio.<br />
-              <span className="text-brand">No controle.</span>
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.02]">
+              Gestão simples para <span className="text-brand">vender mais</span> e cuidar menos do estoque.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-md">
-              Controle de estoque sem complicação. Cadastre produtos, registre vendas e nunca mais perca o pedido por falta de informação.
+              O ControleJá organiza seu estoque, suas vendas, compras e clientes — sem complicação, sem mensalidade surpresa, sem treinamento longo.
             </p>
+            <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-2 text-sm font-medium max-w-md">
+              {["Controle de estoque", "Registro de vendas", "Cadastro de clientes", "Compras e fornecedores"].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <span className="h-5 w-5 rounded-full bg-brand/20 text-brand-foreground grid place-items-center shrink-0">
+                    <Check className="h-3 w-3" />
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
-              <Button asChild size="lg" className="text-base h-12 px-6">
+              <Button asChild size="lg" className="text-base h-12 px-7 shadow-lg">
                 <Link to="/auth" search={{ mode: "register" }}>
-                  Começar agora <ArrowRight className="h-4 w-4" />
+                  Quero contratar agora <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="text-base h-12 px-6 border-[#25D366] text-[#1ebe5a] hover:bg-[#25D366]/10 hover:text-[#1ebe5a]">
@@ -77,131 +96,236 @@ function Landing() {
                 </a>
               </Button>
             </div>
-            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-brand" /> Sem contrato</span>
-              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-brand" /> Cancele quando quiser</span>
-              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-brand" /> Suporte rápido</span>
-            </div>
+            <p className="mt-4 text-xs text-muted-foreground">
+              Sem fidelidade • Cancele quando quiser • Garantia de 7 dias
+            </p>
           </div>
+
+          {/* Hero mockup composition */}
           <div className="relative">
-            <div className="absolute -inset-8 bg-gradient-to-tr from-brand/30 via-transparent to-primary/20 blur-3xl -z-10" />
-            <div className="rounded-2xl border border-border bg-card shadow-2xl p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <Logo size="sm" showText={false} />
-                <span className="text-xs text-muted-foreground">Resumo do dia</span>
+            <div className="absolute -inset-10 bg-gradient-to-tr from-brand/30 via-transparent to-primary/20 blur-3xl -z-10" />
+            <DashboardMockup />
+          </div>
+        </div>
+      </section>
+
+      {/* Trust strip */}
+      <section className="px-5 md:px-10 py-6 bg-primary text-primary-foreground">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex -space-x-2">
+            {["bg-rose-300","bg-amber-300","bg-sky-300","bg-emerald-300","bg-violet-300","bg-orange-300","bg-teal-300"].map((c, i) => (
+              <div key={i} className={`h-9 w-9 rounded-full border-2 border-primary ${c} grid place-items-center text-xs font-bold text-primary`}>
+                {String.fromCharCode(65 + i)}
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <DemoStat label="Entradas" value="42" tone="brand" />
-                <DemoStat label="Saídas" value="28" tone="primary" />
-                <DemoStat label="Crítico" value="3" tone="warn" />
-                <DemoStat label="Em estoque" value="R$ 8.4k" tone="muted" />
+            ))}
+            <div className="h-9 w-9 rounded-full border-2 border-primary bg-brand grid place-items-center text-xs font-bold text-brand-foreground">+</div>
+          </div>
+          <p className="text-sm md:text-base font-semibold text-center md:text-right">
+            Centenas de pequenos negócios já organizaram o estoque com o ControleJá
+          </p>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section id="funcionalidades" className="px-5 md:px-10 py-20 md:py-28">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Funcionalidades</span>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mt-3">
+              Tudo o que sua loja precisa.<br />
+              <span className="text-muted-foreground">Nada que ela não precisa.</span>
+            </h2>
+            <p className="text-muted-foreground mt-5">
+              Sem fiscal, sem relatórios complexos, sem configurações infinitas. Cada tela foi pensada para você usar em 2 toques.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Feature icon={Package} title="Estoque sempre certo" desc="Cadastro com foto, custo, margem e estoque atual. Variações quando precisar." />
+            <Feature icon={ShoppingBag} title="Vendas no balcão" desc="Busque, adicione e finalize a venda em segundos — no celular ou no computador." />
+            <Feature icon={Receipt} title="Compras e fornecedores" desc="Registre entradas, controle pedidos e tenha histórico de cada fornecedor." />
+            <Feature icon={Users} title="Clientes organizados" desc="Cadastro com WhatsApp, histórico de compras e contato direto." />
+            <Feature icon={AlertTriangle} title="Alerta de reposição" desc="Veja na hora o que está acabando e mande o pedido pelo WhatsApp." />
+            <Feature icon={TrendingUp} title="Dashboard claro" desc="Saiba quanto vendeu, o que mais sai e o valor parado em estoque." />
+            <Feature icon={Tag} title="Categorias e kits" desc="Organize produtos por categoria e monte kits/combo para vender mais." />
+            <Feature icon={FileText} title="Comprovante em PDF" desc="Gere notinha do pedido com tudo que o cliente comprou — pronto pra enviar." />
+            <Feature icon={Smartphone} title="Funciona no celular" desc="Seu estoque no bolso. Use no balcão, no estoque ou em casa." />
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison — simplicity wins */}
+      <section className="px-5 md:px-10 py-20 md:py-28 bg-muted/40 border-y border-border/60">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Por que ControleJá</span>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mt-3">
+              Simples por escolha.<br />Não por falta de recurso.
+            </h2>
+            <p className="text-muted-foreground mt-5">
+              A maioria dos sistemas tenta resolver tudo — e acaba não sendo usado. Aqui é o contrário: cada tela tem só o essencial pra você não travar no meio da venda.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-border bg-card p-7">
+              <div className="flex items-center gap-2 text-muted-foreground mb-5">
+                <XCircle className="h-5 w-5" />
+                <span className="font-bold">Outros sistemas</span>
               </div>
-              <div className="rounded-xl bg-muted/60 p-4 space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">Camiseta básica — M</span>
-                  <span className="text-destructive font-semibold">1 un</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">Caneca personalizada</span>
-                  <span className="text-success font-semibold">14 un</span>
-                </div>
+              <ul className="space-y-3 text-sm">
+                {[
+                  "Cadastro com 30 campos obrigatórios",
+                  "Treinamento de 2 horas pra começar",
+                  "Mensalidade que sobe sem aviso",
+                  "Tela cheia de menu e relatório que ninguém usa",
+                  "Suporte que demora dias pra responder",
+                ].map((t) => (
+                  <li key={t} className="flex gap-2 text-muted-foreground">
+                    <Minus className="h-4 w-4 mt-0.5 shrink-0" /> {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border-2 border-brand bg-card p-7 shadow-xl">
+              <div className="flex items-center gap-2 text-brand-foreground mb-5">
+                <Check className="h-5 w-5" />
+                <span className="font-bold">ControleJá</span>
               </div>
+              <ul className="space-y-3 text-sm">
+                {[
+                  "Cadastro em 4 campos: nome, preço, estoque, foto",
+                  "Você usa em 1 minuto, sem treinamento",
+                  "R$39,90/mês fixo. Sem reajuste surpresa",
+                  "Só o que importa pro dia a dia da sua loja",
+                  "Suporte direto no WhatsApp, todos os dias",
+                ].map((t) => (
+                  <li key={t} className="flex gap-2">
+                    <Check className="h-4 w-4 mt-0.5 shrink-0 text-brand-foreground" /> {t}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="px-5 md:px-10 py-16 md:py-20 bg-muted/40 border-y border-border/60">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-3">
-            Tudo que você precisa. Nada que você não precisa.
-          </h2>
-          <p className="text-muted-foreground text-center max-w-xl mx-auto mb-12">
-            Sem fiscal, sem relatórios complexos, sem configurações infinitas.
-          </p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Feature icon={Package} title="Cadastro simples" desc="Produtos com foto, custo, margem e estoque. Variações quando precisar." />
-            <Feature icon={Zap} title="Movimente em 2 toques" desc="Entradas e saídas com botões grandes, sem fricção." />
-            <Feature icon={ShoppingBag} title="Modo balcão" desc="Busque, veja preço e dê baixa rapidíssimo durante a venda." />
-            <Feature icon={AlertTriangle} title="Lista de reposição" desc="Saiba na hora o que precisa repor — copie e mande no WhatsApp." />
-            <Feature icon={Smartphone} title="Funciona no celular" desc="Seu estoque sempre no bolso, online no balcão ou fora dele." />
-            <Feature icon={Check} title="Comece em 1 minuto" desc="Crie sua conta grátis e cadastre o primeiro produto agora." />
+      {/* Veja na prática — sales mockup */}
+      <section className="px-5 md:px-10 py-20 md:py-28">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-14 items-center">
+          <div className="order-2 md:order-1 relative">
+            <div className="absolute -inset-10 bg-gradient-to-br from-primary/20 via-transparent to-brand/30 blur-3xl -z-10" />
+            <SalesMockup />
+          </div>
+          <div className="order-1 md:order-2">
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Veja na prática</span>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mt-3">
+              Da venda ao recibo<br />em <span className="text-brand">poucos segundos.</span>
+            </h2>
+            <p className="text-muted-foreground mt-5 text-lg">
+              Adicione produtos, escolha o cliente, registre o pagamento — e o sistema já gera o PDF da venda pronto pra enviar no WhatsApp do cliente.
+            </p>
+            <ul className="mt-6 space-y-3">
+              {[
+                "Busca instantânea por nome, código ou cliente",
+                "Múltiplas formas de pagamento por venda",
+                "Estoque baixa automaticamente",
+                "Comprovante em PDF gerado na hora",
+              ].map((t) => (
+                <li key={t} className="flex gap-3">
+                  <span className="h-6 w-6 rounded-full bg-brand text-brand-foreground grid place-items-center shrink-0 mt-0.5">
+                    <Check className="h-3.5 w-3.5" />
+                  </span>
+                  <span className="text-foreground/90">{t}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
       {/* Como funciona */}
-      <section className="px-5 md:px-10 py-16 md:py-24 max-w-6xl mx-auto w-full">
-        <div className="text-center mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Como funciona</span>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">3 passos para tirar do papel</h2>
-        </div>
-        <div className="grid md:grid-cols-3 gap-5">
-          <Step n={1} icon={Plus} title="Cadastre seus produtos" desc="Em poucos minutos, com foto, preço e estoque inicial." />
-          <Step n={2} icon={ArrowLeftRight} title="Registre entradas e saídas" desc="Com poucos cliques, no celular ou no computador." />
-          <Step n={3} icon={BarChart3} title="Tenha controle total" desc="Estoque atualizado automaticamente, alertas em tempo real." />
+      <section className="px-5 md:px-10 py-20 md:py-24 bg-muted/40 border-y border-border/60">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-14">
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Como funciona</span>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mt-3">3 passos para tirar do papel</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-5">
+            <Step n={1} icon={Plus} title="Cadastre seus produtos" desc="Em poucos minutos, com foto, preço e estoque inicial." />
+            <Step n={2} icon={ArrowLeftRight} title="Registre entradas e saídas" desc="Com poucos cliques, no celular ou no computador." />
+            <Step n={3} icon={BarChart3} title="Tenha controle total" desc="Estoque atualizado, alertas em tempo real, vendas no histórico." />
+          </div>
         </div>
       </section>
 
       {/* Para quem é */}
-      <section className="px-5 md:px-10 py-16 md:py-20 bg-muted/40 border-y border-border/60">
+      <section id="para-quem" className="px-5 md:px-10 py-20 md:py-24">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-3">Feito para o seu negócio</h2>
-          <p className="text-muted-foreground text-center max-w-xl mx-auto mb-12">
-            Se você vende produtos ou presta serviço, o ControleJá serve.
-          </p>
+          <div className="text-center max-w-xl mx-auto mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Pra quem é</span>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mt-3">Feito para o seu negócio</h2>
+            <p className="text-muted-foreground mt-4">
+              Se você vende produto ou presta serviço, o ControleJá serve.
+            </p>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <Niche icon={Zap} title="Materiais elétricos" />
             <Niche icon={ShoppingCart} title="Mini mercados" />
             <Niche icon={Shirt} title="Lojas de roupas" />
             <Niche icon={Wrench} title="Prestadores de serviço" />
             <Niche icon={Store} title="Pequenos comércios" />
+            <Niche icon={Boxes} title="Distribuidoras" />
+            <Niche icon={Package} title="Papelarias" />
+            <Niche icon={ShoppingBag} title="Lojas online" />
+            <Niche icon={Tag} title="Brechós" />
+            <Niche icon={Receipt} title="Bazares" />
           </div>
         </div>
       </section>
 
       {/* Prova social */}
-      <section className="px-5 md:px-10 py-16 md:py-24 max-w-6xl mx-auto w-full">
-        <div className="text-center mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Quem usa, recomenda</span>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">Histórias reais de quem organizou o estoque</h2>
-        </div>
-        <div className="grid md:grid-cols-3 gap-5">
-          <Testimonial
-            name="Mariana S."
-            biz="Loja de roupas — Belo Horizonte"
-            quote="Antes eu perdia venda por não saber o que tinha. Hoje confiro no celular em 2 segundos."
-          />
-          <Testimonial
-            name="Carlos R."
-            biz="Materiais elétricos — Contagem"
-            quote="Em uma semana o estoque estava 100% no controle. Simples, sem firula."
-          />
-          <Testimonial
-            name="Juliana M."
-            biz="Mini mercado — Sabará"
-            quote="Atendimento rápido e sistema fácil. Meus funcionários aprenderam no mesmo dia."
-          />
+      <section className="px-5 md:px-10 py-20 md:py-24 bg-muted/40 border-y border-border/60">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Quem usa, recomenda</span>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mt-3">Histórias reais de quem<br />organizou o estoque</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-5">
+            <Testimonial
+              name="Mariana S."
+              biz="Loja de roupas — Belo Horizonte"
+              quote="Antes eu perdia venda por não saber o que tinha. Hoje confiro no celular em 2 segundos."
+            />
+            <Testimonial
+              name="Carlos R."
+              biz="Materiais elétricos — Contagem"
+              quote="Em uma semana o estoque estava 100% no controle. Simples, sem firula."
+            />
+            <Testimonial
+              name="Juliana M."
+              biz="Mini mercado — Sabará"
+              quote="Atendimento rápido e sistema fácil. Meus funcionários aprenderam no mesmo dia."
+            />
+          </div>
         </div>
       </section>
 
-      {/* Trust strip */}
-      <section className="px-5 md:px-10 py-10 bg-muted/40 border-y border-border/60">
+      {/* Trust strip 2 */}
+      <section className="px-5 md:px-10 py-10">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Trust icon={XCircle} title="Sem contrato" />
+          <Trust icon={XCircle} title="Sem fidelidade" />
           <Trust icon={ShieldCheck} title="Cancele quando quiser" />
-          <Trust icon={Headphones} title="Suporte rápido" />
+          <Trust icon={Headphones} title="Suporte no WhatsApp" />
           <Trust icon={Sparkles} title="Simples de usar" />
         </div>
       </section>
 
       {/* Oferta */}
-      <section className="px-5 md:px-10 py-16 md:py-24 max-w-5xl mx-auto w-full">
-        <div className="text-center mb-10">
+      <section id="planos" className="px-5 md:px-10 py-20 md:py-28 max-w-5xl mx-auto w-full">
+        <div className="text-center mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Plano único</span>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">Sem taxas escondidas</h2>
-          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mt-3">Sem taxas escondidas</h2>
+          <p className="text-muted-foreground mt-4 max-w-xl mx-auto text-lg">
             Tudo incluso. Você sabe exatamente o que paga, do primeiro mês em diante.
           </p>
         </div>
@@ -210,24 +334,24 @@ function Landing() {
           {/* Primeiro mês */}
           <div className="relative rounded-3xl border-2 border-brand bg-card p-7 md:p-8 shadow-2xl flex flex-col">
             <span className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-brand text-brand-foreground text-[10px] font-bold uppercase tracking-wider">
-              Mais escolhido
+              Comece por aqui
             </span>
             <div className="text-xs uppercase tracking-widest font-bold text-brand-foreground">Primeiro mês</div>
             <div className="mt-3 flex items-baseline gap-1">
               <span className="text-5xl md:text-6xl font-extrabold text-primary">R$139,90</span>
             </div>
-            <p className="text-sm text-muted-foreground mt-2">Pagamento único de início</p>
+            <p className="text-sm text-muted-foreground mt-2">Pagamento único — inclui ativação e 1º mês de uso</p>
 
             <ul className="mt-6 space-y-3 text-sm flex-1">
-              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Ativação imediata da conta</li>
-              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Suporte no cadastro dos seus produtos</li>
-              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> 7 dias de teste — ou seu dinheiro de volta</li>
-              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Atendimento prioritário no WhatsApp</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand-foreground mt-0.5 shrink-0" /> Ativação imediata da conta</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand-foreground mt-0.5 shrink-0" /> Suporte no cadastro dos seus produtos</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand-foreground mt-0.5 shrink-0" /> 7 dias de garantia — ou seu dinheiro de volta</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand-foreground mt-0.5 shrink-0" /> Atendimento prioritário no WhatsApp</li>
             </ul>
 
-            <Button asChild size="lg" className="mt-7 h-12 text-base font-bold w-full shadow-[var(--shadow-glow)]">
+            <Button asChild size="lg" className="mt-7 h-12 text-base font-bold w-full">
               <Link to="/auth" search={{ mode: "register" }}>
-                Começar agora <ArrowRight className="h-5 w-5" />
+                Quero contratar agora <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
           </div>
@@ -242,10 +366,10 @@ function Landing() {
             <p className="text-sm text-muted-foreground mt-2">Mensalidade fixa, sem reajuste surpresa</p>
 
             <ul className="mt-6 space-y-3 text-sm flex-1">
-              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Estoque, vendas e relatórios ilimitados</li>
-              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Acesso no celular e no computador</li>
-              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Atualizações novas todo mês</li>
-              <li className="flex gap-2"><Check className="h-4 w-4 text-brand mt-0.5 shrink-0" /> Cancele quando quiser, sem multa</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand-foreground mt-0.5 shrink-0" /> Estoque, vendas e relatórios ilimitados</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand-foreground mt-0.5 shrink-0" /> Acesso no celular e no computador</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand-foreground mt-0.5 shrink-0" /> Atualizações novas todo mês</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-brand-foreground mt-0.5 shrink-0" /> Cancele quando quiser, sem multa</li>
             </ul>
 
             <a
@@ -264,6 +388,60 @@ function Landing() {
         </p>
       </section>
 
+      {/* FAQ */}
+      <section id="duvidas" className="px-5 md:px-10 py-20 md:py-24 bg-muted/40 border-y border-border/60">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-foreground">Dúvidas</span>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mt-3">Perguntas frequentes</h2>
+          </div>
+          <div className="space-y-3">
+            <Faq q="Como funciona o pagamento?">
+              Você paga R$139,90 no primeiro mês (ativação + 1º mês de uso). A partir do 2º mês, é só R$39,90/mês fixo. Cobrança no cartão de crédito.
+            </Faq>
+            <Faq q="Posso cancelar quando quiser?">
+              Sim. Sem multa, sem fidelidade. É só pedir o cancelamento no WhatsApp e a próxima cobrança não acontece.
+            </Faq>
+            <Faq q="Tem garantia?">
+              Sim. Você tem 7 dias para testar. Se não gostar, devolvemos 100% do valor pago.
+            </Faq>
+            <Faq q="Funciona no celular?">
+              Funciona no celular, tablet e computador — basta abrir o navegador. Não precisa baixar nada.
+            </Faq>
+            <Faq q="Preciso instalar alguma coisa?">
+              Não. O ControleJá roda direto no navegador. Crie sua conta e já comece a usar.
+            </Faq>
+            <Faq q="Quem cuida dos meus dados?">
+              Seus dados ficam em servidores seguros, com backup automático. Só você acessa a sua conta.
+            </Faq>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA final */}
+      <section className="px-5 md:px-10 py-20 md:py-24 bg-primary text-primary-foreground">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
+            Pronto pra parar de perder vendas<br />por desorganização?
+          </h2>
+          <p className="mt-5 text-primary-foreground/80 text-lg max-w-xl mx-auto">
+            Comece hoje. Em poucos minutos sua loja já está organizada.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <Button asChild size="lg" className="h-12 px-7 text-base font-bold bg-brand text-brand-foreground hover:bg-brand/90">
+              <Link to="/auth" search={{ mode: "register" }}>
+                Quero contratar agora <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="h-12 px-7 text-base border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="h-4 w-4" /> Falar com a gente
+              </a>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       <footer className="px-5 md:px-10 py-8 border-t border-border/60 text-center text-sm text-muted-foreground">
         © {new Date().getFullYear()} ControleJá — Feito para pequenos negócios.
       </footer>
@@ -273,16 +451,136 @@ function Landing() {
   );
 }
 
+/* ===== Mockups ===== */
+
+function MockChrome({ children, label }: { children: React.ReactNode; label: string }) {
+  return (
+    <div className="rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border bg-muted/40">
+        <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
+        <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
+        <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
+        <span className="ml-3 text-xs text-muted-foreground font-medium">{label}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function DashboardMockup() {
+  return (
+    <div className="relative">
+      <MockChrome label="controleja.app — Dashboard">
+        <div className="p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs text-muted-foreground">Resumo de hoje</div>
+              <div className="font-bold">Olá, Mariana 👋</div>
+            </div>
+            <Logo size="sm" showText={false} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <DemoStat label="Vendas hoje" value="R$ 1.248" tone="brand" />
+            <DemoStat label="Pedidos" value="12" tone="primary" />
+            <DemoStat label="Estoque crítico" value="3" tone="warn" />
+            <DemoStat label="Em estoque" value="R$ 8.4k" tone="muted" />
+          </div>
+          <div className="rounded-xl bg-muted/60 p-3 space-y-2">
+            <div className="text-[11px] uppercase font-bold tracking-wide text-muted-foreground">Últimas movimentações</div>
+            <MockRow name="Camiseta básica — M" sub="Venda • há 2 min" amount="-1" tone="out" />
+            <MockRow name="Caneca personalizada" sub="Compra • há 1h" amount="+14" tone="in" />
+            <MockRow name="Cabo HDMI 2m" sub="Venda • há 3h" amount="-2" tone="out" />
+          </div>
+        </div>
+      </MockChrome>
+
+      {/* Floating cards */}
+      <div className="hidden md:block absolute -left-12 top-32 w-56 rounded-xl border border-border bg-card shadow-xl p-3 rotate-[-4deg]">
+        <div className="text-[10px] font-bold uppercase tracking-wider text-brand-foreground">Reposição</div>
+        <div className="mt-1.5 flex items-center justify-between text-sm">
+          <span className="font-medium truncate">Pilha AA</span>
+          <span className="text-destructive font-bold">2 un</span>
+        </div>
+        <div className="mt-1 flex items-center justify-between text-sm">
+          <span className="font-medium truncate">Fita isolante</span>
+          <span className="text-destructive font-bold">1 un</span>
+        </div>
+      </div>
+      <div className="hidden md:block absolute -right-8 -bottom-6 w-60 rounded-xl border border-border bg-card shadow-xl p-3 rotate-[3deg]">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="h-7 w-7 rounded-full bg-brand/20 grid place-items-center">
+            <Check className="h-3.5 w-3.5 text-brand-foreground" />
+          </span>
+          <div>
+            <div className="text-xs font-bold">Venda registrada</div>
+            <div className="text-[10px] text-muted-foreground">PDF gerado e enviado</div>
+          </div>
+        </div>
+        <div className="text-2xl font-extrabold tabular-nums">R$ 89,90</div>
+      </div>
+    </div>
+  );
+}
+
+function SalesMockup() {
+  return (
+    <MockChrome label="controleja.app — Nova venda">
+      <div className="p-5 grid grid-cols-1 gap-4">
+        <div className="rounded-lg border border-border px-3 py-2.5 flex items-center gap-2 text-sm bg-muted/30">
+          <span className="text-muted-foreground">🔍</span>
+          <span className="text-muted-foreground">Buscar produto…</span>
+        </div>
+        <div className="space-y-2">
+          {[
+            { n: "Camiseta básica — M", q: 2, p: "59,90" },
+            { n: "Caneca personalizada", q: 1, p: "39,90" },
+            { n: "Adesivo decorativo", q: 3, p: "9,90" },
+          ].map((it) => (
+            <div key={it.n} className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2.5">
+              <div className="min-w-0">
+                <div className="font-medium text-sm truncate">{it.n}</div>
+                <div className="text-xs text-muted-foreground">Qtd. {it.q} × R$ {it.p}</div>
+              </div>
+              <div className="font-bold tabular-nums text-sm">R$ {(parseFloat(it.p.replace(",", ".")) * it.q).toFixed(2).replace(".", ",")}</div>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-xl bg-primary text-primary-foreground p-4 flex items-center justify-between">
+          <div>
+            <div className="text-[10px] uppercase tracking-wider opacity-70">Total da venda</div>
+            <div className="text-2xl font-extrabold tabular-nums">R$ 209,50</div>
+          </div>
+          <div className="px-3 py-2 rounded-lg bg-brand text-brand-foreground text-sm font-bold">
+            Finalizar
+          </div>
+        </div>
+      </div>
+    </MockChrome>
+  );
+}
+
+function MockRow({ name, sub, amount, tone }: { name: string; sub: string; amount: string; tone: "in" | "out" }) {
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <div className="min-w-0">
+        <div className="font-medium truncate">{name}</div>
+        <div className="text-[11px] text-muted-foreground">{sub}</div>
+      </div>
+      <div className={`font-bold tabular-nums ${tone === "out" ? "text-destructive" : "text-brand-foreground"}`}>{amount}</div>
+    </div>
+  );
+}
+
 function DemoStat({ label, value, tone }: { label: string; value: string; tone: "brand" | "primary" | "warn" | "muted" }) {
   const styles = {
-    brand: "bg-brand/10 text-brand-foreground",
+    brand: "bg-brand/15 text-brand-foreground",
     primary: "bg-primary/10 text-primary",
     warn: "bg-warning/15 text-warning-foreground",
     muted: "bg-muted text-foreground",
   };
   return (
     <div className={`rounded-lg p-3 ${styles[tone]}`}>
-      <div className="text-[10px] uppercase font-semibold tracking-wide opacity-70">{label}</div>
+      <div className="text-[10px] uppercase font-bold tracking-wide opacity-70">{label}</div>
       <div className="text-xl font-bold tabular-nums">{value}</div>
     </div>
   );
@@ -290,11 +588,11 @@ function DemoStat({ label, value, tone }: { label: string; value: string; tone: 
 
 function Feature({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-5 hover:shadow-lg hover:border-brand/40 transition-all">
+    <div className="rounded-xl border border-border bg-card p-5 hover:shadow-lg hover:border-brand/40 hover:-translate-y-0.5 transition-all">
       <div className="h-11 w-11 rounded-xl bg-brand/15 text-brand-foreground grid place-items-center mb-4">
         <Icon className="h-5 w-5" />
       </div>
-      <h3 className="font-semibold mb-1">{title}</h3>
+      <h3 className="font-bold mb-1">{title}</h3>
       <p className="text-sm text-muted-foreground">{desc}</p>
     </div>
   );
@@ -336,7 +634,7 @@ function Testimonial({ name, biz, quote }: { name: string; biz: string; quote: s
       </div>
       <p className="text-sm leading-relaxed mb-5">"{quote}"</p>
       <div className="flex items-center gap-3 pt-4 border-t border-border">
-        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-brand grid place-items-center text-white font-bold">
+        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-brand grid place-items-center text-primary-foreground font-bold">
           {name.charAt(0)}
         </div>
         <div className="min-w-0">
@@ -355,6 +653,24 @@ function Trust({ icon: Icon, title }: { icon: any; title: string }) {
         <Icon className="h-4 w-4" />
       </div>
       <span className="text-sm font-semibold">{title}</span>
+    </div>
+  );
+}
+
+function Faq({ q, children }: { q: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left font-semibold hover:bg-muted/40 transition-colors"
+      >
+        {q}
+        <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="px-5 pb-4 text-sm text-muted-foreground">{children}</div>
+      )}
     </div>
   );
 }
