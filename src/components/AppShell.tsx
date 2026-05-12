@@ -12,7 +12,7 @@ import { actions } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return"];
+const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin"];
 
 type NavItem = { to: string; label: string; icon: any; adminOnly?: boolean };
 const nav: NavItem[] = [

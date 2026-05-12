@@ -18,7 +18,7 @@ function CheckoutPage() {
   const { user, loading } = useAuth();
   const { isActive, loading: subLoading } = useSubscription();
   const navigate = useNavigate();
-  const [stripePromise] = useState(() => getStripe());
+  const [stripePromise] = useState<any>(null);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth", search: { mode: "register" } });

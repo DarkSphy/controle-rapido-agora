@@ -56,12 +56,8 @@ export function useSubscription() {
     };
   }, [user, authLoading]);
 
-  const isActive = !!sub && (
-    sub.grandfathered ||
-    (["active", "trialing", "past_due"].includes(sub.status) &&
-      (!sub.current_period_end || new Date(sub.current_period_end) > new Date())) ||
-    (sub.status === "canceled" && sub.current_period_end && new Date(sub.current_period_end) > new Date())
-  );
+  // BYPASS STRIPE: Assume subscription is always active for now.
+  const isActive = true;
 
   return { subscription: sub, isActive, loading: authLoading || loading };
 }
