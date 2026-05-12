@@ -95,7 +95,7 @@ function OrcamentosPage() {
         if (p) {
           name = p.name;
           if (item.variationId) {
-            const v = p.variations.find(v => v.id === item.variationId);
+            const v = p.variations?.find(v => v.id === item.variationId);
             if (v) name = `${p.name} — ${v.name}`;
           }
         }
@@ -315,7 +315,7 @@ function OrcamentosPage() {
                   if (p) {
                     name = p.name;
                     if (item.variationId) {
-                      const v = p.variations.find(v => v.id === item.variationId);
+                      const v = p.variations?.find(v => v.id === item.variationId);
                       if (v) name = `${p.name} — ${v.name}`;
                     }
                   }
