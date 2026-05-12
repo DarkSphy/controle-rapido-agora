@@ -68,9 +68,7 @@ function Landing() {
         <div className="absolute top-0 right-0 w-[600px] h-[600px] -z-10 rounded-full bg-brand/15 blur-3xl translate-x-1/3 -translate-y-1/3" />
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand/15 text-brand-foreground text-xs font-bold mb-5 border border-brand/30">
-              <Sparkles className="h-3.5 w-3.5" /> Planos a partir de R$39,90/mês
-            </span>
+
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.02]">
               Gestão simples para <span className="text-brand">vender mais</span> e cuidar menos do estoque.
             </h1>
