@@ -45,7 +45,6 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
     if (repeatSale) {
       const items = saleItems.filter(si => si.saleId === repeatSale.id).map(si => {
         const p = products.find(p => p.id === si.productId);
-        return {
         const variation = p?.variations?.find(v => v.id === si.variationId);
         return {
           cartItemId: si.variationId ? `${si.productId}-${si.variationId}` : si.productId,
