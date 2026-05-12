@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useRef } from "react";
-import { Plus, Edit2, Search, FileText, Send, CheckCircle2, Clock, XCircle, Printer, ArrowRight, Wrench } from "lucide-react";
+import { Plus, Edit2, Search, FileText, Send, CheckCircle2, Clock, XCircle, Printer, ArrowRight, Wrench, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useStore, actions, Quote, formatBRL } from "@/lib/store";
@@ -248,6 +248,18 @@ function OrcamentosPage() {
                         </Button>
                       </div>
                     )}
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 ml-auto"
+                      onClick={() => {
+                        if (confirm("Tem certeza que deseja excluir este orçamento?")) {
+                          actions.deleteQuote(o.id);
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               );
