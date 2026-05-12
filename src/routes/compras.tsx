@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useStore, formatBRL } from "@/lib/store";
 import { Button } from "@/components/ui/button";
-import { Plus, Truck, Calendar, Tag } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, Truck, Calendar, Tag, Search } from "lucide-react";
 import { PurchaseDialog } from "@/components/PurchaseDialog";
 
 export const Route = createFileRoute("/compras")({
@@ -21,6 +22,21 @@ function ComprasPage() {
   const suppliers = useStore((s) => s.suppliers);
   const products = useStore((s) => s.products);
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return purchases;
+    return purchases.filter((p) => {
+      const sup = suppliers.find((s) => s.id === p.supplierId);
+      if (sup?.name.toLowerCase().includes(q)) return true;
+      const items = purchaseItems.filter((pi) => pi.purchaseId === p.id);
+      return items.some((pi) => {
+        const prod = products.find((pr) => pr.id === pi.productId);
+        return prod?.name.toLowerCase().includes(q);
+      });
+    });
+  }, [purchases, purchaseItems, suppliers, products, query]);
 
   return (
     <div className="px-4 md:px-8 py-6 md:py-10 max-w-5xl mx-auto">
