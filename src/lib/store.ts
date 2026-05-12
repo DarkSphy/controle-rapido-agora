@@ -980,12 +980,23 @@ export const actions = {
 
   async deleteSale(id: string) {
     const { error } = await supabase.from("sales").delete().eq("id", id);
-    if (error) return toast.error("Erro ao excluir venda");
+    if (error) return toast.error("Erro ao excluir venda. Certifique-se de executar o script SQL de atualização.");
+
+    // Check if there was an OS linked to this sale and revert it
+    const linkedOS = state.serviceOrders.find(o => o.saleId === id);
+    if (linkedOS) {
+      await supabase.from("service_orders").update({ status: "Em andamento", sale_id: null }).eq("id", linkedOS.id);
+      const updatedOS = { ...linkedOS, status: "Em andamento" as const, saleId: null };
+      setState({
+        serviceOrders: state.serviceOrders.map(o => o.id === linkedOS.id ? updatedOS : o)
+      });
+    }
+
     setState({
       sales: state.sales.filter(s => s.id !== id),
       saleItems: state.saleItems.filter(si => si.saleId !== id),
     });
-    toast.success("Venda excluída");
+    toast.success("Venda excluída com sucesso");
   },
 
   // Purchase Integration
