@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin } from "@/lib/store";
 import { 
   TrendingUp, TrendingDown, AlertCircle, Package, BarChart3, Settings2, 
-  ShoppingBasket, Truck, Lightbulb 
+  ShoppingBasket, Truck, Lightbulb, ArrowLeftRight 
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -76,20 +76,20 @@ function Dashboard() {
         <Stat icon={AlertCircle} label="Estoque zerado" value={empty.length} accent="destructive" />
         <Stat 
           icon={Package} 
-          label={
-            <div className="flex flex-col gap-1">
-              <span>Valor em estoque</span>
-              <button 
-                onClick={() => setShowCostValue(!showCostValue)}
-                className="text-[10px] text-brand-foreground font-semibold hover:underline text-left"
-              >
-                {showCostValue ? "Ver preço final" : "Ver preço de custo"}
-              </button>
-            </div>
-          } 
+          label="Valor em estoque"
           value={formatBRL(totalValue)} 
           accent="default" 
           small 
+          action={
+            <button 
+              onClick={() => setShowCostValue(!showCostValue)}
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md border border-brand/20 bg-brand/10 text-brand-foreground hover:bg-brand/20 transition-all text-[10px] font-bold uppercase tracking-wider shadow-sm active:scale-95"
+              title="Alternar cálculo entre preço de custo ou preço final"
+            >
+              <ArrowLeftRight className="h-3 w-3" />
+              {showCostValue ? "Custo" : "Final"}
+            </button>
+          }
         />
       </div>
 
@@ -155,8 +155,8 @@ function Dashboard() {
 }
 
 function Stat({
-  icon: Icon, label, value, accent, small,
-}: { icon: any; label: React.ReactNode; value: number | string; accent: "brand" | "primary" | "destructive" | "default"; small?: boolean }) {
+  icon: Icon, label, value, accent, small, action
+}: { icon: any; label: React.ReactNode; value: number | string; accent: "brand" | "primary" | "destructive" | "default"; small?: boolean; action?: React.ReactNode }) {
   const colors = {
     brand: "bg-brand/15 text-brand-foreground",
     primary: "bg-primary/10 text-primary",
@@ -164,9 +164,12 @@ function Stat({
     default: "bg-muted text-foreground",
   } as const;
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
-      <div className={`h-9 w-9 rounded-lg grid place-items-center mb-3 ${colors[accent]}`}>
-        <Icon className="h-5 w-5" />
+    <div className="rounded-xl border border-border bg-card p-4 relative">
+      <div className="flex items-start justify-between mb-3">
+        <div className={`h-9 w-9 rounded-lg grid place-items-center ${colors[accent]}`}>
+          <Icon className="h-5 w-5" />
+        </div>
+        {action && <div>{action}</div>}
       </div>
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className={`font-bold tabular-nums ${small ? "text-lg" : "text-2xl"}`}>{value}</div>
