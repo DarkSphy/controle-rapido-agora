@@ -18,6 +18,13 @@ function SuppliersPage() {
   const [editing, setEditing] = useState<Supplier | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return suppliers;
+    return suppliers.filter((s) => s.name.toLowerCase().includes(q) || (s.phone || "").toLowerCase().includes(q));
+  }, [suppliers, query]);
 
   function startEdit(s: Supplier | null) {
     setEditing(s);
