@@ -27,6 +27,8 @@ function OrcamentosPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [printingQuote, setPrintingQuote] = useState<Quote | null>(null);
 
+  const bs = useStore((s) => s.businessSettings);
+
   const filtered = useMemo(() => {
     if (!q) return quotes;
     const lower = q.toLowerCase();
@@ -78,8 +80,37 @@ function OrcamentosPage() {
   function handleWhatsApp(quote: Quote) {
     const customer = customers.find(c => c.id === quote.customerId);
     const phone = customer?.phone?.replace(/\D/g, '');
-    const validStr = quote.validityDate ? ` (válido até ${new Date(quote.validityDate).toLocaleDateString("pt-BR")})` : "";
-    const msg = `Olá${customer ? `, ${customer.name}` : ''}! Segue seu orçamento #${quote.id.slice(0,6)} no valor de *${formatBRL(quote.total)}*${validStr}. Qualquer dúvida estou à disposição.`;
+    
+    let msg = `Olá${customer ? ` ${customer.name}` : ''}!\nSegue o detalhamento do seu orçamento:\n\n`;
+    msg += `*Orçamento #${quote.id.slice(0,6)}*\n`;
+    msg += `Emissão: ${new Date(quote.createdAt).toLocaleDateString("pt-BR")}\n`;
+    if (quote.validityDate) msg += `Validade: ${new Date(quote.validityDate).toLocaleDateString("pt-BR")}\n`;
+    
+    msg += `\n*Itens do Orçamento:*\n`;
+    const items = quoteItems.filter(i => i.quoteId === quote.id);
+    items.forEach(item => {
+      let name = item.manualName || "Item";
+      if (item.productId) {
+        const p = products.find(p => p.id === item.productId);
+        if (p) {
+          name = p.name;
+          if (item.variationId) {
+            const v = p.variations.find(v => v.id === item.variationId);
+            if (v) name = `${p.name} — ${v.name}`;
+          }
+        }
+      }
+      msg += `- ${item.quantity}x ${name} (${formatBRL(item.unitPrice)})\n`;
+    });
+
+    msg += `\n*Subtotal:* ${formatBRL(quote.subtotal)}\n`;
+    if (quote.discount > 0) msg += `*Desconto:* -${formatBRL(quote.discount)}\n`;
+    msg += `*Total:* ${formatBRL(quote.total)}\n`;
+
+    if (quote.paymentConditions) msg += `\n*Condições de Pagamento:*\n${quote.paymentConditions}\n`;
+    if (quote.notes) msg += `\n*Observações:*\n${quote.notes}\n`;
+    
+    msg += `\nQualquer dúvida, estamos à disposição!`;
     
     if (phone) {
       window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -231,13 +262,24 @@ function OrcamentosPage() {
       {printingQuote && (
         <div className="hidden print:block p-8 bg-white text-black min-h-screen">
           <div className="flex justify-between items-start border-b-2 border-black pb-6 mb-6">
-            <div>
-              <h1 className="text-4xl font-black mb-1">ORÇAMENTO</h1>
-              <div className="text-sm font-semibold uppercase tracking-widest text-gray-500">#{printingQuote.id.slice(0, 8)}</div>
+            <div className="flex gap-4 items-center">
+              {bs?.logoUrl && (
+                <img src={bs.logoUrl} alt="Logo" className="w-24 h-24 object-contain" />
+              )}
+              <div>
+                <h1 className="text-4xl font-black mb-1">ORÇAMENTO</h1>
+                <div className="text-sm font-semibold uppercase tracking-widest text-gray-500">#{printingQuote.id.slice(0, 8)}</div>
+              </div>
             </div>
             <div className="text-right text-sm text-gray-600">
-              <div><strong>Emissão:</strong> {new Date(printingQuote.createdAt).toLocaleDateString("pt-BR")}</div>
-              {printingQuote.validityDate && <div><strong>Validade:</strong> {new Date(printingQuote.validityDate).toLocaleDateString("pt-BR")}</div>}
+              {bs?.name && <div className="font-bold text-black text-lg mb-1">{bs.name}</div>}
+              {bs?.phone && <div>{bs.phone}</div>}
+              {bs?.email && <div>{bs.email}</div>}
+              {bs?.address && <div className="max-w-[250px] ml-auto">{bs.address}</div>}
+              <div className="mt-2 pt-2 border-t border-gray-200">
+                <div><strong>Emissão:</strong> {new Date(printingQuote.createdAt).toLocaleDateString("pt-BR")}</div>
+                {printingQuote.validityDate && <div><strong>Validade:</strong> {new Date(printingQuote.validityDate).toLocaleDateString("pt-BR")}</div>}
+              </div>
             </div>
           </div>
 
@@ -269,7 +311,7 @@ function OrcamentosPage() {
               {quoteItems.filter(i => i.quoteId === printingQuote.id).map(item => {
                 let name = item.manualName || "Item";
                 if (item.productId) {
-                  const p = useStore.getState().products.find(p => p.id === item.productId);
+                  const p = products.find(p => p.id === item.productId);
                   if (p) {
                     name = p.name;
                     if (item.variationId) {

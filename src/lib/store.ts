@@ -160,6 +160,15 @@ export type QuoteItem = {
   isService: boolean;
 };
 
+export type BusinessSettings = {
+  id: string;
+  name: string | null;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  logoUrl: string | null;
+};
+
 type State = {
   products: Product[];
   movements: Movement[];
@@ -177,6 +186,7 @@ type State = {
   serviceOrderItems: ServiceOrderItem[];
   quotes: Quote[];
   quoteItems: QuoteItem[];
+  businessSettings: BusinessSettings | null;
   taxRate: number;
   taxMode: "margin" | "final";
   loaded: boolean;
@@ -186,7 +196,7 @@ let state: State = {
   products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
   kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
   purchases: [], purchaseItems: [], serviceOrders: [], serviceOrderItems: [],
-  quotes: [], quoteItems: [],
+  quotes: [], quoteItems: [], businessSettings: null,
   taxRate: 0, taxMode: "margin", loaded: false 
 };
 const listeners = new Set<() => void>();
@@ -466,8 +476,8 @@ export const actions = {
       purchaseItems,
       serviceOrders,
       serviceOrderItems,
-      quotes,
       quoteItems,
+      businessSettingsData,
     ] = await Promise.all([
       fetchTable("products", supabase.from("products").select("*").order("created_at", { ascending: false })),
       fetchTable("variations"),
@@ -484,8 +494,8 @@ export const actions = {
       fetchTable("purchase_items"),
       fetchTable("service_orders", supabase.from("service_orders").select("*").order("created_at", { ascending: false })),
       fetchTable("service_order_items"),
-      fetchTable("quotes", supabase.from("quotes").select("*").order("created_at", { ascending: false })),
       fetchTable("quote_items"),
+      fetchTable("business_settings", supabase.from("business_settings").select("*").limit(1)),
     ]);
 
     const products = (prods ?? []).map((p: any) => rowToProduct(p, vars ?? []));
@@ -504,6 +514,19 @@ export const actions = {
     const serviceOrderItemsList = (serviceOrderItems ?? []).map(rowToServiceOrderItem);
     const quotesList = (quotes ?? []).map(rowToQuote);
     const quoteItemsList = (quoteItems ?? []).map(rowToQuoteItem);
+    
+    let businessSettings = null;
+    if (businessSettingsData && businessSettingsData.length > 0) {
+      const bs = businessSettingsData[0];
+      businessSettings = {
+        id: bs.id,
+        name: bs.name,
+        phone: bs.phone,
+        email: bs.email,
+        address: bs.address,
+        logoUrl: bs.logo_url
+      };
+    }
 
     setState({
       products,
@@ -518,10 +541,10 @@ export const actions = {
       saleItems: saleItemsList,
       purchases: purchasesList,
       purchaseItems: purchaseItemsList,
-      serviceOrders: serviceOrdersList,
       serviceOrderItems: serviceOrderItemsList,
       quotes: quotesList,
       quoteItems: quoteItemsList,
+      businessSettings,
       taxRate,
       taxMode,
       loaded: true,
@@ -1311,6 +1334,71 @@ export const actions = {
 
     await actions.updateQuote(id, { status: "Aprovado" });
     toast.success("Orçamento convertido em Ordem de Serviço!");
+  },
+
+  async updateBusinessSettings(patch: Partial<BusinessSettings>) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return toast.error("Usuário não autenticado");
+
+    const bs = state.businessSettings;
+    const payload = {
+      user_id: user.id,
+      name: patch.name !== undefined ? patch.name : bs?.name,
+      phone: patch.phone !== undefined ? patch.phone : bs?.phone,
+      email: patch.email !== undefined ? patch.email : bs?.email,
+      address: patch.address !== undefined ? patch.address : bs?.address,
+      logo_url: patch.logoUrl !== undefined ? patch.logoUrl : bs?.logoUrl,
+      updated_at: new Date().toISOString()
+    };
+
+    if (bs) {
+      const { error } = await supabase.from("business_settings").update(payload).eq("id", bs.id);
+      if (error) {
+        console.error("Erro ao atualizar configurações:", error);
+        return toast.error("Erro ao salvar configurações");
+      }
+      setState({ businessSettings: { ...bs, ...patch } });
+      toast.success("Configurações atualizadas");
+    } else {
+      const { data, error } = await supabase.from("business_settings").insert([payload]).select().single();
+      if (error) {
+        console.error("Erro ao criar configurações:", error);
+        return toast.error("Erro ao salvar configurações");
+      }
+      setState({ businessSettings: {
+        id: data.id,
+        name: data.name,
+        phone: data.phone,
+        email: data.email,
+        address: data.address,
+        logoUrl: data.logo_url
+      }});
+      toast.success("Configurações salvas");
+    }
+  },
+
+  async uploadLogo(file: File): Promise<string | null> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Usuário não autenticado");
+      return null;
+    }
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('logos')
+      .upload(fileName, file, { upsert: true });
+
+    if (uploadError) {
+      console.error("Erro ao fazer upload da logo:", uploadError);
+      toast.error("Erro ao enviar a imagem");
+      return null;
+    }
+
+    const { data } = supabase.storage.from('logos').getPublicUrl(fileName);
+    return data.publicUrl;
   }
 };
 
