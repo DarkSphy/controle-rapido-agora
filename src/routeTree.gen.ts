@@ -15,6 +15,7 @@ import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as ReposicaoRouteImport } from './routes/reposicao'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ProdutosRouteImport } from './routes/produtos'
+import { Route as OSRouteImport } from './routes/os'
 import { Route as ServicosRouteImport } from './routes/servicos'
 import { Route as MovimentacoesRouteImport } from './routes/movimentacoes'
 import { Route as KitsRouteImport } from './routes/kits'
@@ -67,6 +68,11 @@ const ReportsRoute = ReportsRouteImport.update({
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OSRoute = OSRouteImport.update({
+  id: '/os',
+  path: '/os',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicosRoute = ServicosRouteImport.update({
@@ -303,6 +309,7 @@ export interface RootRouteChildren {
   KitsRoute: typeof KitsRoute
   MovimentacoesRoute: typeof MovimentacoesRoute
   ProdutosRoute: typeof ProdutosRoute
+  OSRoute: typeof OSRoute
   ServicosRoute: typeof ServicosRoute
   ReportsRoute: typeof ReportsRoute
   ReposicaoRoute: typeof ReposicaoRoute
@@ -353,6 +360,13 @@ declare module '@tanstack/react-router' {
       path: '/produtos'
       fullPath: '/produtos'
       preLoaderRoute: typeof ProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/os': {
+      id: '/os'
+      path: '/os'
+      fullPath: '/os'
+      preLoaderRoute: typeof OSRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/servicos': {
@@ -490,6 +504,7 @@ const rootRouteChildren: RootRouteChildren = {
   KitsRoute: KitsRoute,
   MovimentacoesRoute: MovimentacoesRoute,
   ProdutosRoute: ProdutosRoute,
+  OSRoute: OSRoute,
   ServicosRoute: ServicosRoute,
   ReportsRoute: ReportsRoute,
   ReposicaoRoute: ReposicaoRoute,

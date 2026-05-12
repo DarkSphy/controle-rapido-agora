@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { 
   LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut, 
-  Truck, Tag, Box, BarChart3, DollarSign, Users, Lightbulb, ShoppingBasket, Briefcase
+  Truck, Tag, Box, BarChart3, DollarSign, Users, Lightbulb, ShoppingBasket, Briefcase, Wrench
 } from "lucide-react";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,7 @@ const nav: NavItem[] = [
   { to: "/financeiro", label: "Financeiro", icon: DollarSign },
   { to: "/produtos", label: "Produtos", icon: Package },
   { to: "/servicos", label: "Serviços", icon: Briefcase },
+  { to: "/os", label: "Ordem de Serviço", icon: Wrench },
   { to: "/categories", label: "Categorias", icon: Tag },
   { to: "/suppliers", label: "Fornecedores", icon: Truck },
   { to: "/clientes", label: "Clientes", icon: Users },

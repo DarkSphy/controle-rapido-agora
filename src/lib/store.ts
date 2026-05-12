@@ -116,6 +116,26 @@ export type PurchaseItem = {
   unitPrice: number;
 };
 
+export type ServiceOrder = {
+  id: string;
+  customerId?: string;
+  saleId?: string;
+  type: string;
+  description?: string;
+  status: "Aberta" | "Em andamento" | "Finalizada" | "Cancelada";
+  serviceValue: number;
+  createdAt: number;
+};
+
+export type ServiceOrderItem = {
+  id: string;
+  orderId: string;
+  productId: string;
+  variationId?: string;
+  quantity: number;
+  unitPrice: number;
+};
+
 type State = {
   products: Product[];
   movements: Movement[];
@@ -129,6 +149,8 @@ type State = {
   saleItems: SaleItem[];
   purchases: Purchase[];
   purchaseItems: PurchaseItem[];
+  serviceOrders: ServiceOrder[];
+  serviceOrderItems: ServiceOrderItem[];
   taxRate: number;
   taxMode: "margin" | "final";
   loaded: boolean;
@@ -137,7 +159,8 @@ type State = {
 let state: State = { 
   products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
   kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
-  purchases: [], purchaseItems: [], taxRate: 0, taxMode: "margin", loaded: false 
+  purchases: [], purchaseItems: [], serviceOrders: [], serviceOrderItems: [],
+  taxRate: 0, taxMode: "margin", loaded: false 
 };
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
@@ -154,7 +177,8 @@ const getSnapshot = () => state;
 const serverSnap: State = { 
   products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
   kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
-  purchases: [], purchaseItems: [], taxRate: 0, taxMode: "margin", loaded: false 
+  purchases: [], purchaseItems: [], serviceOrders: [], serviceOrderItems: [],
+  taxRate: 0, taxMode: "margin", loaded: false 
 };
 const getServer = () => serverSnap;
 
@@ -330,6 +354,30 @@ function rowToPurchaseItem(pi: any): PurchaseItem {
   };
 }
 
+function rowToServiceOrder(so: any): ServiceOrder {
+  return {
+    id: so.id,
+    customerId: so.customer_id ?? undefined,
+    saleId: so.sale_id ?? undefined,
+    type: so.type,
+    description: so.description ?? undefined,
+    status: so.status as any,
+    serviceValue: Number(so.service_value),
+    createdAt: new Date(so.created_at).getTime(),
+  };
+}
+
+function rowToServiceOrderItem(soi: any): ServiceOrderItem {
+  return {
+    id: soi.id,
+    orderId: soi.order_id,
+    productId: soi.product_id,
+    variationId: soi.variation_id ?? undefined,
+    quantity: soi.quantity,
+    unitPrice: Number(soi.unit_price),
+  };
+}
+
 export const actions = {
   async loadAll() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -360,6 +408,8 @@ export const actions = {
       saleItems,
       purchases,
       purchaseItems,
+      serviceOrders,
+      serviceOrderItems,
     ] = await Promise.all([
       fetchTable("products", supabase.from("products").select("*").order("created_at", { ascending: false })),
       fetchTable("variations"),
@@ -374,6 +424,8 @@ export const actions = {
       fetchTable("sale_items"),
       fetchTable("purchases", supabase.from("purchases").select("*").order("created_at", { ascending: false })),
       fetchTable("purchase_items"),
+      fetchTable("service_orders", supabase.from("service_orders").select("*").order("created_at", { ascending: false })),
+      fetchTable("service_order_items"),
     ]);
 
     const products = (prods ?? []).map((p: any) => rowToProduct(p, vars ?? []));
@@ -388,6 +440,8 @@ export const actions = {
     const saleItemsList = (saleItems ?? []).map(rowToSaleItem);
     const purchasesList = (purchases ?? []).map(rowToPurchase);
     const purchaseItemsList = (purchaseItems ?? []).map(rowToPurchaseItem);
+    const serviceOrdersList = (serviceOrders ?? []).map(rowToServiceOrder);
+    const serviceOrderItemsList = (serviceOrderItems ?? []).map(rowToServiceOrderItem);
 
     setState({
       products,
@@ -402,6 +456,8 @@ export const actions = {
       saleItems: saleItemsList,
       purchases: purchasesList,
       purchaseItems: purchaseItemsList,
+      serviceOrders: serviceOrdersList,
+      serviceOrderItems: serviceOrderItemsList,
       taxRate,
       taxMode,
       loaded: true,
@@ -412,7 +468,8 @@ export const actions = {
     setState({ 
       products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
       kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
-      purchases: [], purchaseItems: [], taxRate: 0, taxMode: "margin", loaded: false 
+      purchases: [], purchaseItems: [], serviceOrders: [], serviceOrderItems: [],
+      taxRate: 0, taxMode: "margin", loaded: false 
     });
   },
 
@@ -873,6 +930,151 @@ export const actions = {
     });
     toast.success("Compra registrada com sucesso");
   },
+
+  // Service Order CRUD
+  async addServiceOrder(o: { customerId?: string; type: string; description?: string; serviceValue: number }, items: Omit<ServiceOrderItem, "id" | "orderId">[]) {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return;
+    
+    const { data: row, error } = await supabase.from("service_orders").insert({
+      user_id: user.user.id,
+      customer_id: o.customerId || null,
+      type: o.type,
+      description: o.description || null,
+      service_value: o.serviceValue,
+      status: "Aberta"
+    }).select().single();
+    if (error || !row) return toast.error(error?.message ?? "Erro ao salvar OS");
+
+    let soItems: any[] = [];
+    if (items.length > 0) {
+      const itemRows = items.map(i => ({
+        order_id: row.id,
+        product_id: i.productId,
+        variation_id: i.variationId || null,
+        quantity: i.quantity,
+        unit_price: i.unitPrice,
+      }));
+      const { data: iRows } = await supabase.from("service_order_items").insert(itemRows).select();
+      soItems = iRows || [];
+    }
+
+    const order = rowToServiceOrder(row);
+    setState({
+      serviceOrders: [order, ...state.serviceOrders],
+      serviceOrderItems: [...soItems.map(rowToServiceOrderItem), ...state.serviceOrderItems],
+    });
+    toast.success("Ordem de serviço criada");
+    return order;
+  },
+
+  async updateServiceOrder(id: string, patch: Partial<{ customerId: string; type: string; description: string; serviceValue: number; status: "Aberta" | "Em andamento" | "Finalizada" | "Cancelada" }>, items?: Omit<ServiceOrderItem, "id" | "orderId">[]) {
+    const order = state.serviceOrders.find(o => o.id === id);
+    if (!order) return;
+
+    // Determine if we are transitioning to Finalizada
+    const isFinalizing = patch.status === "Finalizada" && order.status !== "Finalizada" && !order.saleId;
+
+    const update: any = {};
+    if (patch.customerId !== undefined) update.customer_id = patch.customerId || null;
+    if (patch.type !== undefined) update.type = patch.type;
+    if (patch.description !== undefined) update.description = patch.description;
+    if (patch.serviceValue !== undefined) update.service_value = patch.serviceValue;
+    if (patch.status !== undefined) update.status = patch.status;
+
+    let saleId = order.saleId;
+    if (isFinalizing) {
+      // Create a sale to process financial entry and stock deduct
+      const currentItems = items || state.serviceOrderItems.filter(i => i.orderId === id);
+      const partsTotal = currentItems.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0);
+      const serviceVal = patch.serviceValue !== undefined ? patch.serviceValue : order.serviceValue;
+      const totalAmount = partsTotal + serviceVal;
+
+      const { data: user } = await supabase.auth.getUser();
+      if (user.user) {
+        const { data: saleRow, error: saleErr } = await supabase.from("sales").insert({
+          user_id: user.user.id,
+          customer_id: patch.customerId !== undefined ? patch.customerId : order.customerId,
+          total_amount: totalAmount,
+          payment_method: "Dinheiro" // default generic for OS
+        }).select().single();
+
+        if (saleRow && !saleErr) {
+          saleId = saleRow.id;
+          update.sale_id = saleId;
+          
+          if (currentItems.length > 0) {
+            const saleItemsRows = currentItems.map(i => ({
+              sale_id: saleId,
+              product_id: i.productId,
+              variation_id: i.variationId || null,
+              quantity: i.quantity,
+              unit_price: i.unitPrice,
+            }));
+            await supabase.from("sale_items").insert(saleItemsRows);
+            
+            // Deduct stock
+            for (const item of currentItems) {
+              await actions.move({ productId: item.productId, variationId: item.variationId, quantity: item.quantity, type: "out" });
+            }
+          }
+          
+          // We need to fetch the newly created sale and sale_items to update state directly
+          const newSale = rowToSale(saleRow);
+          const { data: newSaleItems } = await supabase.from("sale_items").select("*").eq("sale_id", saleId);
+          setState({
+            sales: [newSale, ...state.sales],
+            saleItems: [...(newSaleItems || []).map(rowToSaleItem), ...state.saleItems]
+          });
+        }
+      }
+    }
+
+    if (Object.keys(update).length > 0) {
+      const { error } = await supabase.from("service_orders").update(update).eq("id", id);
+      if (error) return toast.error(error.message);
+    }
+
+    let newItems = state.serviceOrderItems;
+    if (items !== undefined && !isFinalizing && order.status !== "Finalizada") {
+      // Update items only if not finalized
+      await supabase.from("service_order_items").delete().eq("order_id", id);
+      let soItems: any[] = [];
+      if (items.length > 0) {
+        const itemRows = items.map(i => ({
+          order_id: id,
+          product_id: i.productId,
+          variation_id: i.variationId || null,
+          quantity: i.quantity,
+          unit_price: i.unitPrice,
+        }));
+        const { data: iRows } = await supabase.from("service_order_items").insert(itemRows).select();
+        soItems = iRows || [];
+      }
+      newItems = [...state.serviceOrderItems.filter(i => i.orderId !== id), ...soItems.map(rowToServiceOrderItem)];
+    }
+
+    setState({
+      serviceOrders: state.serviceOrders.map(o => o.id === id ? { ...o, ...patch, saleId: saleId || o.saleId } : o),
+      serviceOrderItems: newItems
+    });
+    toast.success("Ordem de serviço atualizada");
+  },
+
+  async deleteServiceOrder(id: string) {
+    const order = state.serviceOrders.find(o => o.id === id);
+    if (order?.saleId) {
+      toast.error("Não é possível excluir uma OS finalizada (já lançada no financeiro)");
+      return;
+    }
+    const { error } = await supabase.from("service_orders").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    setState({ 
+      serviceOrders: state.serviceOrders.filter((o) => o.id !== id),
+      serviceOrderItems: state.serviceOrderItems.filter((i) => i.orderId !== id)
+    });
+    toast.success("Ordem de serviço excluída");
+  }
 };
 
 

@@ -1,0 +1,123 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { Plus, Edit2, Wrench, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useStore, ServiceOrder, formatBRL } from "@/lib/store";
+import { OSDialog } from "@/components/OSDialog";
+import { cn } from "@/lib/utils";
+
+export const Route = createFileRoute("/os")({
+  head: () => ({
+    meta: [
+      { title: "Ordens de Serviço — ControleJá" },
+      { name: "description", content: "Gerencie suas ordens de serviço." },
+    ],
+  }),
+  component: OSPage,
+});
+
+function OSPage() {
+  const serviceOrders = useStore((s) => s.serviceOrders);
+  const customers = useStore((s) => s.customers);
+  const items = useStore((s) => s.serviceOrderItems);
+  const [q, setQ] = useState("");
+  const [editing, setEditing] = useState<ServiceOrder | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+
+  const filtered = useMemo(() => {
+    if (!q) return serviceOrders;
+    const lower = q.toLowerCase();
+    return serviceOrders.filter(o => {
+      const customer = customers.find(c => c.id === o.customerId)?.name.toLowerCase() || "";
+      return o.type.toLowerCase().includes(lower) || 
+             customer.includes(lower) || 
+             o.id.toLowerCase().includes(lower);
+    });
+  }, [serviceOrders, q, customers]);
+
+  function getStatusColor(status: string) {
+    switch (status) {
+      case "Aberta": return "bg-blue-500/10 text-blue-600 border-blue-500/20";
+      case "Em andamento": return "bg-amber-500/10 text-amber-600 border-amber-500/20";
+      case "Finalizada": return "bg-success/10 text-success border-success/20";
+      case "Cancelada": return "bg-destructive/10 text-destructive border-destructive/20";
+      default: return "bg-muted text-muted-foreground border-border";
+    }
+  }
+
+  return (
+    <div className="px-4 md:px-8 py-6 md:py-10 max-w-6xl mx-auto">
+      <header className="flex items-center justify-between gap-3 mb-6">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Ordens de Serviço</h1>
+          <p className="text-muted-foreground text-sm mt-1">{serviceOrders.length} ordens cadastradas</p>
+        </div>
+        <Button onClick={() => { setEditing(null); setEditOpen(true); }}>
+          <Plus className="h-4 w-4" /> Nova OS
+        </Button>
+      </header>
+
+      <div className="mb-6 relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input 
+          value={q} 
+          onChange={e => setQ(e.target.value)} 
+          placeholder="Buscar por cliente, tipo ou número da OS..." 
+          className="pl-9"
+        />
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border p-12 text-center">
+          <div className="mx-auto h-12 w-12 bg-muted rounded-full grid place-items-center mb-4 text-muted-foreground">
+            <Wrench className="h-6 w-6" />
+          </div>
+          <p className="text-muted-foreground font-medium mb-4">Nenhuma ordem de serviço encontrada.</p>
+          <Button onClick={() => { setEditing(null); setEditOpen(true); }}>
+            <Plus className="h-4 w-4" /> Criar primeira OS
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((o) => {
+            const customer = customers.find((c) => c.id === o.customerId);
+            const myItems = items.filter(i => i.orderId === o.id);
+            const partsTotal = myItems.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0);
+            const totalAmount = partsTotal + o.serviceValue;
+            
+            return (
+              <div key={o.id} className="rounded-xl border border-border bg-card p-4 transition-all hover:border-brand/40 group flex flex-col">
+                <div className="flex justify-between items-start gap-4 mb-4">
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                      #{o.id.slice(0, 6)} • {new Date(o.createdAt).toLocaleDateString("pt-BR")}
+                    </div>
+                    <h3 className="font-semibold text-lg truncate" title={o.type}>{o.type}</h3>
+                    <div className="text-sm text-muted-foreground truncate">{customer?.name || "Sem cliente vinculado"}</div>
+                  </div>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 bg-muted/50 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { setEditing(o); setEditOpen(true); }}>
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <div className="mt-auto pt-4 border-t border-border flex justify-between items-end">
+                  <div className={cn("text-xs font-semibold px-2.5 py-1 rounded-full border", getStatusColor(o.status))}>
+                    {o.status}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xl font-bold text-foreground tabular-nums leading-none">
+                      {formatBRL(totalAmount)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <OSDialog order={editing} open={editOpen} onOpenChange={setEditOpen} />
+    </div>
+  );
+}
