@@ -1,4 +1,4 @@
-const WA_URL = "https://wa.me/5531973175882?text=" + encodeURIComponent("Olá, vim pela página do ControleJá e gostaria de saber mais.");
+const WA_URL = "https://wa.me/5531973175882?text=" + encodeURIComponent("Gostaria de tirar dúvidas sobre o produto.");
 
 export function WhatsAppFab() {
   return (

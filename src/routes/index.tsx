@@ -11,9 +11,12 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-const WA_URL =
-  "https://wa.me/5531973175882?text=" +
-  encodeURIComponent("Olá, vim pela página do ControleJá e gostaria de contratar.");
+const PHONE = "5531973175882";
+const MSG_HIRE = "Gostaria de contratar o controle já.";
+const MSG_HELP = "Gostaria de tirar dúvidas sobre o produto.";
+
+const WA_HIRE_URL = `https://wa.me/${PHONE}?text=${encodeURIComponent(MSG_HIRE)}`;
+const WA_HELP_URL = `https://wa.me/${PHONE}?text=${encodeURIComponent(MSG_HELP)}`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,7 +42,7 @@ function Landing() {
           <a href="#para-quem" className="hover:text-brand-foreground transition-colors">Para quem é</a>
           <a href="#planos" className="hover:text-brand-foreground transition-colors">Planos</a>
           <a href="#duvidas" className="hover:text-brand-foreground transition-colors">Dúvidas</a>
-          <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="hover:text-brand-foreground transition-colors">Contato</a>
+          <a href={WA_HELP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-brand-foreground transition-colors">Contato</a>
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
@@ -52,7 +55,7 @@ function Landing() {
                 <Link to="/auth">Entrar</Link>
               </Button>
               <Button asChild className="shadow-md">
-                <Link to="/auth" search={{ mode: "register" }}>Assinar agora</Link>
+                <a href={WA_HIRE_URL}>Assinar agora</a>
               </Button>
             </>
           )}
@@ -86,12 +89,12 @@ function Landing() {
             </ul>
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <Button asChild size="lg" className="text-base h-12 px-7 shadow-lg">
-                <Link to="/auth" search={{ mode: "register" }}>
+                <a href={WA_HIRE_URL}>
                   Quero contratar agora <ArrowRight className="h-4 w-4" />
-                </Link>
+                </a>
               </Button>
               <Button asChild size="lg" variant="outline" className="text-base h-12 px-6 border-[#25D366] text-[#1ebe5a] hover:bg-[#25D366]/10 hover:text-[#1ebe5a]">
-                <a href={WA_URL} target="_blank" rel="noopener noreferrer">
+                <a href={WA_HELP_URL} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="h-4 w-4" /> Falar no WhatsApp
                 </a>
               </Button>
@@ -349,10 +352,10 @@ function Landing() {
               <li className="flex gap-2"><Check className="h-4 w-4 text-brand-foreground mt-0.5 shrink-0" /> Atendimento prioritário no WhatsApp</li>
             </ul>
 
-            <Button asChild size="lg" className="mt-7 h-12 text-base font-bold w-full">
-              <Link to="/auth" search={{ mode: "register" }}>
+            <Button asChild size="lg" className="mt-7 h-12 text-base font-bold w-full shadow-[var(--shadow-glow)]">
+              <a href={WA_HIRE_URL}>
                 Quero contratar agora <ArrowRight className="h-5 w-5" />
-              </Link>
+              </a>
             </Button>
           </div>
 
@@ -373,7 +376,7 @@ function Landing() {
             </ul>
 
             <a
-              href={WA_URL}
+              href={WA_HELP_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-7 inline-flex items-center justify-center gap-2 h-12 rounded-md border border-[#25D366] text-[#1ebe5a] font-semibold hover:bg-[#25D366]/10 transition-colors"
@@ -429,12 +432,12 @@ function Landing() {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg" className="h-12 px-7 text-base font-bold bg-brand text-brand-foreground hover:bg-brand/90">
-              <Link to="/auth" search={{ mode: "register" }}>
+              <a href={WA_HIRE_URL}>
                 Quero contratar agora <ArrowRight className="h-5 w-5" />
-              </Link>
+              </a>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-7 text-base border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
-              <a href={WA_URL} target="_blank" rel="noopener noreferrer">
+              <a href={WA_HELP_URL} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="h-4 w-4" /> Falar com a gente
               </a>
             </Button>
