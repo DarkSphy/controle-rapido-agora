@@ -102,7 +102,7 @@ function OrcamentosPage() {
       notes: quote.notes,
       items,
       subtotal: quote.subtotal,
-      laborValue: quote.laborValue,
+      laborValue: quote.laborValue || 0,
       discount: quote.discount,
       total: quote.total,
       businessName: bs?.name,
@@ -139,7 +139,7 @@ function OrcamentosPage() {
     });
 
     msg += `\n*Subtotal:* ${formatBRL(quote.subtotal)}\n`;
-    if (quote.laborValue > 0) msg += `*Mão de Obra:* ${formatBRL(quote.laborValue)}\n`;
+    if ((quote.laborValue || 0) > 0) msg += `*Mão de Obra:* ${formatBRL(quote.laborValue || 0)}\n`;
     if (quote.discount > 0) msg += `*Desconto:* -${formatBRL(quote.discount)}\n`;
     msg += `*Total:* ${formatBRL(quote.total)}\n`;
 
@@ -281,7 +281,7 @@ function OrcamentosPage() {
                       </Button>
                     </div>
 
-                    {o.status === "Pendente" && (
+                    {o.status !== "Recusado" && (
                       <div className="flex gap-2 ml-auto">
                         <Button size="sm" onClick={() => handleConvertSale(o)}>
                           <ArrowRight className="h-4 w-4 mr-2" /> P/ Venda

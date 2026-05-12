@@ -137,9 +137,9 @@ export function generateQuotePDF(a: Args) {
   doc.text(formatBRL(a.subtotal), right - 5, y, { align: "right" });
   y += 6;
 
-  if (a.laborValue > 0) {
+  if ((a.laborValue || 0) > 0) {
     doc.text("Mão de Obra:", 150, y);
-    doc.text(formatBRL(a.laborValue), right - 5, y, { align: "right" });
+    doc.text(formatBRL(a.laborValue || 0), right - 5, y, { align: "right" });
     y += 6;
   }
   

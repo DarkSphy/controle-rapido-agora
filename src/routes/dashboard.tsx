@@ -76,8 +76,9 @@ function Dashboard() {
     };
   }, [sales, saleItems, purchases, quotes]);
 
-  const empty = products.filter((p) => productEffectiveStock(p) <= 0);
+  const empty = products.filter((p) => !p.isService && productEffectiveStock(p) <= 0);
   const totalValue = products.reduce((sum, p) => {
+    if (p.isService) return sum;
     const unitValue = showCostValue ? p.cost : priceFromCostMargin(p.cost, p.margin);
     return sum + productEffectiveStock(p) * unitValue;
   }, 0);
