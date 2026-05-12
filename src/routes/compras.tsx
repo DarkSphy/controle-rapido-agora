@@ -50,17 +50,22 @@ function ComprasPage() {
         </Button>
       </header>
 
-      {purchases.length === 0 ? (
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por fornecedor ou produto..." className="pl-9 h-11" />
+      </div>
+
+      {filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center flex flex-col items-center">
           <div className="h-12 w-12 rounded-full bg-muted grid place-items-center mb-4">
             <Truck className="h-6 w-6 text-muted-foreground" />
           </div>
-          <p className="text-muted-foreground">Nenhuma compra registrada.</p>
-          <Button variant="link" onClick={() => setOpen(true)}>Registrar primeira compra</Button>
+          <p className="text-muted-foreground">{query ? "Nenhuma compra encontrada." : "Nenhuma compra registrada."}</p>
+          {!query && <Button variant="link" onClick={() => setOpen(true)}>Registrar primeira compra</Button>}
         </div>
       ) : (
         <div className="space-y-4">
-          {purchases.map((p) => {
+          {filtered.map((p) => {
             const supplier = suppliers.find(s => s.id === p.supplierId);
             const items = purchaseItems.filter(pi => pi.purchaseId === p.id);
             const date = new Date(p.createdAt);
