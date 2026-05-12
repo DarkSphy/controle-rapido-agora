@@ -27,14 +27,17 @@ function ProductsPage() {
   const [moveType, setMoveType] = useState<"in" | "out">("in");
   const [moveOpen, setMoveOpen] = useState(false);
 
-  const filtered = useMemo(() => searchProducts(products, q), [products, q]);
+  const filtered = useMemo(() => {
+    const onlyProducts = products.filter(p => !p.isService);
+    return searchProducts(onlyProducts, q);
+  }, [products, q]);
 
   return (
     <div className="px-4 md:px-8 py-6 md:py-10 max-w-6xl mx-auto">
       <header className="flex items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Produtos</h1>
-          <p className="text-muted-foreground text-sm mt-1">{products.length} cadastrados</p>
+          <p className="text-muted-foreground text-sm mt-1">{products.filter(p => !p.isService).length} cadastrados</p>
         </div>
         <Button onClick={() => { setEditing(null); setEditOpen(true); }}>
           <Plus className="h-4 w-4" /> Novo produto

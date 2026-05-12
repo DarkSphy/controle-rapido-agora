@@ -39,6 +39,7 @@ export type Product = {
   createdAt: number;
   supplierId?: string;
   categoryId?: string;
+  isService?: boolean;
 };
 
 export type PriceHistory = {
@@ -95,6 +96,7 @@ export type SaleItem = {
   id: string;
   saleId: string;
   productId: string;
+  variationId?: string;
   quantity: number;
   unitPrice: number;
 };
@@ -161,6 +163,7 @@ export function useStore<T>(selector: (s: State) => T): T {
 }
 
 export function productEffectiveStock(p: Product): number {
+  if (p.isService) return 999999;
   if (p.variations && p.variations.length > 0) {
     return p.variations.reduce((sum, v) => sum + (v.stock ?? 0), 0);
   }
@@ -203,6 +206,7 @@ function rowToProduct(p: any, vars: any[]): Product {
     createdAt: new Date(p.created_at).getTime(),
     supplierId: p.supplier_id ?? undefined,
     categoryId: p.category_id ?? undefined,
+    isService: p.is_service ?? false,
     variations: vars
       .filter((v) => v.product_id === p.id)
       .map((v) => ({
@@ -301,6 +305,7 @@ function rowToSaleItem(si: any): SaleItem {
     id: si.id,
     saleId: si.sale_id,
     productId: si.product_id,
+    variationId: si.variation_id ?? undefined,
     quantity: si.quantity,
     unitPrice: Number(si.unit_price),
   };
@@ -437,6 +442,7 @@ export const actions = {
         min_stock: p.minStock,
         supplier_id: (p as any).supplierId,
         category_id: (p as any).categoryId,
+        is_service: (p as any).isService ?? false,
       })
       .select()
       .single();
@@ -472,6 +478,7 @@ export const actions = {
     if (patch.minStock !== undefined) update.min_stock = patch.minStock;
     if ((patch as any).supplierId !== undefined) update.supplier_id = (patch as any).supplierId;
     if ((patch as any).categoryId !== undefined) update.category_id = (patch as any).categoryId;
+    if ((patch as any).isService !== undefined) update.is_service = (patch as any).isService;
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("products").update(update).eq("id", id);
       if (error) return toast.error(error.message);
@@ -521,6 +528,7 @@ export const actions = {
               ...(patch.minStock !== undefined && { minStock: patch.minStock }),
               ...(patch as any).supplierId !== undefined && { supplierId: (patch as any).supplierId },
               ...(patch as any).categoryId !== undefined && { categoryId: (patch as any).categoryId },
+              ...(patch as any).isService !== undefined && { isService: (patch as any).isService },
               ...(newVars !== undefined && { variations: newVars }),
             }
           : p,
@@ -708,9 +716,14 @@ export const actions = {
         variations: product.variations.map((x) => (x.id === args.variationId ? { ...x, stock: newStock } : x)),
       };
     } else {
-      const newStock = Math.max(0, product.stock + delta);
-      await supabase.from("products").update({ stock: newStock, usage: product.usage + 1 }).eq("id", product.id);
-      updatedProduct = { ...product, usage: product.usage + 1, stock: newStock };
+      if (!product.isService) {
+        const newStock = Math.max(0, product.stock + delta);
+        await supabase.from("products").update({ stock: newStock, usage: product.usage + 1 }).eq("id", product.id);
+        updatedProduct = { ...product, usage: product.usage + 1, stock: newStock };
+      } else {
+        await supabase.from("products").update({ usage: product.usage + 1 }).eq("id", product.id);
+        updatedProduct = { ...product, usage: product.usage + 1 };
+      }
     }
 
     if (args.type === "in" && args.purchasePrice !== undefined) {
@@ -801,7 +814,7 @@ export const actions = {
     
     // Deduct stock
     for (const item of items) {
-      await actions.move({ productId: item.productId, quantity: item.quantity, type: "out" });
+      await actions.move({ productId: item.productId, variationId: item.variationId, quantity: item.quantity, type: "out" });
     }
     
     setState({

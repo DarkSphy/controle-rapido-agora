@@ -10,7 +10,9 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 type CartItem = {
+  cartItemId: string;
   productId: string;
+  variationId?: string;
   name: string;
   quantity: number;
   price: number;
@@ -44,8 +46,12 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
       const items = saleItems.filter(si => si.saleId === repeatSale.id).map(si => {
         const p = products.find(p => p.id === si.productId);
         return {
+        const variation = p?.variations?.find(v => v.id === si.variationId);
+        return {
+          cartItemId: si.variationId ? `${si.productId}-${si.variationId}` : si.productId,
           productId: si.productId,
-          name: p?.name || "Produto excluído",
+          variationId: si.variationId,
+          name: variation ? `${p?.name} — ${variation.name}` : (p?.name || "Produto excluído"),
           quantity: si.quantity,
           price: si.unitPrice
         };
@@ -65,24 +71,28 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
 
   const total = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.quantity, 0), [cart]);
 
-  function addToCart(p: any) {
-    const price = priceFromCostMargin(p.cost, p.margin);
+  function addToCart(p: any, v?: any) {
+    const price = v ? priceFromCostMargin(v.cost, v.margin) : priceFromCostMargin(p.cost, p.margin);
+    const name = v ? `${p.name} — ${v.name}` : p.name;
+    const variationId = v?.id;
+    const cartItemId = variationId ? `${p.id}-${variationId}` : p.id;
+
     setCart(prev => {
-      const existing = prev.find(i => i.productId === p.id);
+      const existing = prev.find(i => i.cartItemId === cartItemId);
       if (existing) {
-        return prev.map(i => i.productId === p.id ? { ...i, quantity: i.quantity + 1 } : i);
+        return prev.map(i => i.cartItemId === cartItemId ? { ...i, quantity: i.quantity + 1 } : i);
       }
-      return [...prev, { productId: p.id, name: p.name, quantity: 1, price }];
+      return [...prev, { cartItemId, productId: p.id, variationId, name, quantity: 1, price }];
     });
     setQ("");
   }
 
   function updateQty(id: string, delta: number) {
-    setCart(prev => prev.map(i => i.productId === id ? { ...i, quantity: Math.max(1, i.quantity + delta) } : i));
+    setCart(prev => prev.map(i => i.cartItemId === id ? { ...i, quantity: Math.max(1, i.quantity + delta) } : i));
   }
 
   function removeFromCart(id: string) {
-    setCart(prev => prev.filter(i => i.productId !== id));
+    setCart(prev => prev.filter(i => i.cartItemId !== id));
   }
 
   async function handleFinish() {
@@ -113,7 +123,7 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
 
       await actions.addSale(
         { customerId: finalCustomerId || undefined, totalAmount: total, paymentMethod },
-        cart.map(i => ({ productId: i.productId, quantity: i.quantity, unitPrice: i.price }))
+        cart.map(i => ({ productId: i.productId, variationId: i.variationId, quantity: i.quantity, unitPrice: i.price }))
       );
       setCart([]);
       setQ("");
@@ -145,20 +155,37 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
             <Label className="mb-2 block">Adicionar produtos</Label>
             <SearchBar value={q} onChange={setQ} placeholder="Busque por nome ou código..." />
             {filtered.length > 0 && (
-              <div className="absolute z-20 left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
-                {filtered.map(p => (
-                  <button
-                    key={p.id}
-                    onClick={() => addToCart(p)}
-                    className="w-full flex items-center justify-between p-3 hover:bg-muted transition-colors border-b border-border last:border-0"
-                  >
-                    <div className="text-left">
-                      <div className="font-medium">{p.name}</div>
-                      <div className="text-xs text-muted-foreground">{p.stock} em estoque</div>
-                    </div>
-                    <div className="font-bold text-brand">{formatBRL(priceFromCostMargin(p.cost, p.margin))}</div>
-                  </button>
-                ))}
+              <div className="absolute z-20 left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1 max-h-60 overflow-y-auto">
+                {filtered.flatMap(p => {
+                  if (p.variations && p.variations.length > 0) {
+                    return p.variations.map(v => (
+                      <button
+                        key={v.id}
+                        onClick={() => addToCart(p, v)}
+                        className="w-full flex items-center justify-between p-3 hover:bg-muted transition-colors border-b border-border last:border-0"
+                      >
+                        <div className="text-left">
+                          <div className="font-medium">{p.name} — {v.name}</div>
+                          <div className="text-xs text-muted-foreground">{v.stock} em estoque</div>
+                        </div>
+                        <div className="font-bold text-brand">{formatBRL(priceFromCostMargin(v.cost, v.margin))}</div>
+                      </button>
+                    ));
+                  }
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => addToCart(p)}
+                      className="w-full flex items-center justify-between p-3 hover:bg-muted transition-colors border-b border-border last:border-0"
+                    >
+                      <div className="text-left">
+                        <div className="font-medium">{p.name}</div>
+                        {!p.isService && <div className="text-xs text-muted-foreground">{p.stock} em estoque</div>}
+                      </div>
+                      <div className="font-bold text-brand">{formatBRL(priceFromCostMargin(p.cost, p.margin))}</div>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -176,21 +203,21 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
             ) : (
               <div className="border border-border rounded-xl overflow-hidden bg-muted/30">
                 {cart.map(item => (
-                  <div key={item.productId} className="flex items-center gap-4 p-3 border-b border-border last:border-0">
+                  <div key={item.cartItemId} className="flex items-center gap-4 p-3 border-b border-border last:border-0">
                     <div className="flex-1 min-w-0">
                       <div className="font-medium truncate text-sm">{item.name}</div>
                       <div className="text-xs text-muted-foreground">{formatBRL(item.price)} / un</div>
                     </div>
                     <div className="flex items-center gap-2 bg-background rounded-lg border border-border p-1">
                       <button 
-                        onClick={() => updateQty(item.productId, -1)}
+                        onClick={() => updateQty(item.cartItemId, -1)}
                         className="h-7 w-7 rounded grid place-items-center hover:bg-muted"
                       >
                         <Minus className="h-3 w-3" />
                       </button>
                       <span className="w-8 text-center font-semibold text-sm tabular-nums">{item.quantity}</span>
                       <button 
-                        onClick={() => updateQty(item.productId, 1)}
+                        onClick={() => updateQty(item.cartItemId, 1)}
                         className="h-7 w-7 rounded grid place-items-center hover:bg-muted"
                       >
                         <Plus className="h-3 w-3" />
@@ -198,7 +225,7 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
                     </div>
                     <div className="font-bold text-sm min-w-[70px] text-right">{formatBRL(item.price * item.quantity)}</div>
                     <button 
-                      onClick={() => removeFromCart(item.productId)}
+                      onClick={() => removeFromCart(item.cartItemId)}
                       className="text-muted-foreground hover:text-destructive p-1"
                     >
                       <Trash2 className="h-4 w-4" />

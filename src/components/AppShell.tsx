@@ -21,6 +21,7 @@ const nav: NavItem[] = [
   { to: "/compras", label: "Compras", icon: Truck },
   { to: "/financeiro", label: "Financeiro", icon: DollarSign },
   { to: "/produtos", label: "Produtos", icon: Package },
+  { to: "/servicos", label: "Serviços", icon: Tag },
   { to: "/categories", label: "Categorias", icon: Tag },
   { to: "/suppliers", label: "Fornecedores", icon: Truck },
   { to: "/clientes", label: "Clientes", icon: Users },

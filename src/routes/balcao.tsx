@@ -47,14 +47,16 @@ function BalcaoPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold truncate text-lg">{p.name}</h3>
-                  <span className={cn(
-                    "text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full",
-                    status === "ok" && "bg-success/10 text-success",
-                    status === "low" && "bg-warning/15 text-warning-foreground",
-                    status === "empty" && "bg-destructive/10 text-destructive",
-                  )}>
-                    {stock} un
-                  </span>
+                  {!p.isService && (
+                    <span className={cn(
+                      "text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full",
+                      status === "ok" && "bg-success/10 text-success",
+                      status === "low" && "bg-warning/15 text-warning-foreground",
+                      status === "empty" && "bg-destructive/10 text-destructive",
+                    )}>
+                      {stock} un
+                    </span>
+                  )}
                 </div>
                 <div className="text-2xl font-bold text-primary tabular-nums mt-0.5">{formatBRL(price)}</div>
               </div>
@@ -62,9 +64,11 @@ function BalcaoPage() {
                 <Button size="lg" onClick={() => { setMoveProduct(p); setMoveType("out"); setMoveOpen(true); }}>
                   <Minus className="h-4 w-4" /> Vender
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => { setMoveProduct(p); setMoveType("in"); setMoveOpen(true); }}>
-                  <Plus className="h-4 w-4" /> Entrada
-                </Button>
+                {!p.isService && (
+                  <Button size="sm" variant="outline" onClick={() => { setMoveProduct(p); setMoveType("in"); setMoveOpen(true); }}>
+                    <Plus className="h-4 w-4" /> Entrada
+                  </Button>
+                )}
               </div>
             </div>
           );

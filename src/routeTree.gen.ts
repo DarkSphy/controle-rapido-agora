@@ -15,6 +15,7 @@ import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as ReposicaoRouteImport } from './routes/reposicao'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ProdutosRouteImport } from './routes/produtos'
+import { Route as ServicosRouteImport } from './routes/servicos'
 import { Route as MovimentacoesRouteImport } from './routes/movimentacoes'
 import { Route as KitsRouteImport } from './routes/kits'
 import { Route as InsightsRouteImport } from './routes/insights'
@@ -66,6 +67,11 @@ const ReportsRoute = ReportsRouteImport.update({
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosRoute = ServicosRouteImport.update({
+  id: '/servicos',
+  path: '/servicos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MovimentacoesRoute = MovimentacoesRouteImport.update({
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/kits': typeof KitsRoute
   '/movimentacoes': typeof MovimentacoesRoute
   '/produtos': typeof ProdutosRoute
+  '/servicos': typeof ServicosRoute
   '/reports': typeof ReportsRoute
   '/reposicao': typeof ReposicaoRoute
   '/suppliers': typeof SuppliersRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByTo {
   '/kits': typeof KitsRoute
   '/movimentacoes': typeof MovimentacoesRoute
   '/produtos': typeof ProdutosRoute
+  '/servicos': typeof ServicosRoute
   '/reports': typeof ReportsRoute
   '/reposicao': typeof ReposicaoRoute
   '/suppliers': typeof SuppliersRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/kits': typeof KitsRoute
   '/movimentacoes': typeof MovimentacoesRoute
   '/produtos': typeof ProdutosRoute
+  '/servicos': typeof ServicosRoute
   '/reports': typeof ReportsRoute
   '/reposicao': typeof ReposicaoRoute
   '/suppliers': typeof SuppliersRoute
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
     | '/kits'
     | '/movimentacoes'
     | '/produtos'
+    | '/servicos'
     | '/reports'
     | '/reposicao'
     | '/suppliers'
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/kits'
     | '/movimentacoes'
     | '/produtos'
+    | '/servicos'
     | '/reports'
     | '/reposicao'
     | '/suppliers'
@@ -268,6 +279,7 @@ export interface FileRouteTypes {
     | '/kits'
     | '/movimentacoes'
     | '/produtos'
+    | '/servicos'
     | '/reports'
     | '/reposicao'
     | '/suppliers'
@@ -291,6 +303,7 @@ export interface RootRouteChildren {
   KitsRoute: typeof KitsRoute
   MovimentacoesRoute: typeof MovimentacoesRoute
   ProdutosRoute: typeof ProdutosRoute
+  ServicosRoute: typeof ServicosRoute
   ReportsRoute: typeof ReportsRoute
   ReposicaoRoute: typeof ReposicaoRoute
   SuppliersRoute: typeof SuppliersRoute
@@ -340,6 +353,13 @@ declare module '@tanstack/react-router' {
       path: '/produtos'
       fullPath: '/produtos'
       preLoaderRoute: typeof ProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos': {
+      id: '/servicos'
+      path: '/servicos'
+      fullPath: '/servicos'
+      preLoaderRoute: typeof ServicosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/movimentacoes': {
@@ -470,6 +490,7 @@ const rootRouteChildren: RootRouteChildren = {
   KitsRoute: KitsRoute,
   MovimentacoesRoute: MovimentacoesRoute,
   ProdutosRoute: ProdutosRoute,
+  ServicosRoute: ServicosRoute,
   ReportsRoute: ReportsRoute,
   ReposicaoRoute: ReposicaoRoute,
   SuppliersRoute: SuppliersRoute,
