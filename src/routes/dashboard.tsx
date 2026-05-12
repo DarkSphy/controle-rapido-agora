@@ -91,6 +91,13 @@ function Dashboard() {
     return list.sort((a, b) => b.date - a.date).slice(0, 5);
   }, [sales, quotes]);
 
+  const empty = products.filter((p) => !p.isService && productEffectiveStock(p) <= 0);
+  const totalValue = products.reduce((sum, p) => {
+    if (p.isService) return sum;
+    const unitValue = showCostValue ? p.cost : priceFromCostMargin(p.cost, p.margin);
+    return sum + productEffectiveStock(p) * unitValue;
+  }, 0);
+
   const stats = [
     { label: "Vendas hoje", value: formatBRL(today.productSales), icon: TrendingUp, color: "text-success bg-success/10", trend: "+12% vs ontem" },
     { label: "Mão de obra hoje", value: formatBRL(today.laborSales), icon: Wrench, color: "text-brand bg-brand/10", trend: "estável" },
