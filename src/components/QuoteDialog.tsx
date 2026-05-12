@@ -329,7 +329,7 @@ export function QuoteDialog({
                 <div className="space-y-2">
                   <div className="relative">
                     <SearchBar value={q} onChange={setQ} placeholder="Buscar produto ou serviço do sistema..." />
-                    {filtered.length > 0 && (
+                    {q && filtered.length > 0 && (
                       <div className="absolute z-20 left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1 max-h-60 overflow-y-auto">
                         {filtered.flatMap(p => {
                           if (p.variations && p.variations.length > 0) {
