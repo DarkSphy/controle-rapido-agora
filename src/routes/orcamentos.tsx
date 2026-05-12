@@ -4,6 +4,7 @@ import { Plus, Edit2, Search, FileText, Send, CheckCircle2, Clock, XCircle, Prin
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useStore, actions, Quote, formatBRL } from "@/lib/store";
+import { generateQuotePDF } from "@/lib/quoteReceipt";
 import { QuoteDialog } from "@/components/QuoteDialog";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,6 @@ function OrcamentosPage() {
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Quote | null>(null);
   const [editOpen, setEditOpen] = useState(false);
-  const [printingQuote, setPrintingQuote] = useState<Quote | null>(null);
 
   const bs = useStore((s) => s.businessSettings);
 
@@ -70,11 +70,45 @@ function OrcamentosPage() {
   }
 
   function handlePrint(quote: Quote) {
-    setPrintingQuote(quote);
-    setTimeout(() => {
-      window.print();
-      setPrintingQuote(null);
-    }, 100);
+    const customer = customers.find(c => c.id === quote.customerId);
+    const items = quoteItems.filter(i => i.quoteId === quote.id).map(item => {
+      let name = item.manualName || "Item";
+      if (item.productId) {
+        const p = products.find(p => p.id === item.productId);
+        if (p) {
+          name = p.name;
+          if (item.variationId) {
+            const v = p.variations?.find(v => v.id === item.variationId);
+            if (v) name = `${p.name} — ${v.name}`;
+          }
+        }
+      }
+      return { 
+        name, 
+        isService: item.isService,
+        quantity: item.quantity, 
+        unitPrice: item.unitPrice 
+      };
+    });
+
+    generateQuotePDF({
+      quoteId: quote.id,
+      date: new Date(quote.createdAt),
+      validityDate: quote.validityDate,
+      customerName: customer?.name,
+      customerPhone: customer?.phone,
+      customerEmail: customer?.email,
+      paymentConditions: quote.paymentConditions,
+      notes: quote.notes,
+      items,
+      subtotal: quote.subtotal,
+      discount: quote.discount,
+      total: quote.total,
+      businessName: bs?.name,
+      businessPhone: bs?.phone,
+      businessEmail: bs?.email,
+      businessAddress: bs?.address,
+    });
   }
 
   function handleWhatsApp(quote: Quote) {
@@ -112,11 +146,18 @@ function OrcamentosPage() {
     
     msg += `\nQualquer dúvida, estamos à disposição!`;
     
-    if (phone) {
-      window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-    } else {
-      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
-    }
+    const url = phone 
+      ? `https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+    
+    // Create an anchor element to bypass popup blockers in sandboxes
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 
   function handleConvertSale(quote: Quote) {
@@ -270,124 +311,7 @@ function OrcamentosPage() {
         <QuoteDialog quote={editing} open={editOpen} onOpenChange={setEditOpen} />
       </div>
 
-      {/* Print View Layer (Hidden via CSS except when printing) */}
-      {printingQuote && (
-        <div className="hidden print:block p-8 bg-white text-black min-h-screen">
-          <div className="flex justify-between items-start border-b-2 border-black pb-6 mb-6">
-            <div className="flex gap-4 items-center">
-              {bs?.logoUrl && (
-                <img src={bs.logoUrl} alt="Logo" className="w-24 h-24 object-contain" />
-              )}
-              <div>
-                <h1 className="text-4xl font-black mb-1">ORÇAMENTO</h1>
-                <div className="text-sm font-semibold uppercase tracking-widest text-gray-500">#{printingQuote.id.slice(0, 8)}</div>
-              </div>
-            </div>
-            <div className="text-right text-sm text-gray-600">
-              {bs?.name && <div className="font-bold text-black text-lg mb-1">{bs.name}</div>}
-              {bs?.phone && <div>{bs.phone}</div>}
-              {bs?.email && <div>{bs.email}</div>}
-              {bs?.address && <div className="max-w-[250px] ml-auto">{bs.address}</div>}
-              <div className="mt-2 pt-2 border-t border-gray-200">
-                <div><strong>Emissão:</strong> {new Date(printingQuote.createdAt).toLocaleDateString("pt-BR")}</div>
-                {printingQuote.validityDate && <div><strong>Validade:</strong> {new Date(printingQuote.validityDate).toLocaleDateString("pt-BR")}</div>}
-              </div>
-            </div>
-          </div>
 
-          <div className="mb-8">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Cliente</h2>
-            {(() => {
-              const customer = customers.find(c => c.id === printingQuote.customerId);
-              if (!customer) return <div className="text-lg">Cliente não informado</div>;
-              return (
-                <div className="text-lg font-semibold">
-                  <div>{customer.name}</div>
-                  {customer.phone && <div className="text-sm font-normal text-gray-600">{customer.phone}</div>}
-                  {customer.email && <div className="text-sm font-normal text-gray-600">{customer.email}</div>}
-                </div>
-              );
-            })()}
-          </div>
-
-          <table className="w-full mb-8">
-            <thead>
-              <tr className="border-b border-gray-300 text-left text-xs uppercase tracking-widest text-gray-500">
-                <th className="pb-3 font-semibold w-full">Descrição</th>
-                <th className="pb-3 font-semibold px-4 text-center">Qtd</th>
-                <th className="pb-3 font-semibold px-4 text-right">V. Unit</th>
-                <th className="pb-3 font-semibold text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {quoteItems.filter(i => i.quoteId === printingQuote.id).map(item => {
-                let name = item.manualName || "Item";
-                if (item.productId) {
-                  const p = products.find(p => p.id === item.productId);
-                  if (p) {
-                    name = p.name;
-                    if (item.variationId) {
-                      const v = p.variations?.find(v => v.id === item.variationId);
-                      if (v) name = `${p.name} — ${v.name}`;
-                    }
-                  }
-                }
-                return (
-                  <tr key={item.id} className="border-b border-gray-100 last:border-0">
-                    <td className="py-4 pr-4">
-                      <div className="font-semibold text-sm">{name}</div>
-                      <div className="text-xs text-gray-500">{item.isService ? "Serviço" : "Produto"}</div>
-                    </td>
-                    <td className="py-4 px-4 text-center text-sm">{item.quantity}</td>
-                    <td className="py-4 px-4 text-right text-sm">{formatBRL(item.unitPrice)}</td>
-                    <td className="py-4 text-right font-semibold text-sm">{formatBRL(item.unitPrice * item.quantity)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-
-          <div className="flex justify-end mb-12">
-            <div className="w-64 space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Subtotal</span>
-                <span>{formatBRL(printingQuote.subtotal)}</span>
-              </div>
-              {printingQuote.discount > 0 && (
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Desconto</span>
-                  <span className="text-red-600">-{formatBRL(printingQuote.discount)}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-lg font-black pt-2 border-t border-black">
-                <span>Total</span>
-                <span>{formatBRL(printingQuote.total)}</span>
-              </div>
-            </div>
-          </div>
-
-          {(printingQuote.paymentConditions || printingQuote.notes) && (
-            <div className="border-t border-gray-200 pt-6 grid grid-cols-2 gap-8 text-sm">
-              {printingQuote.paymentConditions && (
-                <div>
-                  <h3 className="font-bold text-xs uppercase tracking-widest text-gray-400 mb-2">Condições de Pagamento</h3>
-                  <div className="text-gray-700 whitespace-pre-wrap">{printingQuote.paymentConditions}</div>
-                </div>
-              )}
-              {printingQuote.notes && (
-                <div>
-                  <h3 className="font-bold text-xs uppercase tracking-widest text-gray-400 mb-2">Observações</h3>
-                  <div className="text-gray-700 whitespace-pre-wrap">{printingQuote.notes}</div>
-                </div>
-              )}
-            </div>
-          )}
-          
-          <div className="mt-16 text-center text-xs text-gray-400 uppercase tracking-widest">
-            Obrigado pela preferência!
-          </div>
-        </div>
-      )}
     </>
   );
 }
