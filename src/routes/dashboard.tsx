@@ -28,6 +28,7 @@ function Dashboard() {
   const purchases = useStore((s) => s.purchases);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [taxOpen, setTaxOpen] = useState(false);
+  const [showCostValue, setShowCostValue] = useState(false);
 
   const today = useMemo(() => {
     const start = new Date();
@@ -41,7 +42,10 @@ function Dashboard() {
   }, [sales, purchases]);
 
   const empty = products.filter((p) => productEffectiveStock(p) <= 0);
-  const totalValue = products.reduce((sum, p) => sum + productEffectiveStock(p) * priceFromCostMargin(p.cost, p.margin), 0);
+  const totalValue = products.reduce((sum, p) => {
+    const unitValue = showCostValue ? p.cost : priceFromCostMargin(p.cost, p.margin);
+    return sum + productEffectiveStock(p) * unitValue;
+  }, 0);
 
   return (
     <div className="px-4 md:px-8 py-6 md:py-10 max-w-6xl mx-auto">
@@ -70,7 +74,23 @@ function Dashboard() {
         <Stat icon={TrendingUp} label="Vendas hoje" value={formatBRL(today.sales)} accent="brand" small />
         <Stat icon={TrendingDown} label="Gasto hoje" value={formatBRL(today.purchases)} accent="primary" small />
         <Stat icon={AlertCircle} label="Estoque zerado" value={empty.length} accent="destructive" />
-        <Stat icon={Package} label="Valor em estoque" value={formatBRL(totalValue)} accent="default" small />
+        <Stat 
+          icon={Package} 
+          label={
+            <div className="flex flex-col gap-1">
+              <span>Valor em estoque</span>
+              <button 
+                onClick={() => setShowCostValue(!showCostValue)}
+                className="text-[10px] text-brand-foreground font-semibold hover:underline text-left"
+              >
+                {showCostValue ? "Ver preço final" : "Ver preço de custo"}
+              </button>
+            </div>
+          } 
+          value={formatBRL(totalValue)} 
+          accent="default" 
+          small 
+        />
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
@@ -136,7 +156,7 @@ function Dashboard() {
 
 function Stat({
   icon: Icon, label, value, accent, small,
-}: { icon: any; label: string; value: number | string; accent: "brand" | "primary" | "destructive" | "default"; small?: boolean }) {
+}: { icon: any; label: React.ReactNode; value: number | string; accent: "brand" | "primary" | "destructive" | "default"; small?: boolean }) {
   const colors = {
     brand: "bg-brand/15 text-brand-foreground",
     primary: "bg-primary/10 text-primary",
