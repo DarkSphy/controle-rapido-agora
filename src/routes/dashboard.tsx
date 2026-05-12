@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin } from "@/lib/store";
 import { 
   TrendingUp, TrendingDown, AlertCircle, Package, BarChart3, Settings2, 
-  ShoppingBasket, Truck, Lightbulb, ArrowLeftRight, FileText
+  ShoppingBasket, Truck, Lightbulb, ArrowLeftRight, FileText, Wrench
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ function Dashboard() {
   const movements = useStore((s) => s.movements);
   const categories = useStore((s) => s.categories);
   const sales = useStore((s) => s.sales);
+  const saleItems = useStore((s) => s.saleItems);
   const purchases = useStore((s) => s.purchases);
   const quotes = useStore((s) => s.quotes);
   const [bulkOpen, setBulkOpen] = useState(false);
@@ -36,7 +37,22 @@ function Dashboard() {
     start.setHours(0, 0, 0, 0);
     const t = start.getTime();
     
-    const todaySales = sales.filter(s => s.createdAt >= t).reduce((sum, s) => sum + s.totalAmount, 0);
+    const todaySalesList = sales.filter(s => s.createdAt >= t);
+    
+    let productSales = 0;
+    let laborSales = 0;
+
+    todaySalesList.forEach(s => {
+      const myItems = saleItems.filter(si => si.saleId === s.id);
+      const itemsTotal = myItems.reduce((sum, si) => sum + (si.unitPrice * si.quantity), 0);
+      
+      const pVal = Math.min(s.totalAmount, itemsTotal);
+      const lVal = Math.max(0, s.totalAmount - itemsTotal);
+      
+      productSales += pVal;
+      laborSales += lVal;
+    });
+
     const todayPurchases = purchases.filter(p => p.createdAt >= t).reduce((sum, p) => sum + p.totalAmount, 0);
     
     // Month start for quotes
@@ -50,13 +66,15 @@ function Dashboard() {
     const approvedQuotesValue = approvedQuotesMonth.reduce((sum, q) => sum + q.total, 0);
     
     return { 
-      sales: todaySales, 
+      productSales,
+      laborSales,
+      totalSales: productSales + laborSales,
       purchases: todayPurchases,
       pendingQuotes,
       approvedQuotesCount: approvedQuotesMonth.length,
       approvedQuotesValue
     };
-  }, [sales, purchases, quotes]);
+  }, [sales, saleItems, purchases, quotes]);
 
   const empty = products.filter((p) => productEffectiveStock(p) <= 0);
   const totalValue = products.reduce((sum, p) => {
@@ -87,8 +105,9 @@ function Dashboard() {
         </div>
       </header>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
-        <Stat icon={TrendingUp} label="Vendas hoje" value={formatBRL(today.sales)} accent="brand" small />
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-8">
+        <Stat icon={TrendingUp} label="Vendas hoje" value={formatBRL(today.productSales)} accent="brand" small />
+        <Stat icon={Wrench} label="Mão de obra hoje" value={formatBRL(today.laborSales)} accent="brand" small />
         <Stat icon={TrendingDown} label="Gasto hoje" value={formatBRL(today.purchases)} accent="primary" small />
         <Stat icon={AlertCircle} label="Estoque zerado" value={empty.length} accent="destructive" />
         <Stat 

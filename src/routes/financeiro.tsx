@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useStore, formatBRL } from "@/lib/store";
-import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, DollarSign } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, DollarSign, Wrench, ShoppingBasket } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/financeiro")({
@@ -16,14 +16,26 @@ export const Route = createFileRoute("/financeiro")({
 
 function FinanceiroPage() {
   const sales = useStore((s) => s.sales);
+  const saleItems = useStore((s) => s.saleItems);
   const purchases = useStore((s) => s.purchases);
 
   const stats = useMemo(() => {
-    const totalSales = sales.reduce((sum, s) => sum + s.totalAmount, 0);
+    let productSales = 0;
+    let laborSales = 0;
+
+    sales.forEach(s => {
+      const myItems = saleItems.filter(si => si.saleId === s.id);
+      const itemsTotal = myItems.reduce((sum, si) => sum + (si.unitPrice * si.quantity), 0);
+      
+      productSales += Math.min(s.totalAmount, itemsTotal);
+      laborSales += Math.max(0, s.totalAmount - itemsTotal);
+    });
+
+    const totalSales = productSales + laborSales;
     const totalPurchases = purchases.reduce((sum, p) => sum + p.totalAmount, 0);
     const profit = totalSales - totalPurchases;
-    return { totalSales, totalPurchases, profit };
-  }, [sales, purchases]);
+    return { productSales, laborSales, totalSales, totalPurchases, profit };
+  }, [sales, saleItems, purchases]);
 
   const transactions = useMemo(() => {
     const s = sales.map(x => ({ ...x, type: "sale" as const }));
@@ -38,11 +50,18 @@ function FinanceiroPage() {
         <p className="text-muted-foreground text-sm mt-1">Resumo básico de caixa do seu negócio</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <FinCard 
-          label="Total Vendido" 
-          value={stats.totalSales} 
-          icon={TrendingUp} 
+          label="Total Produtos" 
+          value={stats.productSales} 
+          icon={ShoppingBasket} 
+          trend="up"
+          color="bg-success/10 text-success" 
+        />
+        <FinCard 
+          label="Total Mão de Obra" 
+          value={stats.laborSales} 
+          icon={Wrench} 
           trend="up"
           color="bg-success/10 text-success" 
         />
