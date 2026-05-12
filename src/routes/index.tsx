@@ -436,7 +436,7 @@ function Landing() {
                 Quero contratar agora <ArrowRight className="h-5 w-5" />
               </a>
             </Button>
-            <Button asChild size="lg" variant="outline" className="h-12 px-7 text-base border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
+            <Button asChild size="lg" variant="outline" className="h-12 px-7 text-base bg-transparent border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground hover:text-primary">
               <a href={WA_HELP_URL} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="h-4 w-4" /> Falar com a gente
               </a>
