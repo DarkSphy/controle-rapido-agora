@@ -57,8 +57,13 @@ function SuppliersPage() {
         </Button>
       </header>
 
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar fornecedor por nome ou telefone..." className="pl-9 h-11" />
+      </div>
+
       <div className="grid gap-3">
-        {suppliers.map((s) => (
+        {filtered.map((s) => (
           <div key={s.id} className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
             <div className="min-w-0">
               <h3 className="font-semibold truncate text-lg">{s.name}</h3>
@@ -83,9 +88,9 @@ function SuppliersPage() {
             </div>
           </div>
         ))}
-        {suppliers.length === 0 && (
+        {filtered.length === 0 && (
           <div className="rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
-            Nenhum fornecedor cadastrado.
+            {query ? "Nenhum fornecedor encontrado." : "Nenhum fornecedor cadastrado."}
           </div>
         )}
       </div>
