@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BulkAdjustDialog } from "@/components/BulkAdjustDialog";
+import { BulkTaxDialog } from "@/components/BulkTaxDialog";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -26,6 +27,7 @@ function Dashboard() {
   const sales = useStore((s) => s.sales);
   const purchases = useStore((s) => s.purchases);
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [taxOpen, setTaxOpen] = useState(false);
 
   const today = useMemo(() => {
     const start = new Date();
@@ -119,11 +121,15 @@ function Dashboard() {
           <Button variant="outline" className="w-full justify-start gap-2 mb-2" onClick={() => setBulkOpen(true)}>
             <Settings2 className="h-4 w-4" /> Ajuste de preço em massa
           </Button>
-          <p className="text-[10px] text-muted-foreground uppercase">Aumente ou reduza margens por categoria.</p>
+          <Button variant="outline" className="w-full justify-start gap-2 mb-2" onClick={() => setTaxOpen(true)}>
+            <Settings2 className="h-4 w-4" /> Configurar Tributos Globais
+          </Button>
+          <p className="text-[10px] text-muted-foreground uppercase">Aumente margens ou defina impostos de forma global.</p>
         </div>
       </div>
 
       <BulkAdjustDialog open={bulkOpen} onOpenChange={setBulkOpen} />
+      <BulkTaxDialog open={taxOpen} onOpenChange={setTaxOpen} />
     </div>
   );
 }

@@ -127,13 +127,15 @@ type State = {
   saleItems: SaleItem[];
   purchases: Purchase[];
   purchaseItems: PurchaseItem[];
+  taxRate: number;
+  taxMode: "margin" | "final";
   loaded: boolean;
 };
 
 let state: State = { 
   products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
   kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
-  purchases: [], purchaseItems: [], loaded: false 
+  purchases: [], purchaseItems: [], taxRate: 0, taxMode: "margin", loaded: false 
 };
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
@@ -150,7 +152,7 @@ const getSnapshot = () => state;
 const serverSnap: State = { 
   products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
   kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
-  purchases: [], purchaseItems: [], loaded: false 
+  purchases: [], purchaseItems: [], taxRate: 0, taxMode: "margin", loaded: false 
 };
 const getServer = () => serverSnap;
 
@@ -172,7 +174,15 @@ export function stockStatus(stock: number, minStock: number): "ok" | "low" | "em
 }
 
 export function priceFromCostMargin(cost: number, margin: number): number {
-  return cost * (1 + (margin ?? 0) / 100);
+  const s = getSnapshot();
+  const basePrice = cost * (1 + (margin ?? 0) / 100);
+  if (!s.taxRate) return basePrice;
+  if (s.taxMode === "final") {
+    return basePrice * (1 + s.taxRate / 100);
+  } else {
+    // taxMode === "margin"
+    return cost * (1 + ((margin ?? 0) + s.taxRate) / 100);
+  }
 }
 
 const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -317,6 +327,10 @@ function rowToPurchaseItem(pi: any): PurchaseItem {
 
 export const actions = {
   async loadAll() {
+    const { data: { user } } = await supabase.auth.getUser();
+    const taxRate = user?.user_metadata?.tax_rate ?? 0;
+    const taxMode = user?.user_metadata?.tax_mode ?? "margin";
+
     const fetchTable = async (table: string, query: any = null) => {
       const q = query || supabase.from(table).select("*");
       const { data, error } = await q;
@@ -383,6 +397,8 @@ export const actions = {
       saleItems: saleItemsList,
       purchases: purchasesList,
       purchaseItems: purchaseItemsList,
+      taxRate,
+      taxMode,
       loaded: true,
     });
   },
@@ -391,8 +407,19 @@ export const actions = {
     setState({ 
       products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
       kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
-      purchases: [], purchaseItems: [], loaded: false 
+      purchases: [], purchaseItems: [], taxRate: 0, taxMode: "margin", loaded: false 
     });
+  },
+
+  async setGlobalTaxes(taxRate: number, taxMode: "margin" | "final") {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return toast.error("Faça login");
+    const { error } = await supabase.auth.updateUser({
+      data: { tax_rate: taxRate, tax_mode: taxMode }
+    });
+    if (error) return toast.error("Erro ao salvar impostos: " + error.message);
+    setState({ taxRate, taxMode });
+    toast.success("Impostos atualizados com sucesso");
   },
 
   async addProduct(p: Omit<Product, "id" | "usage" | "createdAt" | "variations"> & { variations?: Omit<Variation, "id">[] }) {
