@@ -16,6 +16,7 @@ import { Route as ReposicaoRouteImport } from './routes/reposicao'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as OSRouteImport } from './routes/os'
+import { Route as OrcamentosRouteImport } from './routes/orcamentos'
 import { Route as ServicosRouteImport } from './routes/servicos'
 import { Route as MovimentacoesRouteImport } from './routes/movimentacoes'
 import { Route as KitsRouteImport } from './routes/kits'
@@ -73,6 +74,11 @@ const ProdutosRoute = ProdutosRouteImport.update({
 const OSRoute = OSRouteImport.update({
   id: '/os',
   path: '/os',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrcamentosRoute = OrcamentosRouteImport.update({
+  id: '/orcamentos',
+  path: '/orcamentos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicosRoute = ServicosRouteImport.update({
@@ -310,6 +316,7 @@ export interface RootRouteChildren {
   MovimentacoesRoute: typeof MovimentacoesRoute
   ProdutosRoute: typeof ProdutosRoute
   OSRoute: typeof OSRoute
+  OrcamentosRoute: typeof OrcamentosRoute
   ServicosRoute: typeof ServicosRoute
   ReportsRoute: typeof ReportsRoute
   ReposicaoRoute: typeof ReposicaoRoute
@@ -367,6 +374,13 @@ declare module '@tanstack/react-router' {
       path: '/os'
       fullPath: '/os'
       preLoaderRoute: typeof OSRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orcamentos': {
+      id: '/orcamentos'
+      path: '/orcamentos'
+      fullPath: '/orcamentos'
+      preLoaderRoute: typeof OrcamentosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/servicos': {
@@ -505,6 +519,7 @@ const rootRouteChildren: RootRouteChildren = {
   MovimentacoesRoute: MovimentacoesRoute,
   ProdutosRoute: ProdutosRoute,
   OSRoute: OSRoute,
+  OrcamentosRoute: OrcamentosRoute,
   ServicosRoute: ServicosRoute,
   ReportsRoute: ReportsRoute,
   ReposicaoRoute: ReposicaoRoute,

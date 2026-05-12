@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin } from "@/lib/store";
 import { 
   TrendingUp, TrendingDown, AlertCircle, Package, BarChart3, Settings2, 
-  ShoppingBasket, Truck, Lightbulb, ArrowLeftRight 
+  ShoppingBasket, Truck, Lightbulb, ArrowLeftRight, FileText
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ function Dashboard() {
   const categories = useStore((s) => s.categories);
   const sales = useStore((s) => s.sales);
   const purchases = useStore((s) => s.purchases);
+  const quotes = useStore((s) => s.quotes);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [taxOpen, setTaxOpen] = useState(false);
   const [showCostValue, setShowCostValue] = useState(false);
@@ -38,8 +39,24 @@ function Dashboard() {
     const todaySales = sales.filter(s => s.createdAt >= t).reduce((sum, s) => sum + s.totalAmount, 0);
     const todayPurchases = purchases.filter(p => p.createdAt >= t).reduce((sum, p) => sum + p.totalAmount, 0);
     
-    return { sales: todaySales, purchases: todayPurchases };
-  }, [sales, purchases]);
+    // Month start for quotes
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+    const tm = monthStart.getTime();
+
+    const pendingQuotes = quotes.filter(q => q.status === "Pendente").length;
+    const approvedQuotesMonth = quotes.filter(q => q.status === "Aprovado" && q.createdAt >= tm);
+    const approvedQuotesValue = approvedQuotesMonth.reduce((sum, q) => sum + q.total, 0);
+    
+    return { 
+      sales: todaySales, 
+      purchases: todayPurchases,
+      pendingQuotes,
+      approvedQuotesCount: approvedQuotesMonth.length,
+      approvedQuotesValue
+    };
+  }, [sales, purchases, quotes]);
 
   const empty = products.filter((p) => productEffectiveStock(p) <= 0);
   const totalValue = products.reduce((sum, p) => {
@@ -114,7 +131,7 @@ function Dashboard() {
         </Card>
       </div>
 
-      <div className="mt-8 grid md:grid-cols-3 gap-4">
+      <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="rounded-xl border border-border bg-card p-5 relative overflow-hidden group hover:border-brand/50 transition-all">
           <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-brand/10 group-hover:scale-110 transition-transform" />
           <h2 className="font-bold mb-1 flex items-center gap-2">
@@ -134,6 +151,29 @@ function Dashboard() {
             </Link>
           </Button>
           <p className="text-[10px] text-muted-foreground uppercase">Acompanhe entradas e saídas detalhadas.</p>
+        </div>
+
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h2 className="font-semibold mb-4">Orçamentos</h2>
+          <div className="space-y-3 mb-4">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Pendentes:</span>
+              <span className="font-bold text-amber-600">{today.pendingQuotes}</span>
+            </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Aprovados (Mês):</span>
+              <span className="font-bold text-success">{today.approvedQuotesCount}</span>
+            </div>
+            <div className="flex justify-between items-center text-sm border-t border-border pt-2">
+              <span className="text-muted-foreground">Valor (Mês):</span>
+              <span className="font-black text-brand">{formatBRL(today.approvedQuotesValue)}</span>
+            </div>
+          </div>
+          <Button asChild variant="outline" className="w-full justify-start gap-2">
+            <Link to="/orcamentos">
+              <FileText className="h-4 w-4" /> Ver orçamentos
+            </Link>
+          </Button>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-5">

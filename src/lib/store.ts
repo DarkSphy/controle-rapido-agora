@@ -136,6 +136,30 @@ export type ServiceOrderItem = {
   unitPrice: number;
 };
 
+export type Quote = {
+  id: string;
+  customerId?: string;
+  status: "Pendente" | "Aprovado" | "Recusado" | "Expirado";
+  subtotal: number;
+  discount: number;
+  total: number;
+  validityDate?: string;
+  notes?: string;
+  paymentConditions?: string;
+  createdAt: number;
+};
+
+export type QuoteItem = {
+  id: string;
+  quoteId: string;
+  productId?: string;
+  variationId?: string;
+  manualName?: string;
+  quantity: number;
+  unitPrice: number;
+  isService: boolean;
+};
+
 type State = {
   products: Product[];
   movements: Movement[];
@@ -151,6 +175,8 @@ type State = {
   purchaseItems: PurchaseItem[];
   serviceOrders: ServiceOrder[];
   serviceOrderItems: ServiceOrderItem[];
+  quotes: Quote[];
+  quoteItems: QuoteItem[];
   taxRate: number;
   taxMode: "margin" | "final";
   loaded: boolean;
@@ -160,6 +186,7 @@ let state: State = {
   products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
   kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
   purchases: [], purchaseItems: [], serviceOrders: [], serviceOrderItems: [],
+  quotes: [], quoteItems: [],
   taxRate: 0, taxMode: "margin", loaded: false 
 };
 const listeners = new Set<() => void>();
@@ -178,6 +205,7 @@ const serverSnap: State = {
   products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
   kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
   purchases: [], purchaseItems: [], serviceOrders: [], serviceOrderItems: [],
+  quotes: [], quoteItems: [],
   taxRate: 0, taxMode: "margin", loaded: false 
 };
 const getServer = () => serverSnap;
@@ -378,6 +406,34 @@ function rowToServiceOrderItem(soi: any): ServiceOrderItem {
   };
 }
 
+function rowToQuote(q: any): Quote {
+  return {
+    id: q.id,
+    customerId: q.customer_id ?? undefined,
+    status: q.status as any,
+    subtotal: Number(q.subtotal),
+    discount: Number(q.discount),
+    total: Number(q.total),
+    validityDate: q.validity_date ?? undefined,
+    notes: q.notes ?? undefined,
+    paymentConditions: q.payment_conditions ?? undefined,
+    createdAt: new Date(q.created_at).getTime(),
+  };
+}
+
+function rowToQuoteItem(qi: any): QuoteItem {
+  return {
+    id: qi.id,
+    quoteId: qi.quote_id,
+    productId: qi.product_id ?? undefined,
+    variationId: qi.variation_id ?? undefined,
+    manualName: qi.manual_name ?? undefined,
+    quantity: qi.quantity,
+    unitPrice: Number(qi.unit_price),
+    isService: qi.is_service ?? false,
+  };
+}
+
 export const actions = {
   async loadAll() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -410,6 +466,8 @@ export const actions = {
       purchaseItems,
       serviceOrders,
       serviceOrderItems,
+      quotes,
+      quoteItems,
     ] = await Promise.all([
       fetchTable("products", supabase.from("products").select("*").order("created_at", { ascending: false })),
       fetchTable("variations"),
@@ -426,6 +484,8 @@ export const actions = {
       fetchTable("purchase_items"),
       fetchTable("service_orders", supabase.from("service_orders").select("*").order("created_at", { ascending: false })),
       fetchTable("service_order_items"),
+      fetchTable("quotes", supabase.from("quotes").select("*").order("created_at", { ascending: false })),
+      fetchTable("quote_items"),
     ]);
 
     const products = (prods ?? []).map((p: any) => rowToProduct(p, vars ?? []));
@@ -442,6 +502,8 @@ export const actions = {
     const purchaseItemsList = (purchaseItems ?? []).map(rowToPurchaseItem);
     const serviceOrdersList = (serviceOrders ?? []).map(rowToServiceOrder);
     const serviceOrderItemsList = (serviceOrderItems ?? []).map(rowToServiceOrderItem);
+    const quotesList = (quotes ?? []).map(rowToQuote);
+    const quoteItemsList = (quoteItems ?? []).map(rowToQuoteItem);
 
     setState({
       products,
@@ -458,6 +520,8 @@ export const actions = {
       purchaseItems: purchaseItemsList,
       serviceOrders: serviceOrdersList,
       serviceOrderItems: serviceOrderItemsList,
+      quotes: quotesList,
+      quoteItems: quoteItemsList,
       taxRate,
       taxMode,
       loaded: true,
@@ -469,6 +533,7 @@ export const actions = {
       products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
       kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
       purchases: [], purchaseItems: [], serviceOrders: [], serviceOrderItems: [],
+      quotes: [], quoteItems: [],
       taxRate: 0, taxMode: "margin", loaded: false 
     });
   },
@@ -1074,6 +1139,178 @@ export const actions = {
       serviceOrderItems: state.serviceOrderItems.filter((i) => i.orderId !== id)
     });
     toast.success("Ordem de serviço excluída");
+  },
+
+  // Quote CRUD
+  async addQuote(q: Omit<Quote, "id" | "createdAt" | "status"> & { status?: string }, items: Omit<QuoteItem, "id" | "quoteId">[]) {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return;
+
+    const { data: row, error } = await supabase.from("quotes").insert({
+      user_id: user.user.id,
+      customer_id: q.customerId || null,
+      status: q.status || "Pendente",
+      subtotal: q.subtotal,
+      discount: q.discount,
+      total: q.total,
+      validity_date: q.validityDate || null,
+      notes: q.notes || null,
+      payment_conditions: q.paymentConditions || null,
+    }).select().single();
+
+    if (error || !row) return toast.error(error?.message ?? "Erro ao salvar Orçamento");
+
+    let qItems: any[] = [];
+    if (items.length > 0) {
+      const itemRows = items.map(i => ({
+        quote_id: row.id,
+        product_id: i.productId || null,
+        variation_id: i.variationId || null,
+        manual_name: i.manualName || null,
+        quantity: i.quantity,
+        unit_price: i.unitPrice,
+        is_service: i.isService
+      }));
+      const { data: iRows } = await supabase.from("quote_items").insert(itemRows).select();
+      qItems = iRows || [];
+    }
+
+    const quote = rowToQuote(row);
+    setState({
+      quotes: [quote, ...state.quotes],
+      quoteItems: [...qItems.map(rowToQuoteItem), ...state.quoteItems],
+    });
+    toast.success("Orçamento criado");
+    return quote;
+  },
+
+  async updateQuote(id: string, patch: Partial<Omit<Quote, "id" | "createdAt">>, items?: Omit<QuoteItem, "id" | "quoteId">[]) {
+    const quote = state.quotes.find(q => q.id === id);
+    if (!quote) return;
+
+    const update: any = {};
+    if (patch.customerId !== undefined) update.customer_id = patch.customerId || null;
+    if (patch.status !== undefined) update.status = patch.status;
+    if (patch.subtotal !== undefined) update.subtotal = patch.subtotal;
+    if (patch.discount !== undefined) update.discount = patch.discount;
+    if (patch.total !== undefined) update.total = patch.total;
+    if (patch.validityDate !== undefined) update.validity_date = patch.validityDate || null;
+    if (patch.notes !== undefined) update.notes = patch.notes || null;
+    if (patch.paymentConditions !== undefined) update.payment_conditions = patch.paymentConditions || null;
+
+    if (Object.keys(update).length > 0) {
+      const { error } = await supabase.from("quotes").update(update).eq("id", id);
+      if (error) return toast.error(error.message);
+    }
+
+    let newItems = state.quoteItems;
+    if (items !== undefined) {
+      await supabase.from("quote_items").delete().eq("quote_id", id);
+      let qItems: any[] = [];
+      if (items.length > 0) {
+        const itemRows = items.map(i => ({
+          quote_id: id,
+          product_id: i.productId || null,
+          variation_id: i.variationId || null,
+          manual_name: i.manualName || null,
+          quantity: i.quantity,
+          unit_price: i.unitPrice,
+          is_service: i.isService
+        }));
+        const { data: iRows } = await supabase.from("quote_items").insert(itemRows).select();
+        qItems = iRows || [];
+      }
+      newItems = [...state.quoteItems.filter(i => i.quoteId !== id), ...qItems.map(rowToQuoteItem)];
+    }
+
+    setState({
+      quotes: state.quotes.map(q => q.id === id ? { ...q, ...patch } : q),
+      quoteItems: newItems
+    });
+    toast.success("Orçamento atualizado");
+  },
+
+  async deleteQuote(id: string) {
+    const { error } = await supabase.from("quotes").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    setState({ 
+      quotes: state.quotes.filter((q) => q.id !== id),
+      quoteItems: state.quoteItems.filter((i) => i.quoteId !== id)
+    });
+    toast.success("Orçamento excluído");
+  },
+
+  async convertQuoteToSale(id: string) {
+    const quote = state.quotes.find(q => q.id === id);
+    if (!quote) return;
+    const items = state.quoteItems.filter(i => i.quoteId === id);
+
+    // Convert only actual products (skip pure manual items and services for stock, addSale will handle it)
+    // Wait, addSale expects productId. For manual items, we might not have a productId.
+    // Let's create a sale manually.
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return;
+    
+    const { data: saleRow, error } = await supabase.from("sales").insert({
+      user_id: user.user.id,
+      customer_id: quote.customerId || null,
+      total_amount: quote.total,
+      payment_method: "Dinheiro" // Default, can be edited later
+    }).select().single();
+    
+    if (error || !saleRow) return toast.error("Erro ao registrar venda a partir do orçamento");
+    
+    // We only create sale_items and deduct stock for items that have a valid productId
+    const validItems = items.filter(i => i.productId && !i.isService);
+    if (validItems.length > 0) {
+      const itemRows = validItems.map(i => ({
+        sale_id: saleRow.id,
+        product_id: i.productId,
+        variation_id: i.variationId || null,
+        quantity: i.quantity,
+        unit_price: i.unitPrice,
+      }));
+      await supabase.from("sale_items").insert(itemRows);
+      
+      for (const item of validItems) {
+        await actions.move({ productId: item.productId!, variationId: item.variationId, quantity: item.quantity, type: "out" });
+      }
+    }
+
+    // Mark quote as approved
+    await actions.updateQuote(id, { status: "Aprovado" });
+    
+    // Refresh sales in state
+    const { data: newSaleItems } = await supabase.from("sale_items").select("*").eq("sale_id", saleRow.id);
+    setState({
+      sales: [rowToSale(saleRow), ...state.sales],
+      saleItems: [...(newSaleItems ?? []).map(rowToSaleItem), ...state.saleItems]
+    });
+    toast.success("Orçamento convertido em venda!");
+  },
+
+  async convertQuoteToOS(id: string) {
+    const quote = state.quotes.find(q => q.id === id);
+    if (!quote) return;
+    const items = state.quoteItems.filter(i => i.quoteId === id);
+
+    const serviceVal = items.filter(i => i.isService || !i.productId).reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
+    const prodItems = items.filter(i => i.productId && !i.isService).map(i => ({
+      productId: i.productId!,
+      variationId: i.variationId,
+      quantity: i.quantity,
+      unitPrice: i.unitPrice,
+    }));
+
+    await actions.addServiceOrder({
+      customerId: quote.customerId,
+      type: "Orçamento Convertido",
+      description: quote.notes,
+      serviceValue: serviceVal - quote.discount // applying discount to service value to match total
+    }, prodItems);
+
+    await actions.updateQuote(id, { status: "Aprovado" });
+    toast.success("Orçamento convertido em Ordem de Serviço!");
   }
 };
 
