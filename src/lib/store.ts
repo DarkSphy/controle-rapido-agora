@@ -217,7 +217,7 @@ const serverSnap: State = {
   products: [], movements: [], suppliers: [], categories: [], priceHistory: [], 
   kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
   purchases: [], purchaseItems: [], serviceOrders: [], serviceOrderItems: [],
-  quotes: [], quoteItems: [],
+  quotes: [], quoteItems: [], businessSettings: null,
   taxRate: 0, taxMode: "margin", loaded: false 
 };
 const getServer = () => serverSnap;
