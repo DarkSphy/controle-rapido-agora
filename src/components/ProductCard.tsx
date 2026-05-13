@@ -27,7 +27,7 @@ export function ProductCard({
 }) {
   const stock = productEffectiveStock(product);
   const status = stockStatus(stock, product.minStock);
-  const price = priceFromCostMargin(product.cost, product.margin);
+  const priceLabel = formatProductPrice(product);
 
   return (
     <div className="group rounded-xl border border-border bg-card p-4 flex flex-col gap-3 hover:shadow-md hover:border-primary/30 transition-all">
