@@ -51,7 +51,7 @@ function OSPage() {
   const products = useStore((s) => s.products);
   const bs = useStore((s) => s.businessSettings);
 
-  function handlePrint(o: ServiceOrder) {
+  async function handlePrint(o: ServiceOrder) {
     const customer = customers.find((c) => c.id === o.customerId);
     const myItems = items.filter(i => i.orderId === o.id).map(item => {
       let name = "Item";
@@ -65,32 +65,38 @@ function OSPage() {
           }
         }
       }
-      return { 
-        name, 
-        quantity: item.quantity, 
-        unitPrice: item.unitPrice 
+      return {
+        name,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice
       };
     });
 
     const partsTotal = myItems.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0);
 
-    generateOSPDF({
-      osId: o.id,
-      date: new Date(o.createdAt),
-      customerName: customer?.name,
-      customerPhone: customer?.phone,
-      customerEmail: customer?.email,
-      type: o.type,
-      description: o.description,
-      status: o.status,
-      items: myItems,
-      serviceValue: o.serviceValue,
-      total: partsTotal + o.serviceValue,
-      businessName: bs?.name,
-      businessPhone: bs?.phone,
-      businessEmail: bs?.email,
-      businessAddress: bs?.address,
-    });
+    try {
+      await generateOSPDF({
+        osId: o.id,
+        date: new Date(o.createdAt),
+        customerName: customer?.name,
+        customerPhone: customer?.phone,
+        customerEmail: customer?.email,
+        type: o.type,
+        description: o.description,
+        status: o.status,
+        items: myItems,
+        serviceValue: o.serviceValue,
+        total: partsTotal + o.serviceValue,
+        businessName: bs?.name,
+        businessPhone: bs?.phone,
+        businessEmail: bs?.email,
+        businessAddress: bs?.address,
+        businessLogoUrl: bs?.logoUrl,
+      });
+    } catch (e: any) {
+      console.error(e);
+      alert("Erro ao gerar PDF: " + (e?.message || e));
+    }
   }
 
   const [finalizingOS, setFinalizingOS] = useState<ServiceOrder | null>(null);
