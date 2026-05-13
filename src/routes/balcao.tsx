@@ -41,7 +41,7 @@ function BalcaoPage() {
         {filtered.map((p) => {
           const stock = productEffectiveStock(p);
           const status = stockStatus(stock, p.minStock);
-          const price = priceFromCostMargin(p.cost, p.margin);
+          const priceLabel = formatProductPrice(p);
           return (
             <div key={p.id} className="rounded-xl border border-border bg-card p-4 flex items-center gap-4">
               <div className="flex-1 min-w-0">
