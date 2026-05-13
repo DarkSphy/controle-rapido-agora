@@ -70,7 +70,7 @@ function OrcamentosPage() {
     }
   }
 
-  function handlePrint(quote: Quote) {
+  async function handlePrint(quote: Quote) {
     const customer = customers.find(c => c.id === quote.customerId);
     const items = quoteItems.filter(i => i.quoteId === quote.id).map(item => {
       let name = item.manualName || "Item";
@@ -84,33 +84,39 @@ function OrcamentosPage() {
           }
         }
       }
-      return { 
-        name, 
+      return {
+        name,
         isService: item.isService,
-        quantity: item.quantity, 
-        unitPrice: item.unitPrice 
+        quantity: item.quantity,
+        unitPrice: item.unitPrice
       };
     });
 
-    generateQuotePDF({
-      quoteId: quote.id,
-      date: new Date(quote.createdAt),
-      validityDate: quote.validityDate,
-      customerName: customer?.name,
-      customerPhone: customer?.phone,
-      customerEmail: customer?.email,
-      paymentConditions: quote.paymentConditions,
-      notes: quote.notes,
-      items,
-      subtotal: quote.subtotal,
-      laborValue: quote.laborValue || 0,
-      discount: quote.discount,
-      total: quote.total,
-      businessName: bs?.name,
-      businessPhone: bs?.phone,
-      businessEmail: bs?.email,
-      businessAddress: bs?.address,
-    });
+    try {
+      await generateQuotePDF({
+        quoteId: quote.id,
+        date: new Date(quote.createdAt),
+        validityDate: quote.validityDate,
+        customerName: customer?.name,
+        customerPhone: customer?.phone,
+        customerEmail: customer?.email,
+        paymentConditions: quote.paymentConditions,
+        notes: quote.notes,
+        items,
+        subtotal: quote.subtotal,
+        laborValue: quote.laborValue || 0,
+        discount: quote.discount,
+        total: quote.total,
+        businessName: bs?.name,
+        businessPhone: bs?.phone,
+        businessEmail: bs?.email,
+        businessAddress: bs?.address,
+        businessLogoUrl: bs?.logoUrl,
+      });
+    } catch (e: any) {
+      console.error("Erro ao gerar PDF do orçamento:", e);
+      alert("Erro ao gerar PDF: " + (e?.message || e));
+    }
   }
 
   function handleWhatsApp(quote: Quote) {
