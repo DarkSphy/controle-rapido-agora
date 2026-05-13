@@ -1015,7 +1015,7 @@ export const actions = {
     const linkedOS = state.serviceOrders.find(o => o.saleId === id);
     if (linkedOS) {
       await supabase.from("service_orders").update({ status: "Em andamento", sale_id: null }).eq("id", linkedOS.id);
-      const updatedOS = { ...linkedOS, status: "Em andamento" as const, saleId: null };
+      const updatedOS = { ...linkedOS, status: "Em andamento" as const, saleId: undefined };
       setState({
         serviceOrders: state.serviceOrders.map(o => o.id === linkedOS.id ? updatedOS : o)
       });
