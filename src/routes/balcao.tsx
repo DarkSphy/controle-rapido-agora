@@ -58,7 +58,7 @@ function BalcaoPage() {
                     </span>
                   )}
                 </div>
-                <div className="text-2xl font-bold text-primary tabular-nums mt-0.5">{formatBRL(price)}</div>
+                <div className="text-2xl font-bold text-primary tabular-nums mt-0.5">{priceLabel}</div>
               </div>
               <div className="flex flex-col gap-2">
                 <Button size="lg" onClick={() => { setMoveProduct(p); setMoveType("out"); setMoveOpen(true); }}>
