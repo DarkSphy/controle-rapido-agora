@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin } from "@/lib/store";
+import { useStore, productEffectiveStock, formatBRL, productInventoryValue } from "@/lib/store";
 import { 
   TrendingUp, TrendingDown, AlertCircle, Package, BarChart3, Settings2, 
   ShoppingBasket, Truck, Lightbulb, ArrowLeftRight, FileText, Wrench
@@ -94,8 +94,7 @@ function Dashboard() {
   const empty = products.filter((p) => !p.isService && productEffectiveStock(p) <= 0);
   const totalValue = products.reduce((sum, p) => {
     if (p.isService) return sum;
-    const unitValue = showCostValue ? p.cost : priceFromCostMargin(p.cost, p.margin);
-    return sum + productEffectiveStock(p) * unitValue;
+    return sum + productInventoryValue(p, showCostValue);
   }, 0);
 
   const stats = [

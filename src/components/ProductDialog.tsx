@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Product, Variation, actions, formatBRL, priceFromCostMargin, useStore } from "@/lib/store";
+import { Product, Variation, actions, formatBRL, priceFromCostMargin, formatProductPrice, useStore } from "@/lib/store";
 import { toast } from "sonner";
 import { Plus, Trash2, Share2, History } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -125,7 +125,7 @@ export function ProductDialog({
 
   function share() {
     if (!product) return;
-    const text = `*${product.name}*\nPreço: ${formatBRL(priceFromCostMargin(product.cost, product.margin))}`;
+    const text = `*${product.name}*\nPreço: ${formatProductPrice(product)}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
 

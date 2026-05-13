@@ -1,4 +1,4 @@
-import { Product, productEffectiveStock, stockStatus, formatBRL, priceFromCostMargin } from "@/lib/store";
+import { Product, productEffectiveStock, stockStatus, formatProductPrice } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Plus, Minus, Pencil } from "lucide-react";
@@ -27,7 +27,7 @@ export function ProductCard({
 }) {
   const stock = productEffectiveStock(product);
   const status = stockStatus(stock, product.minStock);
-  const price = priceFromCostMargin(product.cost, product.margin);
+  const priceLabel = formatProductPrice(product);
 
   return (
     <div className="group rounded-xl border border-border bg-card p-4 flex flex-col gap-3 hover:shadow-md hover:border-primary/30 transition-all">
@@ -46,7 +46,7 @@ export function ProductCard({
               <Pencil className="h-4 w-4" />
             </button>
           </div>
-          <div className="text-sm text-muted-foreground mt-0.5">{formatBRL(price)}</div>
+          <div className="text-sm text-muted-foreground mt-0.5">{priceLabel}</div>
           {product.variations.length > 0 && (
             <div className="text-xs text-muted-foreground mt-1">
               {product.variations.length} variações

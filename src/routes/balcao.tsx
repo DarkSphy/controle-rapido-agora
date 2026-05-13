@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin, stockStatus, Product } from "@/lib/store";
+import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin, formatProductPrice, stockStatus, Product } from "@/lib/store";
 import { SearchBar, searchProducts } from "@/components/SearchBar";
 import { MoveDialog } from "@/components/MoveDialog";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ function BalcaoPage() {
         {filtered.map((p) => {
           const stock = productEffectiveStock(p);
           const status = stockStatus(stock, p.minStock);
-          const price = priceFromCostMargin(p.cost, p.margin);
+          const priceLabel = formatProductPrice(p);
           return (
             <div key={p.id} className="rounded-xl border border-border bg-card p-4 flex items-center gap-4">
               <div className="flex-1 min-w-0">
@@ -58,7 +58,7 @@ function BalcaoPage() {
                     </span>
                   )}
                 </div>
-                <div className="text-2xl font-bold text-primary tabular-nums mt-0.5">{formatBRL(price)}</div>
+                <div className="text-2xl font-bold text-primary tabular-nums mt-0.5">{priceLabel}</div>
               </div>
               <div className="flex flex-col gap-2">
                 <Button size="lg" onClick={() => { setMoveProduct(p); setMoveType("out"); setMoveOpen(true); }}>
