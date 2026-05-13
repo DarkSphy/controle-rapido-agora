@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin, stockStatus, Product } from "@/lib/store";
+import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin, formatProductPrice, stockStatus, Product } from "@/lib/store";
 import { SearchBar, searchProducts } from "@/components/SearchBar";
 import { MoveDialog } from "@/components/MoveDialog";
 import { Button } from "@/components/ui/button";
