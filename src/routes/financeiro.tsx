@@ -18,6 +18,7 @@ function FinanceiroPage() {
   const sales = useStore((s) => s.sales);
   const saleItems = useStore((s) => s.saleItems);
   const purchases = useStore((s) => s.purchases);
+  const products = useStore((s) => s.products);
 
   const stats = useMemo(() => {
     let productSales = 0;
