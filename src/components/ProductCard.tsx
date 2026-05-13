@@ -46,7 +46,7 @@ export function ProductCard({
               <Pencil className="h-4 w-4" />
             </button>
           </div>
-          <div className="text-sm text-muted-foreground mt-0.5">{formatBRL(price)}</div>
+          <div className="text-sm text-muted-foreground mt-0.5">{priceLabel}</div>
           {product.variations.length > 0 && (
             <div className="text-xs text-muted-foreground mt-1">
               {product.variations.length} variações
