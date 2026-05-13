@@ -1,4 +1,4 @@
-import { Product, productEffectiveStock, stockStatus, formatBRL, priceFromCostMargin } from "@/lib/store";
+import { Product, productEffectiveStock, stockStatus, formatProductPrice } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Plus, Minus, Pencil } from "lucide-react";
