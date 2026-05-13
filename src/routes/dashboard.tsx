@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { useStore, productEffectiveStock, formatBRL, priceFromCostMargin } from "@/lib/store";
+import { useStore, productEffectiveStock, formatBRL, productInventoryValue } from "@/lib/store";
 import { 
   TrendingUp, TrendingDown, AlertCircle, Package, BarChart3, Settings2, 
   ShoppingBasket, Truck, Lightbulb, ArrowLeftRight, FileText, Wrench
