@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      business_settings: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          logo_url: string | null
+          name: string | null
+          phone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -135,6 +171,7 @@ export type Database = {
           product_id: string
           product_name: string
           quantity: number
+          reason: string | null
           type: string
           user_id: string
           variation_id: string | null
@@ -146,6 +183,7 @@ export type Database = {
           product_id: string
           product_name: string
           quantity: number
+          reason?: string | null
           type: string
           user_id: string
           variation_id?: string | null
@@ -157,6 +195,7 @@ export type Database = {
           product_id?: string
           product_name?: string
           quantity?: number
+          reason?: string | null
           type?: string
           user_id?: string
           variation_id?: string | null
@@ -225,6 +264,7 @@ export type Database = {
           created_at: string
           id: string
           image: string | null
+          is_service: boolean | null
           margin: number
           min_stock: number
           name: string
@@ -240,6 +280,7 @@ export type Database = {
           created_at?: string
           id?: string
           image?: string | null
+          is_service?: boolean | null
           margin?: number
           min_stock?: number
           name: string
@@ -255,6 +296,7 @@ export type Database = {
           created_at?: string
           id?: string
           image?: string | null
+          is_service?: boolean | null
           margin?: number
           min_stock?: number
           name?: string
@@ -379,6 +421,114 @@ export type Database = {
           },
         ]
       }
+      quote_items: {
+        Row: {
+          id: string
+          is_service: boolean | null
+          manual_name: string | null
+          product_id: string | null
+          quantity: number
+          quote_id: string | null
+          unit_price: number
+          variation_id: string | null
+        }
+        Insert: {
+          id?: string
+          is_service?: boolean | null
+          manual_name?: string | null
+          product_id?: string | null
+          quantity: number
+          quote_id?: string | null
+          unit_price: number
+          variation_id?: string | null
+        }
+        Update: {
+          id?: string
+          is_service?: boolean | null
+          manual_name?: string | null
+          product_id?: string | null
+          quantity?: number
+          quote_id?: string | null
+          unit_price?: number
+          variation_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_items_variation_id_fkey"
+            columns: ["variation_id"]
+            isOneToOne: false
+            referencedRelation: "variations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotes: {
+        Row: {
+          created_at: string | null
+          customer_id: string | null
+          discount: number | null
+          id: string
+          labor_value: number | null
+          notes: string | null
+          payment_conditions: string | null
+          status: string | null
+          subtotal: number | null
+          total: number | null
+          user_id: string
+          validity_date: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id?: string | null
+          discount?: number | null
+          id?: string
+          labor_value?: number | null
+          notes?: string | null
+          payment_conditions?: string | null
+          status?: string | null
+          subtotal?: number | null
+          total?: number | null
+          user_id: string
+          validity_date?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string | null
+          discount?: number | null
+          id?: string
+          labor_value?: number | null
+          notes?: string | null
+          payment_conditions?: string | null
+          status?: string | null
+          subtotal?: number | null
+          total?: number | null
+          user_id?: string
+          validity_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sale_items: {
         Row: {
           created_at: string
@@ -452,6 +602,106 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_order_items: {
+        Row: {
+          id: string
+          order_id: string | null
+          product_id: string | null
+          quantity: number
+          unit_price: number
+          variation_id: string | null
+        }
+        Insert: {
+          id?: string
+          order_id?: string | null
+          product_id?: string | null
+          quantity: number
+          unit_price: number
+          variation_id?: string | null
+        }
+        Update: {
+          id?: string
+          order_id?: string | null
+          product_id?: string | null
+          quantity?: number
+          unit_price?: number
+          variation_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_order_items_variation_id_fkey"
+            columns: ["variation_id"]
+            isOneToOne: false
+            referencedRelation: "variations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_orders: {
+        Row: {
+          created_at: string | null
+          customer_id: string | null
+          description: string | null
+          id: string
+          sale_id: string | null
+          service_value: number | null
+          status: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id?: string | null
+          description?: string | null
+          id?: string
+          sale_id?: string | null
+          service_value?: number | null
+          status?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string | null
+          description?: string | null
+          id?: string
+          sale_id?: string | null
+          service_value?: number | null
+          status?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
             referencedColumns: ["id"]
           },
         ]
