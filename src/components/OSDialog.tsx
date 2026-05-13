@@ -67,6 +67,7 @@ export function OSDialog({
           description: order.description ?? "",
           serviceValue: String(order.serviceValue),
           status: order.status,
+          paymentMethod: "Dinheiro",
         });
         
         const currentItems = orderItems.filter(i => i.orderId === order.id).map(si => {
