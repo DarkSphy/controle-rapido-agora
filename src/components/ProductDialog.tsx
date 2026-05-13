@@ -125,7 +125,7 @@ export function ProductDialog({
 
   function share() {
     if (!product) return;
-    const text = `*${product.name}*\nPreço: ${formatBRL(priceFromCostMargin(product.cost, product.margin))}`;
+    const text = `*${product.name}*\nPreço: ${formatProductPrice(product)}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
 
