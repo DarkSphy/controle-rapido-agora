@@ -74,6 +74,7 @@ export function QuoteDialog({
           validityDate: quote.validityDate ?? "",
           notes: quote.notes ?? "",
           paymentConditions: quote.paymentConditions ?? "",
+          laborValue: String(quote.laborValue ?? 0),
         });
         
         const currentItems = quoteItems.filter(i => i.quoteId === quote.id).map(qi => {
