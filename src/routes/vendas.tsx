@@ -43,22 +43,34 @@ function VendasPage() {
     });
   }, [sales, saleItems, customers, products, query]);
 
-  function downloadPDF(sale: any) {
+  const bs = useStore((s) => s.businessSettings);
+
+  async function downloadPDF(sale: any) {
     const customer = customers.find((c) => c.id === sale.customerId);
     const items = saleItems.filter((si) => si.saleId === sale.id).map((si) => {
       const p = products.find((p) => p.id === si.productId);
       return { name: p?.name || "Produto", quantity: si.quantity, unitPrice: si.unitPrice };
     });
-    generateSaleReceiptPDF({
-      saleId: sale.id,
-      date: new Date(sale.createdAt),
-      customerName: customer?.name,
-      customerPhone: customer?.phone,
-      customerEmail: customer?.email,
-      paymentMethod: sale.paymentMethod,
-      items,
-      total: sale.totalAmount,
-    });
+    try {
+      await generateSaleReceiptPDF({
+        saleId: sale.id,
+        date: new Date(sale.createdAt),
+        customerName: customer?.name,
+        customerPhone: customer?.phone,
+        customerEmail: customer?.email,
+        paymentMethod: sale.paymentMethod,
+        items,
+        total: sale.totalAmount,
+        businessName: bs?.name,
+        businessPhone: bs?.phone,
+        businessEmail: bs?.email,
+        businessAddress: bs?.address,
+        businessLogoUrl: bs?.logoUrl,
+      });
+    } catch (e: any) {
+      console.error(e);
+      alert("Erro ao gerar PDF: " + (e?.message || e));
+    }
   }
 
   return (
