@@ -9,42 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as VendasRouteImport } from './routes/vendas'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as ServicosRouteImport } from './routes/servicos'
 import { Route as ReposicaoRouteImport } from './routes/reposicao'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ProdutosRouteImport } from './routes/produtos'
-import { Route as OSRouteImport } from './routes/os'
+import { Route as OsRouteImport } from './routes/os'
 import { Route as OrcamentosRouteImport } from './routes/orcamentos'
-import { Route as ServicosRouteImport } from './routes/servicos'
 import { Route as MovimentacoesRouteImport } from './routes/movimentacoes'
 import { Route as KitsRouteImport } from './routes/kits'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as ComprasRouteImport } from './routes/compras'
 import { Route as ClientesRouteImport } from './routes/clientes'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as BalcaoRouteImport } from './routes/balcao'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
-
-const ApiPublicPaymentsWebhookRoute =
-  ApiPublicPaymentsWebhookRouteImport.update({
-    id: '/api/public/payments/webhook',
-    path: '/api/public/payments/webhook',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 const VendasRoute = VendasRouteImport.update({
   id: '/vendas',
@@ -54,6 +42,11 @@ const VendasRoute = VendasRouteImport.update({
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
   path: '/suppliers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosRoute = ServicosRouteImport.update({
+  id: '/servicos',
+  path: '/servicos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReposicaoRoute = ReposicaoRouteImport.update({
@@ -71,7 +64,7 @@ const ProdutosRoute = ProdutosRouteImport.update({
   path: '/produtos',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OSRoute = OSRouteImport.update({
+const OsRoute = OsRouteImport.update({
   id: '/os',
   path: '/os',
   getParentRoute: () => rootRouteImport,
@@ -79,11 +72,6 @@ const OSRoute = OSRouteImport.update({
 const OrcamentosRoute = OrcamentosRouteImport.update({
   id: '/orcamentos',
   path: '/orcamentos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServicosRoute = ServicosRouteImport.update({
-  id: '/servicos',
-  path: '/servicos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MovimentacoesRoute = MovimentacoesRouteImport.update({
@@ -109,6 +97,11 @@ const FinanceiroRoute = FinanceiroRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComprasRoute = ComprasRouteImport.update({
@@ -141,6 +134,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -167,15 +165,18 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRouteWithChildren
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
+  '/configuracoes': typeof ConfiguracoesRoute
   '/dashboard': typeof DashboardRoute
   '/financeiro': typeof FinanceiroRoute
   '/insights': typeof InsightsRoute
   '/kits': typeof KitsRoute
   '/movimentacoes': typeof MovimentacoesRoute
+  '/orcamentos': typeof OrcamentosRoute
+  '/os': typeof OsRoute
   '/produtos': typeof ProdutosRoute
-  '/servicos': typeof ServicosRoute
   '/reports': typeof ReportsRoute
   '/reposicao': typeof ReposicaoRoute
+  '/servicos': typeof ServicosRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -190,15 +191,18 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRouteWithChildren
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
+  '/configuracoes': typeof ConfiguracoesRoute
   '/dashboard': typeof DashboardRoute
   '/financeiro': typeof FinanceiroRoute
   '/insights': typeof InsightsRoute
   '/kits': typeof KitsRoute
   '/movimentacoes': typeof MovimentacoesRoute
+  '/orcamentos': typeof OrcamentosRoute
+  '/os': typeof OsRoute
   '/produtos': typeof ProdutosRoute
-  '/servicos': typeof ServicosRoute
   '/reports': typeof ReportsRoute
   '/reposicao': typeof ReposicaoRoute
+  '/servicos': typeof ServicosRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -214,15 +218,18 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRouteWithChildren
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
+  '/configuracoes': typeof ConfiguracoesRoute
   '/dashboard': typeof DashboardRoute
   '/financeiro': typeof FinanceiroRoute
   '/insights': typeof InsightsRoute
   '/kits': typeof KitsRoute
   '/movimentacoes': typeof MovimentacoesRoute
+  '/orcamentos': typeof OrcamentosRoute
+  '/os': typeof OsRoute
   '/produtos': typeof ProdutosRoute
-  '/servicos': typeof ServicosRoute
   '/reports': typeof ReportsRoute
   '/reposicao': typeof ReposicaoRoute
+  '/servicos': typeof ServicosRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -239,15 +246,18 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/clientes'
     | '/compras'
+    | '/configuracoes'
     | '/dashboard'
     | '/financeiro'
     | '/insights'
     | '/kits'
     | '/movimentacoes'
+    | '/orcamentos'
+    | '/os'
     | '/produtos'
-    | '/servicos'
     | '/reports'
     | '/reposicao'
+    | '/servicos'
     | '/suppliers'
     | '/vendas'
     | '/checkout/return'
@@ -262,15 +272,18 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/clientes'
     | '/compras'
+    | '/configuracoes'
     | '/dashboard'
     | '/financeiro'
     | '/insights'
     | '/kits'
     | '/movimentacoes'
+    | '/orcamentos'
+    | '/os'
     | '/produtos'
-    | '/servicos'
     | '/reports'
     | '/reposicao'
+    | '/servicos'
     | '/suppliers'
     | '/vendas'
     | '/checkout/return'
@@ -285,15 +298,18 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/clientes'
     | '/compras'
+    | '/configuracoes'
     | '/dashboard'
     | '/financeiro'
     | '/insights'
     | '/kits'
     | '/movimentacoes'
+    | '/orcamentos'
+    | '/os'
     | '/produtos'
-    | '/servicos'
     | '/reports'
     | '/reposicao'
+    | '/servicos'
     | '/suppliers'
     | '/vendas'
     | '/checkout/return'
@@ -309,17 +325,18 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRouteWithChildren
   ClientesRoute: typeof ClientesRoute
   ComprasRoute: typeof ComprasRoute
+  ConfiguracoesRoute: typeof ConfiguracoesRoute
   DashboardRoute: typeof DashboardRoute
   FinanceiroRoute: typeof FinanceiroRoute
   InsightsRoute: typeof InsightsRoute
   KitsRoute: typeof KitsRoute
   MovimentacoesRoute: typeof MovimentacoesRoute
-  ProdutosRoute: typeof ProdutosRoute
-  OSRoute: typeof OSRoute
   OrcamentosRoute: typeof OrcamentosRoute
-  ServicosRoute: typeof ServicosRoute
+  OsRoute: typeof OsRoute
+  ProdutosRoute: typeof ProdutosRoute
   ReportsRoute: typeof ReportsRoute
   ReposicaoRoute: typeof ReposicaoRoute
+  ServicosRoute: typeof ServicosRoute
   SuppliersRoute: typeof SuppliersRoute
   VendasRoute: typeof VendasRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -327,13 +344,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/vendas': {
       id: '/vendas'
       path: '/vendas'
@@ -346,6 +356,13 @@ declare module '@tanstack/react-router' {
       path: '/suppliers'
       fullPath: '/suppliers'
       preLoaderRoute: typeof SuppliersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos': {
+      id: '/servicos'
+      path: '/servicos'
+      fullPath: '/servicos'
+      preLoaderRoute: typeof ServicosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reposicao': {
@@ -373,7 +390,7 @@ declare module '@tanstack/react-router' {
       id: '/os'
       path: '/os'
       fullPath: '/os'
-      preLoaderRoute: typeof OSRouteImport
+      preLoaderRoute: typeof OsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orcamentos': {
@@ -381,13 +398,6 @@ declare module '@tanstack/react-router' {
       path: '/orcamentos'
       fullPath: '/orcamentos'
       preLoaderRoute: typeof OrcamentosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/servicos': {
-      id: '/servicos'
-      path: '/servicos'
-      fullPath: '/servicos'
-      preLoaderRoute: typeof ServicosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/movimentacoes': {
@@ -423,6 +433,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracoes': {
+      id: '/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof ConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compras': {
@@ -465,6 +482,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -512,17 +536,18 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRouteWithChildren,
   ClientesRoute: ClientesRoute,
   ComprasRoute: ComprasRoute,
+  ConfiguracoesRoute: ConfiguracoesRoute,
   DashboardRoute: DashboardRoute,
   FinanceiroRoute: FinanceiroRoute,
   InsightsRoute: InsightsRoute,
   KitsRoute: KitsRoute,
   MovimentacoesRoute: MovimentacoesRoute,
-  ProdutosRoute: ProdutosRoute,
-  OSRoute: OSRoute,
   OrcamentosRoute: OrcamentosRoute,
-  ServicosRoute: ServicosRoute,
+  OsRoute: OsRoute,
+  ProdutosRoute: ProdutosRoute,
   ReportsRoute: ReportsRoute,
   ReposicaoRoute: ReposicaoRoute,
+  ServicosRoute: ServicosRoute,
   SuppliersRoute: SuppliersRoute,
   VendasRoute: VendasRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
@@ -530,3 +555,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
