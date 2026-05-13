@@ -70,7 +70,7 @@ function OrcamentosPage() {
     }
   }
 
-  function handlePrint(quote: Quote) {
+  async function handlePrint(quote: Quote) {
     const customer = customers.find(c => c.id === quote.customerId);
     const items = quoteItems.filter(i => i.quoteId === quote.id).map(item => {
       let name = item.manualName || "Item";
@@ -84,33 +84,39 @@ function OrcamentosPage() {
           }
         }
       }
-      return { 
-        name, 
+      return {
+        name,
         isService: item.isService,
-        quantity: item.quantity, 
-        unitPrice: item.unitPrice 
+        quantity: item.quantity,
+        unitPrice: item.unitPrice
       };
     });
 
-    generateQuotePDF({
-      quoteId: quote.id,
-      date: new Date(quote.createdAt),
-      validityDate: quote.validityDate,
-      customerName: customer?.name,
-      customerPhone: customer?.phone,
-      customerEmail: customer?.email,
-      paymentConditions: quote.paymentConditions,
-      notes: quote.notes,
-      items,
-      subtotal: quote.subtotal,
-      laborValue: quote.laborValue || 0,
-      discount: quote.discount,
-      total: quote.total,
-      businessName: bs?.name,
-      businessPhone: bs?.phone,
-      businessEmail: bs?.email,
-      businessAddress: bs?.address,
-    });
+    try {
+      await generateQuotePDF({
+        quoteId: quote.id,
+        date: new Date(quote.createdAt),
+        validityDate: quote.validityDate,
+        customerName: customer?.name,
+        customerPhone: customer?.phone,
+        customerEmail: customer?.email,
+        paymentConditions: quote.paymentConditions,
+        notes: quote.notes,
+        items,
+        subtotal: quote.subtotal,
+        laborValue: quote.laborValue || 0,
+        discount: quote.discount,
+        total: quote.total,
+        businessName: bs?.name,
+        businessPhone: bs?.phone,
+        businessEmail: bs?.email,
+        businessAddress: bs?.address,
+        businessLogoUrl: bs?.logoUrl,
+      });
+    } catch (e: any) {
+      console.error("Erro ao gerar PDF do orçamento:", e);
+      alert("Erro ao gerar PDF: " + (e?.message || e));
+    }
   }
 
   function handleWhatsApp(quote: Quote) {
@@ -269,41 +275,42 @@ function OrcamentosPage() {
                     )}
                   </div>
                   
-                  <div className="mt-auto pt-4 border-t border-border flex flex-wrap gap-2 justify-between">
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => { setEditing(o); setEditOpen(true); }}>
-                        <Edit2 className="h-4 w-4 mr-2" /> Editar
+                  <div className="mt-auto pt-4 border-t border-border space-y-2">
+                    <div className="flex flex-wrap gap-2">
+                      <Button variant="outline" size="sm" onClick={() => { setEditing(o); setEditOpen(true); }} className="flex-1 min-w-[90px]">
+                        <Edit2 className="h-4 w-4 mr-1.5" /> Editar
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handlePrint(o)}>
-                        <Printer className="h-4 w-4 mr-2" /> PDF
+                      <Button variant="outline" size="sm" onClick={() => handlePrint(o)} className="flex-1 min-w-[90px]">
+                        <Printer className="h-4 w-4 mr-1.5" /> PDF
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleWhatsApp(o)} className="text-green-600 border-green-600/20 hover:bg-green-50">
-                        <Send className="h-4 w-4 mr-2" /> WhatsApp
+                      <Button variant="outline" size="sm" onClick={() => handleWhatsApp(o)} className="flex-1 min-w-[110px] text-green-700 border-green-600/30 hover:bg-green-50 hover:text-green-800">
+                        <Send className="h-4 w-4 mr-1.5" /> WhatsApp
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => {
+                          if (confirm("Tem certeza que deseja excluir este orçamento?")) {
+                            actions.deleteQuote(o.id);
+                          }
+                        }}
+                        title="Excluir orçamento"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
 
                     {o.status !== "Recusado" && (
-                      <div className="flex gap-2 ml-auto">
-                        <Button size="sm" onClick={() => handleConvertSale(o)}>
-                          <ArrowRight className="h-4 w-4 mr-2" /> P/ Venda
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        <Button size="sm" onClick={() => handleConvertSale(o)} className="bg-success text-success-foreground hover:bg-success/90 h-10 font-semibold">
+                          <ArrowRight className="h-4 w-4 mr-1.5" /> Gerar Venda
                         </Button>
-                        <Button size="sm" variant="secondary" onClick={() => handleConvertOS(o)}>
-                          <Wrench className="h-4 w-4 mr-2" /> P/ OS
+                        <Button size="sm" onClick={() => handleConvertOS(o)} className="bg-brand text-brand-foreground hover:bg-brand/90 h-10 font-semibold">
+                          <Wrench className="h-4 w-4 mr-1.5" /> Gerar OS
                         </Button>
                       </div>
                     )}
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 ml-auto"
-                      onClick={() => {
-                        if (confirm("Tem certeza que deseja excluir este orçamento?")) {
-                          actions.deleteQuote(o.id);
-                        }
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
               );
