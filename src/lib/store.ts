@@ -257,6 +257,35 @@ export function formatBRL(value: number): string {
   return brl.format(value ?? 0);
 }
 
+export function productPriceRange(p: Product): { min: number; max: number; hasRange: boolean } {
+  if (p.variations && p.variations.length > 0) {
+    const prices = p.variations.map((v) => priceFromCostMargin(v.cost, v.margin));
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    return { min, max, hasRange: min !== max };
+  }
+  const single = priceFromCostMargin(p.cost, p.margin);
+  return { min: single, max: single, hasRange: false };
+}
+
+export function formatProductPrice(p: Product): string {
+  const r = productPriceRange(p);
+  if (r.hasRange) return `${formatBRL(r.min)} – ${formatBRL(r.max)}`;
+  return formatBRL(r.min);
+}
+
+export function productInventoryValue(p: Product, useCost = false): number {
+  if (p.isService) return 0;
+  if (p.variations && p.variations.length > 0) {
+    return p.variations.reduce((sum, v) => {
+      const unit = useCost ? v.cost : priceFromCostMargin(v.cost, v.margin);
+      return sum + (v.stock ?? 0) * unit;
+    }, 0);
+  }
+  const unit = useCost ? p.cost : priceFromCostMargin(p.cost, p.margin);
+  return (p.stock ?? 0) * unit;
+}
+
 function rowToProduct(p: any, vars: any[]): Product {
   return {
     id: p.id,
