@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import { formatBRL } from "@/lib/store";
+import { loadLogoDataURL, drawLogo } from "@/lib/pdfHelpers";
 
 type Item = { name: string; isService: boolean; quantity: number; unitPrice: number };
 type Args = {
@@ -20,29 +21,33 @@ type Args = {
   businessPhone?: string | null;
   businessEmail?: string | null;
   businessAddress?: string | null;
+  businessLogoUrl?: string | null;
 };
 
-export function generateQuotePDF(a: Args) {
-  // A4 format: 210 x 297 mm
+export async function generateQuotePDF(a: Args) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   let y = 20;
   const left = 20;
   const right = 190;
   const contentWidth = right - left;
 
+  const logo = await loadLogoDataURL(a.businessLogoUrl);
+
   // Header
   doc.setFont("helvetica", "bold");
   doc.setFontSize(24);
   doc.text("ORÇAMENTO", left, y);
-  
+
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(100, 100, 100);
   doc.text(`#${a.quoteId.slice(0, 8).toUpperCase()}`, left, y + 6);
-  
-  // Business Info (Right aligned)
+
+  // Business Info (Right aligned) — with optional logo
   doc.setTextColor(0, 0, 0);
-  let by = 20;
+  let by = 14;
+  const logoH = logo ? drawLogo(doc, logo, right - 30, by, 30, 18) : 0;
+  if (logoH) by += logoH + 3;
   if (a.businessName) {
     doc.setFont("helvetica", "bold");
     doc.text(a.businessName, right, by, { align: "right" });
@@ -53,7 +58,7 @@ export function generateQuotePDF(a: Args) {
   if (a.businessEmail) { doc.text(a.businessEmail, right, by, { align: "right" }); by += 5; }
   if (a.businessAddress) { doc.text(a.businessAddress, right, by, { align: "right" }); by += 5; }
 
-  y = Math.max(y + 15, by + 10);
+  y = Math.max(y + 15, by + 5);
   doc.setDrawColor(200, 200, 200);
   doc.line(left, y, right, y);
   y += 10;
