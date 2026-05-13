@@ -22,6 +22,7 @@ function OrcamentosPage() {
   const quotes = useStore((s) => s.quotes);
   const customers = useStore((s) => s.customers);
   const quoteItems = useStore((s) => s.quoteItems);
+  const products = useStore((s) => s.products);
 
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Quote | null>(null);
