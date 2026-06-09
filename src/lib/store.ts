@@ -795,8 +795,12 @@ export const actions = {
   },
 
   // Bulk Price Adjustment
-  async bulkAdjustPrices(categoryId: string | null, percentage: number) {
-    const filtered = categoryId ? state.products.filter((p) => p.categoryId === categoryId) : state.products;
+  async bulkAdjustPrices(categoryId: string | null, supplierId: string | null, percentage: number) {
+    const filtered = state.products.filter((p) => {
+      if (categoryId && p.categoryId !== categoryId) return false;
+      if (supplierId && p.supplierId !== supplierId) return false;
+      return true;
+    });
     if (filtered.length === 0) return toast.error("Nenhum produto encontrado");
 
     const updates = filtered.map(async (p) => {
@@ -807,7 +811,9 @@ export const actions = {
     await Promise.all(updates);
     setState({
       products: state.products.map((p) => {
-        if (!categoryId || p.categoryId === categoryId) {
+        const matchCategory = !categoryId || p.categoryId === categoryId;
+        const matchSupplier = !supplierId || p.supplierId === supplierId;
+        if (matchCategory && matchSupplier) {
           return { ...p, margin: p.margin + percentage };
         }
         return p;

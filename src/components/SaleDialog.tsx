@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useStore, actions, formatBRL, priceFromCostMargin } from "@/lib/store";
 import { SearchBar, searchProducts } from "@/components/SearchBar";
-import { Trash2, Plus, Minus, ShoppingCart, User, CreditCard } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingCart, User, CreditCard, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -25,6 +25,8 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
   onRepeatDone?: () => void;
 }) {
   const products = useStore((s) => s.products);
+  const kits = useStore((s) => s.kits);
+  const kitItems = useStore((s) => s.kitItems);
   const customers = useStore((s) => s.customers);
   const saleItems = useStore((s) => s.saleItems);
   
@@ -63,10 +65,15 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
     }
   }, [repeatSale]);
 
-  const filtered = useMemo(() => {
+  const filteredProducts = useMemo(() => {
     if (!q) return [];
     return searchProducts(products, q).slice(0, 5);
   }, [products, q]);
+
+  const filteredKits = useMemo(() => {
+    if (!q) return [];
+    return kits.filter(k => k.name.toLowerCase().includes(q.toLowerCase())).slice(0, 3);
+  }, [kits, q]);
 
   const total = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.quantity, 0), [cart]);
 
@@ -82,6 +89,24 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
         return prev.map(i => i.cartItemId === cartItemId ? { ...i, quantity: i.quantity + 1 } : i);
       }
       return [...prev, { cartItemId, productId: p.id, variationId, name, quantity: 1, price }];
+    });
+    setQ("");
+  }
+
+  function addKitToCart(k: any, items: any[]) {
+    items.forEach(item => {
+      const p = products.find(prod => prod.id === item.productId);
+      if (p) {
+        const price = priceFromCostMargin(p.cost, p.margin);
+        const cartItemId = p.id;
+        setCart(prev => {
+          const existing = prev.find(i => i.cartItemId === cartItemId);
+          if (existing) {
+            return prev.map(i => i.cartItemId === cartItemId ? { ...i, quantity: i.quantity + item.quantity } : i);
+          }
+          return [...prev, { cartItemId, productId: p.id, name: `${p.name} (Kit ${k.name})`, quantity: item.quantity, price }];
+        });
+      }
     });
     setQ("");
   }
@@ -151,11 +176,35 @@ export function SaleDialog({ open, onOpenChange, repeatSale, onRepeatDone }: {
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Product Search */}
           <div className="relative">
-            <Label className="mb-2 block">Adicionar produtos</Label>
-            <SearchBar value={q} onChange={setQ} placeholder="Busque por nome ou código..." />
-            {filtered.length > 0 && (
+            <Label className="mb-2 block">Adicionar produtos ou kits</Label>
+            <SearchBar value={q} onChange={setQ} placeholder="Busque por nome, código ou kit..." />
+            {q && (filteredProducts.length > 0 || filteredKits.length > 0) && (
               <div className="absolute z-20 left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1 max-h-60 overflow-y-auto">
-                {filtered.flatMap(p => {
+                {filteredKits.map(k => {
+                  const items = kitItems.filter(ki => ki.kitId === k.id);
+                  const totalValue = items.reduce((sum, item) => {
+                    const p = products.find(prod => prod.id === item.productId);
+                    return sum + (p ? priceFromCostMargin(p.cost, p.margin) * item.quantity : 0);
+                  }, 0);
+                  
+                  return (
+                    <button
+                      key={`kit-${k.id}`}
+                      onClick={() => addKitToCart(k, items)}
+                      className="w-full flex items-center justify-between p-3 bg-brand/5 hover:bg-brand/10 transition-colors border-b border-border last:border-0"
+                    >
+                      <div className="text-left flex items-center gap-2">
+                        <Package className="h-4 w-4 text-brand" />
+                        <div>
+                          <div className="font-medium text-brand">Kit: {k.name}</div>
+                          <div className="text-xs text-muted-foreground">{items.length} itens</div>
+                        </div>
+                      </div>
+                      <div className="font-bold text-brand">{formatBRL(totalValue)}</div>
+                    </button>
+                  );
+                })}
+                {filteredProducts.flatMap(p => {
                   if (p.variations && p.variations.length > 0) {
                     return p.variations.map(v => (
                       <button
