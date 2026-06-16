@@ -2,15 +2,16 @@ import { useState, createContext, useContext, useEffect } from "react";
 import { 
   LayoutDashboard, ShoppingBag, Package, Users, Truck,
   Plus, Minus, X, Check, Search, Bell, Menu, ShoppingCart, Info, ExternalLink,
-  Receipt, BarChart3, ChartBar, Settings
+  Receipt, BarChart3, ChartBar, Settings, Store, Storefront, Wrench, Tags, Layers, Lightbulb, ArrowLeftRight, AlertTriangle
 } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
 import { formatBRL } from "@/lib/store";
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 const DemoContext = createContext(null);
 export const useDemo = () => useContext(DemoContext);
@@ -44,7 +45,7 @@ const DemoSettings = ({ shopInfo, setShopInfo }: any) => (
 );
 
 export function DemoDashboard() {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "vendas" | "produtos" | "clientes" | "compras" | "orcamentos" | "financeiro" | "os" | "relatorios" | "configuracoes">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "vendas" | "compras" | "orcamentos" | "os" | "balcao" | "catalogo" | "produtos" | "servicos" | "categorias" | "clientes" | "fornecedores" | "kits" | "financeiro" | "insights" | "historico" | "reposicao" | "configuracoes">("dashboard");
   const [cart, setCart] = useState<{product: typeof mockProducts[0], qty: number}[]>([]);
   const [search, setSearch] = useState("");
   const [todaySales, setTodaySales] = useState(845.50);
@@ -84,7 +85,7 @@ export function DemoDashboard() {
     doc.setFontSize(11);
     doc.text(`Endereço: ${shopInfo.address || "[endereço]"}`, 10, 30);
     doc.text(`Telefone: ${shopInfo.phone || "[telefone]"}`, 10, 36);
-    doc.autoTable({
+    autoTable(doc, {
       startY: 50,
       head: [["Item", "Qtd", "Preço", "Subtotal"]],
       body: cart.map(i => [i.product.name, i.qty, formatBRL(i.product.price), formatBRL(i.product.price * i.qty)]),
@@ -122,15 +123,29 @@ export function DemoDashboard() {
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsSidebarOpen(false)}><X className="h-4 w-4" /></Button>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-1">
-            <button onClick={() => { setActiveTab("dashboard"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "dashboard" ? "bg-sidebar-accent" : ""}`}><LayoutDashboard className="h-4 w-4" /> Resumo</button>
-            <button onClick={() => { setActiveTab("vendas"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "vendas" ? "bg-sidebar-accent" : ""}`}><ShoppingBag className="h-4 w-4" /> Venda Rápida</button>
-            <button onClick={() => { setActiveTab("produtos"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "produtos" ? "bg-sidebar-accent" : ""}`}><Package className="h-4 w-4" /> Produtos</button>
-            <button onClick={() => { setActiveTab("clientes"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "clientes" ? "bg-sidebar-accent" : ""}`}><Users className="h-4 w-4" /> Clientes</button>
-            <button onClick={() => { setActiveTab("orcamentos"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "orcamentos" ? "bg-sidebar-accent" : ""}`}><Receipt className="h-4 w-4" /> Orçamentos</button>
-            <button onClick={() => { setActiveTab("financeiro"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "financeiro" ? "bg-sidebar-accent" : ""}`}><BarChart3 className="h-4 w-4" /> Financeiro</button>
-            <button onClick={() => { setActiveTab("os"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "os" ? "bg-sidebar-accent" : ""}`}><Info className="h-4 w-4" /> Ordens de Serviço</button>
-            <button onClick={() => { setActiveTab("relatorios"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "relatorios" ? "bg-sidebar-accent" : ""}`}><ChartBar className="h-4 w-4" /> Relatórios</button>
-            <button onClick={() => { setActiveTab("configuracoes"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "configuracoes" ? "bg-sidebar-accent" : ""}`}><Settings className="h-4 w-4" /> Configurações</button>
+            <div className="text-xs font-bold text-muted-foreground mb-2 mt-2 uppercase tracking-wider">Operação</div>
+            <button onClick={() => { setActiveTab("dashboard"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "dashboard" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><LayoutDashboard className="h-4 w-4" /> Resumo</button>
+            <button onClick={() => { setActiveTab("vendas"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "vendas" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><ShoppingBag className="h-4 w-4" /> Vendas</button>
+            <button onClick={() => { setActiveTab("compras"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "compras" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><ShoppingCart className="h-4 w-4" /> Compras</button>
+            <button onClick={() => { setActiveTab("orcamentos"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "orcamentos" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Receipt className="h-4 w-4" /> Orçamentos</button>
+            <button onClick={() => { setActiveTab("os"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "os" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Info className="h-4 w-4" /> Ordem de Serviço</button>
+            <button onClick={() => { setActiveTab("balcao"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "balcao" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Store className="h-4 w-4" /> Balcão</button>
+            <button onClick={() => { setActiveTab("catalogo"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "catalogo" ? "bg-sidebar-accent font-medium text-brand bg-brand/10" : "hover:bg-muted"}`}><Storefront className="h-4 w-4" /> Catálogo</button>
+
+            <div className="text-xs font-bold text-muted-foreground mb-2 mt-6 uppercase tracking-wider">Cadastros</div>
+            <button onClick={() => { setActiveTab("produtos"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "produtos" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Package className="h-4 w-4" /> Produtos</button>
+            <button onClick={() => { setActiveTab("servicos"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "servicos" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Wrench className="h-4 w-4" /> Serviços</button>
+            <button onClick={() => { setActiveTab("categorias"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "categorias" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Tags className="h-4 w-4" /> Categorias</button>
+            <button onClick={() => { setActiveTab("clientes"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "clientes" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Users className="h-4 w-4" /> Clientes</button>
+            <button onClick={() => { setActiveTab("fornecedores"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "fornecedores" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Truck className="h-4 w-4" /> Fornecedores</button>
+            <button onClick={() => { setActiveTab("kits"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "kits" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Layers className="h-4 w-4" /> Kits</button>
+
+            <div className="text-xs font-bold text-muted-foreground mb-2 mt-6 uppercase tracking-wider">Gestão</div>
+            <button onClick={() => { setActiveTab("financeiro"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "financeiro" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><BarChart3 className="h-4 w-4" /> Financeiro</button>
+            <button onClick={() => { setActiveTab("insights"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "insights" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Lightbulb className="h-4 w-4" /> Insights</button>
+            <button onClick={() => { setActiveTab("historico"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "historico" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><ArrowLeftRight className="h-4 w-4" /> Histórico</button>
+            <button onClick={() => { setActiveTab("reposicao"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "reposicao" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><AlertTriangle className="h-4 w-4" /> Reposição</button>
+            <button onClick={() => { setActiveTab("configuracoes"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "configuracoes" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Settings className="h-4 w-4" /> Configurações</button>
           </div>
         </aside>
 
@@ -317,6 +332,77 @@ export function DemoDashboard() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "catalogo" && (
+            <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 space-y-8">
+              <ExplanationBanner 
+                icon={Storefront}
+                title="Catálogo Digital"
+                text="Mostre seus produtos com uma vitrine virtual encantadora. (Visão do seu cliente final)"
+              />
+              
+              {/* Rotating Banner */}
+              <div className="w-full">
+                <Carousel className="w-full mx-auto rounded-xl overflow-hidden shadow-lg border border-border" opts={{ loop: true }}>
+                  <CarouselContent>
+                    {[
+                      { title: "Promoção de Inverno", desc: "Até 50% de desconto em itens selecionados", bg: "bg-gradient-to-r from-blue-500 to-cyan-400" },
+                      { title: "Novidades do Mês", desc: "Confira os lançamentos exclusivos", bg: "bg-gradient-to-r from-purple-500 to-pink-500" },
+                      { title: "Frete Grátis", desc: "Para compras acima de R$ 200,00", bg: "bg-gradient-to-r from-emerald-500 to-teal-400" }
+                    ].map((banner, i) => (
+                      <CarouselItem key={i}>
+                        <div className={`flex flex-col items-center justify-center p-12 text-center text-white h-64 ${banner.bg}`}>
+                          <h2 className="text-4xl font-black mb-4 drop-shadow-md">{banner.title}</h2>
+                          <p className="text-lg font-medium opacity-90">{banner.desc}</p>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-4 opacity-70 hover:opacity-100" />
+                  <CarouselNext className="right-4 opacity-70 hover:opacity-100" />
+                </Carousel>
+              </div>
+
+              {/* Normal Static Banners */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="bg-card rounded-xl overflow-hidden border border-border group cursor-pointer shadow-sm hover:shadow-md transition-all">
+                  <div className="h-32 bg-muted/50 flex items-center justify-center p-6 text-center border-b group-hover:bg-brand/5 transition-colors">
+                    <Package className="w-10 h-10 text-brand mb-2 opacity-50" />
+                  </div>
+                  <div className="p-4">
+                    <h4 className="font-bold text-lg mb-1">Eletrônicos</h4>
+                    <p className="text-sm text-muted-foreground">Acessórios, cabos e fones</p>
+                  </div>
+                </div>
+                <div className="bg-card rounded-xl overflow-hidden border border-border group cursor-pointer shadow-sm hover:shadow-md transition-all">
+                  <div className="h-32 bg-muted/50 flex items-center justify-center p-6 text-center border-b group-hover:bg-brand/5 transition-colors">
+                    <ShoppingBag className="w-10 h-10 text-brand mb-2 opacity-50" />
+                  </div>
+                  <div className="p-4">
+                    <h4 className="font-bold text-lg mb-1">Roupas e Moda</h4>
+                    <p className="text-sm text-muted-foreground">Camisetas, calças e acessórios</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {["balcao", "servicos", "categorias", "fornecedores", "kits", "insights", "historico", "reposicao"].includes(activeTab) && (
+            <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4">
+              <ExplanationBanner 
+                icon={Info}
+                title={`Módulo de ${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`}
+                text="Esta funcionalidade avançada permite um controle detalhado para gerenciar melhor sua operação, disponível no sistema completo."
+              />
+              <div className="bg-card border rounded-xl p-12 text-center text-muted-foreground flex flex-col items-center justify-center gap-4">
+                <div className="p-4 bg-muted/30 rounded-full inline-block">
+                  <Info className="h-8 w-8 opacity-50" />
+                </div>
+                <p>A interface detalhada deste módulo não está incluída nesta demonstração rápida.</p>
+                <Button variant="outline" onClick={() => setActiveTab("dashboard")}>Voltar ao Resumo</Button>
               </div>
             </div>
           )}
