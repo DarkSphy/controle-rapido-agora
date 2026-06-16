@@ -18,10 +18,10 @@ export const Route = createFileRoute("/c/$userId")({
       { data: vars },
     ] = await Promise.all([
       supabase.from("catalog_settings").select("*").eq("id", params.userId).maybeSingle(),
-      supabase.from("products").select("*").eq("user_id", params.userId).eq("in_catalog", true),
-      supabase.from("variations").select("*").eq("user_id", params.userId)
+      (supabase.from as any)("catalog_products_public").select("*").eq("user_id", params.userId),
+      (supabase.from as any)("catalog_variations_public").select("*").eq("user_id", params.userId),
     ]);
-    
+
     const settings: CatalogSettings = sets ? {
       id: sets.id,
       whatsappNumber: sets.whatsapp_number ?? undefined,
@@ -47,20 +47,20 @@ export const Route = createFileRoute("/c/$userId")({
       name: p.name,
       description: p.description,
       image: p.image,
-      cost: Number(p.cost),
-      margin: Number(p.margin),
-      stock: p.stock,
-      minStock: p.min_stock,
+      cost: Number(p.price),
+      margin: 0,
+      stock: 0,
+      minStock: 0,
       inCatalog: p.in_catalog,
-      usage: p.usage,
+      usage: 0,
       categoryId: p.category_id,
-      createdAt: new Date(p.created_at).getTime(),
+      createdAt: 0,
       variations: (vars || []).filter((v: any) => v.product_id === p.id).map((v: any) => ({
         id: v.id,
         name: v.name,
-        stock: v.stock,
-        cost: Number(v.cost),
-        margin: Number(v.margin),
+        stock: 0,
+        cost: Number(v.price),
+        margin: 0,
       }))
     }));
 
