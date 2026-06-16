@@ -7,9 +7,12 @@ import {
   Package, Zap, Smartphone, ShoppingBag, AlertTriangle, ArrowRight, Check,
   Plus, ArrowLeftRight, BarChart3, Store, ShoppingCart, Shirt, Wrench,
   ShieldCheck, Headphones, XCircle, Sparkles, MessageCircle, Star,
-  Users, TrendingUp, Receipt, Tag, ChevronDown, Minus, FileText, Boxes,
+  Users, TrendingUp, Receipt, Tag, ChevronDown, Minus, FileText, Boxes, Play
 } from "lucide-react";
 import { useState } from "react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { DemoDashboard } from "@/components/DemoDashboard";
+import { DemoCatalog } from "@/components/DemoCatalog";
 
 const PHONE = "5531973175882";
 const MSG_HIRE = "Gostaria de contratar o controle já.";
@@ -97,7 +100,30 @@ function Landing() {
                 </a>
               </Button>
             </div>
-            <p className="mt-4 text-xs text-muted-foreground">
+            <div className="mt-4 flex flex-col sm:flex-row gap-3">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="lg" variant="secondary" className="text-sm h-11 px-5 w-full sm:w-auto hover:bg-brand hover:text-white transition-colors group">
+                    <Play className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" /> Testar o Sistema
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] p-0 overflow-hidden bg-background border-border">
+                  <DemoDashboard />
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="lg" variant="secondary" className="text-sm h-11 px-5 w-full sm:w-auto hover:bg-brand hover:text-white transition-colors group">
+                    <Store className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" /> Exemplo de Catálogo
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] p-0 overflow-hidden bg-background border-border">
+                  <DemoCatalog />
+                </DialogContent>
+              </Dialog>
+            </div>
+            <p className="mt-6 text-xs text-muted-foreground">
               Sem fidelidade • Cancele quando quiser • Garantia de 7 dias
             </p>
           </div>
