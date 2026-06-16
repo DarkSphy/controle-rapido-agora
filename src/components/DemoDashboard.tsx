@@ -17,7 +17,7 @@ const mockProducts = [
 ];
 
 export function DemoDashboard() {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "vendas">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "vendas" | "produtos" | "clientes" | "compras">("dashboard");
   const [cart, setCart] = useState<{product: typeof mockProducts[0], qty: number}[]>([]);
   const [search, setSearch] = useState("");
   const [todaySales, setTodaySales] = useState(845.50);
@@ -86,15 +86,24 @@ export function DemoDashboard() {
           >
             <ShoppingBag className="h-4 w-4" /> Venda Rápida
           </button>
-          <div className="pt-4 mt-4 border-t border-border/50 space-y-2 opacity-50 pointer-events-none">
+          <div className="pt-4 mt-4 border-t border-border/50 space-y-2">
             <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Cadastros</div>
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground">
+            <button 
+              onClick={() => { setActiveTab("produtos"); setIsSidebarOpen(false); }}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "produtos" ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/50"}`}
+            >
               <Package className="h-4 w-4" /> Produtos
             </button>
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground">
+            <button 
+              onClick={() => { setActiveTab("clientes"); setIsSidebarOpen(false); }}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "clientes" ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/50"}`}
+            >
               <Users className="h-4 w-4" /> Clientes
             </button>
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground">
+            <button 
+              onClick={() => { setActiveTab("compras"); setIsSidebarOpen(false); }}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "compras" ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/50"}`}
+            >
               <Truck className="h-4 w-4" /> Compras
             </button>
           </div>
@@ -115,7 +124,11 @@ export function DemoDashboard() {
               <Menu className="h-5 w-5" />
             </Button>
             <h2 className="font-bold text-lg hidden sm:block">
-              {activeTab === "dashboard" ? "Resumo do Dia" : "Balcão de Vendas"}
+              {activeTab === "dashboard" && "Resumo do Dia"}
+              {activeTab === "vendas" && "Balcão de Vendas"}
+              {activeTab === "produtos" && "Meus Produtos"}
+              {activeTab === "clientes" && "Meus Clientes"}
+              {activeTab === "compras" && "Compras e Fornecedores"}
             </h2>
           </div>
           <div className="flex items-center gap-2">
@@ -250,6 +263,37 @@ export function DemoDashboard() {
                     onClick={finishSale}
                   >
                     <Check className="mr-2 h-5 w-5" /> Finalizar Venda
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {(activeTab === "produtos" || activeTab === "clientes" || activeTab === "compras") && (
+            <div className="flex flex-col items-center justify-center h-full max-w-lg mx-auto text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
+              <div className="h-24 w-24 bg-brand/10 text-brand rounded-full flex items-center justify-center mb-2">
+                {activeTab === "produtos" && <Package className="h-10 w-10" />}
+                {activeTab === "clientes" && <Users className="h-10 w-10" />}
+                {activeTab === "compras" && <Truck className="h-10 w-10" />}
+              </div>
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
+                {activeTab === "produtos" && "Controle de Estoque"}
+                {activeTab === "clientes" && "Gestão de Clientes"}
+                {activeTab === "compras" && "Entradas e Fornecedores"}
+              </h2>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                {activeTab === "produtos" && "Cadastre seus produtos com foto, custo, margem de lucro e variações. O estoque desconta automaticamente a cada venda."}
+                {activeTab === "clientes" && "Guarde o histórico de compras de cada cliente. Saiba quem são os seus melhores compradores e tenha o WhatsApp de todos."}
+                {activeTab === "compras" && "Lance compras para reabastecer o estoque, gerencie notas de fornecedores e controle o custo real dos produtos."}
+              </p>
+              <div className="pt-6 w-full">
+                <div className="bg-muted/30 border border-border p-4 rounded-xl flex items-center justify-between text-left">
+                  <div>
+                    <div className="font-bold text-sm">Gostou das funcionalidades?</div>
+                    <div className="text-xs text-muted-foreground">Experimente grátis na sua conta real.</div>
+                  </div>
+                  <Button onClick={() => window.open('https://wa.me/5531973175882?text=Gostaria%20de%20contratar%20o%20controle%20já.', '_blank')} className="bg-[#25D366] hover:bg-[#128C7E] text-white">
+                    Assinar Agora
                   </Button>
                 </div>
               </div>

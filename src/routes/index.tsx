@@ -10,7 +10,7 @@ import {
   Users, TrendingUp, Receipt, Tag, ChevronDown, Minus, FileText, Boxes, Play
 } from "lucide-react";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { DemoDashboard } from "@/components/DemoDashboard";
 import { DemoCatalog } from "@/components/DemoCatalog";
 
@@ -108,6 +108,7 @@ function Landing() {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] p-0 overflow-hidden bg-background border-border">
+                  <DialogTitle className="sr-only">Simulação do Sistema</DialogTitle>
                   <DemoDashboard />
                 </DialogContent>
               </Dialog>
@@ -119,6 +120,7 @@ function Landing() {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] p-0 overflow-hidden bg-background border-border">
+                  <DialogTitle className="sr-only">Simulação de Catálogo</DialogTitle>
                   <DemoCatalog />
                 </DialogContent>
               </Dialog>

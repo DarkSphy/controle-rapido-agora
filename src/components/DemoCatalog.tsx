@@ -8,10 +8,10 @@ import { toast } from "sonner";
 import { formatBRL } from "@/lib/store";
 
 const mockProducts = [
-  { id: "1", name: "Camiseta Básica Premium", description: "Algodão peruano, caimento perfeito.", price: 69.90, img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=400" },
-  { id: "2", name: "Caneca Mágica Minimalista", description: "Muda de cor com líquido quente.", price: 45.00, img: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&q=80&w=400" },
-  { id: "3", name: "Cabo USB-C Turbo", description: "Carregamento ultrarrápido, 2 metros.", price: 39.90, img: "https://images.unsplash.com/photo-1615526675159-e248c3021d3f?auto=format&fit=crop&q=80&w=400" },
-  { id: "4", name: "Caderno Inteligente", description: "Folhas reposicionáveis, capa dura.", price: 99.90, img: "https://images.unsplash.com/photo-1531346878377-a541e4a113fb?auto=format&fit=crop&q=80&w=400" },
+  { id: "1", name: "Jaqueta de Couro Vintage", description: "Design clássico, couro legítimo com acabamento premium.", price: 489.90, img: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=80&w=600" },
+  { id: "2", name: "Bolsa Satchel Elegance", description: "Couro texturizado, detalhes em dourado e alça ajustável.", price: 245.00, img: "https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=600" },
+  { id: "3", name: "Óculos de Sol Milan", description: "Proteção UV400, armação em acetato polido à mão.", price: 159.90, img: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=600" },
+  { id: "4", name: "Relógio Chrono Black", description: "Mecanismo suíço, resistência à água 50m, pulseira de aço.", price: 699.90, img: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=600" },
 ];
 
 export function DemoCatalog() {
@@ -148,7 +148,7 @@ export function DemoCatalog() {
         {/* BANNER */}
         <div className="w-full overflow-hidden bg-brand">
           <div className="relative max-h-[250px] w-full">
-            <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=1200" alt="Banner" className="w-full h-full object-cover aspect-[3/1] opacity-60 mix-blend-overlay" />
+            <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=1200" alt="Banner" className="w-full h-full object-cover aspect-[3/1] opacity-70 mix-blend-overlay" />
             <div className="absolute inset-0 flex items-center justify-center">
               <h2 className="text-white text-2xl md:text-4xl font-black drop-shadow-lg text-center px-4">
                 Coleção de Inverno
