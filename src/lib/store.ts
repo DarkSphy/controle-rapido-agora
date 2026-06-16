@@ -170,6 +170,13 @@ export type QuoteItem = {
   isService: boolean;
 };
 
+export type CatalogBanner = {
+  id: string;
+  url: string;
+  position: "top" | "middle" | "bottom";
+  link?: string;
+};
+
 export type CatalogSettings = {
   id: string;
   whatsappNumber?: string;
@@ -179,6 +186,9 @@ export type CatalogSettings = {
   bannerUrl?: string;
   bannerText?: string;
   bannerEnabled: boolean;
+  address?: string;
+  description?: string;
+  banners?: CatalogBanner[];
 };
 
 export type BusinessSettings = {
@@ -601,6 +611,9 @@ export const actions = {
         bannerUrl: catalogSettingsData.banner_url ?? undefined,
         bannerText: catalogSettingsData.banner_text ?? undefined,
         bannerEnabled: catalogSettingsData.banner_enabled ?? false,
+        address: catalogSettingsData.address ?? undefined,
+        description: catalogSettingsData.description ?? undefined,
+        banners: catalogSettingsData.banners ?? [],
       };
     }
 
@@ -636,6 +649,25 @@ export const actions = {
       quotes: [], quoteItems: [],
       taxRate: 0, taxMode: "margin", loaded: false 
     });
+  },
+
+  async uploadImage(file: File, bucket = "catalog_images", pathPrefix = ""): Promise<string | null> {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return null;
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${pathPrefix ? pathPrefix + '-' : ''}${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+    const filePath = `${user.user.id}/${fileName}`;
+    
+    const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file, { upsert: true });
+    
+    if (uploadError) {
+      toast.error("Erro ao subir imagem: " + uploadError.message);
+      return null;
+    }
+    
+    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
+    return data.publicUrl;
   },
 
   async setGlobalTaxes(taxRate: number, taxMode: "margin" | "final") {

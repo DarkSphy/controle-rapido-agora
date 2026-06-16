@@ -139,12 +139,17 @@ export function ProductDialog({
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
 
-  function onImage(e: React.ChangeEvent<HTMLInputElement>) {
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  async function onImage(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
-    const r = new FileReader();
-    r.onload = () => setD((p) => ({ ...p, image: r.result as string }));
-    r.readAsDataURL(f);
+    setUploadingImage(true);
+    const url = await actions.uploadImage(f, "catalog_images", "product");
+    if (url) {
+      setD((p) => ({ ...p, image: url }));
+    }
+    setUploadingImage(false);
   }
 
   const cost = parseFloat(d.cost) || 0;
@@ -171,13 +176,20 @@ export function ProductDialog({
         {tab === "general" ? (
           <div className="space-y-4">
             <div className="flex gap-3 items-start">
-              <label className="h-16 w-16 rounded-lg border border-dashed border-border grid place-items-center cursor-pointer overflow-hidden bg-muted">
+              <label className="h-16 w-16 rounded-lg border border-dashed border-border grid place-items-center cursor-pointer overflow-hidden bg-muted relative">
                 {d.image ? (
                   <img src={d.image} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-xs text-muted-foreground">Foto</span>
+                  <span className="text-xs text-muted-foreground text-center px-1">
+                    {uploadingImage ? "Enviando..." : "Foto máx 2MB"}
+                  </span>
                 )}
-                <input type="file" accept="image/*" className="hidden" onChange={onImage} />
+                {uploadingImage && (
+                  <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
+                    <span className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+                  </div>
+                )}
+                <input type="file" accept="image/*" className="hidden" onChange={onImage} disabled={uploadingImage} />
               </label>
               <div className="flex-1 space-y-2">
                 <Label htmlFor="n">Nome</Label>

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Product, Variation, CatalogSettings, formatBRL } from "@/lib/store";
-import { ShoppingCart, Plus, Minus, X, Store } from "lucide-react";
+import { ShoppingCart, Plus, Minus, X, Store, MapPin, MessageCircle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +26,9 @@ export const Route = createFileRoute("/c/$userId")({
       id: sets.id,
       whatsappNumber: sets.whatsapp_number,
       companyName: sets.company_name,
+      address: sets.address,
+      description: sets.description,
+      banners: sets.banners || [],
       colors: sets.colors || { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
       fontFamily: sets.font_family || "Inter",
       bannerUrl: sets.banner_url,
@@ -35,7 +38,8 @@ export const Route = createFileRoute("/c/$userId")({
       id: params.userId,
       bannerEnabled: false,
       colors: { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
-      fontFamily: "Inter"
+      fontFamily: "Inter",
+      banners: []
     };
 
     const products: Product[] = (prods || []).map((p: any) => ({
@@ -49,6 +53,7 @@ export const Route = createFileRoute("/c/$userId")({
       minStock: p.min_stock,
       inCatalog: p.in_catalog,
       usage: p.usage,
+      categoryId: p.category_id,
       createdAt: new Date(p.created_at).getTime(),
       variations: (vars || []).filter((v: any) => v.product_id === p.id).map((v: any) => ({
         id: v.id,
@@ -151,111 +156,150 @@ function CatalogPage() {
     window.open(url, "_blank");
   }
 
+  function openSupport() {
+    if (!settings.whatsappNumber) return toast.error("Suporte indisponível no momento.");
+    const msg = `Olá! Estou vendo o catálogo e gostaria de tirar uma dúvida.`;
+    const url = `https://wa.me/${settings.whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank");
+  }
+
+  const topBanners = settings.banners?.filter(b => b.position === "top") || [];
+  const middleBanners = settings.banners?.filter(b => b.position === "middle") || [];
+  const bottomBanners = settings.banners?.filter(b => b.position === "bottom") || [];
+
   return (
-    <div className="catalog-theme min-h-screen bg-background text-foreground font-sans pb-24">
+    <div className="catalog-theme min-h-screen bg-background text-foreground font-sans pb-24 relative selection:bg-brand selection:text-white">
       <style dangerouslySetInnerHTML={{ __html: themeStyles }} />
       
-      {settings.bannerEnabled && (
-        <div className="w-full bg-primary text-primary-foreground text-center py-2 px-4 text-sm font-medium relative overflow-hidden flex items-center justify-center">
-          {settings.bannerUrl && (
-            <div className="absolute inset-0 opacity-20 bg-cover bg-center" style={{ backgroundImage: `url(${settings.bannerUrl})` }} />
-          )}
-          <span className="relative z-10">{settings.bannerText}</span>
-        </div>
-      )}
-
-      <header className="px-5 py-4 border-b border-border bg-card shadow-sm sticky top-0 z-20">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Store className="h-6 w-6 text-brand" />
-            <h1 className="font-bold text-xl">{settings.companyName || "Catálogo Online"}</h1>
+      {/* HEADER / NAVIGATION */}
+      <header className="px-5 py-4 border-b border-border/50 bg-card/80 backdrop-blur-lg shadow-sm sticky top-0 z-40 transition-all duration-300">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-brand flex items-center justify-center text-white shadow-lg shadow-brand/30">
+              <Store className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="font-extrabold text-xl leading-tight">{settings.companyName || "Catálogo Online"}</h1>
+              {settings.address && (
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                  <MapPin className="h-3 w-3" />
+                  <span className="truncate max-w-[200px] md:max-w-sm">{settings.address}</span>
+                </div>
+              )}
+            </div>
           </div>
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" className="relative h-10 px-4 rounded-full border-brand text-brand hover:bg-brand hover:text-brand-foreground transition-all shadow-sm">
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                <span className="font-semibold">Carrinho</span>
+              <Button className="relative h-11 px-5 rounded-full bg-foreground text-background hover:bg-foreground/90 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                <span className="font-semibold hidden sm:inline">Ver Carrinho</span>
                 {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-destructive text-destructive-foreground text-xs grid place-items-center font-bold">
+                  <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-brand text-white text-xs grid place-items-center font-bold border-2 border-card shadow-sm animate-in zoom-in">
                     {cart.reduce((s, i) => s + i.quantity, 0)}
                   </span>
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-full sm:max-w-md flex flex-col h-full bg-card catalog-theme p-0">
-              <SheetHeader className="p-5 border-b border-border">
-                <SheetTitle>Seu Carrinho</SheetTitle>
+            <SheetContent className="w-full sm:max-w-md flex flex-col h-full bg-card catalog-theme p-0 border-l-0 shadow-2xl">
+              <SheetHeader className="p-6 border-b border-border/50 bg-muted/20">
+                <SheetTitle className="text-xl font-bold flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5 text-brand" /> Seu Carrinho
+                </SheetTitle>
               </SheetHeader>
               
-              <div className="flex-1 overflow-y-auto p-5 space-y-6">
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-none">
                 {cart.length === 0 ? (
-                  <div className="text-center py-10 text-muted-foreground">
-                    <ShoppingCart className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                    Seu carrinho está vazio.
+                  <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground opacity-60">
+                    <ShoppingCart className="h-16 w-16 mb-4" />
+                    <p className="text-lg font-medium">Seu carrinho está vazio</p>
+                    <p className="text-sm">Adicione produtos para continuar</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-5">
                     {cart.map(item => {
                       const price = item.variation ? (item.variation.cost * (1 + item.variation.margin/100)) : (item.product.cost * (1 + item.product.margin/100));
                       return (
-                        <div key={item.id} className="flex gap-3 pb-4 border-b border-border last:border-0">
+                        <div key={item.id} className="flex gap-4 p-4 rounded-2xl border border-border/50 bg-background shadow-sm relative group transition-all hover:border-brand/30">
                           {item.product.image ? (
-                            <img src={item.product.image} className="w-16 h-16 rounded-md object-cover border border-border" />
+                            <img src={item.product.image} alt={item.product.name} className="w-20 h-20 rounded-xl object-cover" />
                           ) : (
-                            <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center text-[10px] text-muted-foreground">Sem foto</div>
+                            <div className="w-20 h-20 rounded-xl bg-muted flex items-center justify-center text-muted-foreground">
+                              <Store className="h-6 w-6 opacity-20" />
+                            </div>
                           )}
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm truncate">{item.product.name}</h4>
-                            {item.variation && <p className="text-xs text-muted-foreground">{item.variation.name}</p>}
-                            <div className="font-bold text-primary mt-1">{formatBRL(price)}</div>
-                            <div className="flex items-center gap-3 mt-2">
-                              <div className="flex items-center border border-border rounded-md">
-                                <button onClick={() => updateQty(item.id, -1)} className="px-2 py-1 text-muted-foreground hover:bg-muted"><Minus className="h-3 w-3" /></button>
-                                <span className="text-xs font-medium px-2 min-w-6 text-center">{item.quantity}</span>
-                                <button onClick={() => updateQty(item.id, 1)} className="px-2 py-1 text-muted-foreground hover:bg-muted"><Plus className="h-3 w-3" /></button>
+                          <div className="flex-1">
+                            <h4 className="font-bold text-sm line-clamp-2">{item.product.name}</h4>
+                            {item.variation && <p className="text-xs text-muted-foreground mt-0.5">{item.variation.name}</p>}
+                            <div className="font-bold text-brand mt-1">{formatBRL(price)}</div>
+                            <div className="flex items-center gap-3 mt-3">
+                              <div className="flex items-center rounded-lg border border-border bg-muted/50 overflow-hidden">
+                                <button className="px-2 py-1 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" onClick={() => updateQty(item.id, -1)}>
+                                  <Minus className="h-3 w-3" />
+                                </button>
+                                <span className="text-xs font-semibold px-2 min-w-[24px] text-center">{item.quantity}</span>
+                                <button className="px-2 py-1 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" onClick={() => updateQty(item.id, 1)}>
+                                  <Plus className="h-3 w-3" />
+                                </button>
                               </div>
-                              <button onClick={() => removeCart(item.id)} className="text-xs text-destructive hover:underline">Remover</button>
                             </div>
                           </div>
+                          <button onClick={() => removeCart(item.id)} className="absolute top-2 right-2 p-1.5 rounded-full text-muted-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors opacity-0 group-hover:opacity-100">
+                            <X className="h-4 w-4" />
+                          </button>
                         </div>
-                      )
+                      );
                     })}
-                  </div>
-                )}
-
-                {cart.length > 0 && (
-                  <div className="pt-4 space-y-4">
-                    <h3 className="font-bold text-lg border-b border-border pb-2">Dados de Entrega</h3>
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1"><Label className="text-xs">Nome *</Label><Input value={name} onChange={e => setName(e.target.value)} /></div>
-                        <div className="space-y-1"><Label className="text-xs">Celular *</Label><Input value={phone} onChange={e => setPhone(e.target.value)} /></div>
-                      </div>
-                      <div className="grid grid-cols-[1fr_2fr] gap-3">
-                        <div className="space-y-1"><Label className="text-xs">CEP</Label><Input value={cep} onChange={e => setCep(e.target.value)} /></div>
-                        <div className="space-y-1"><Label className="text-xs">Rua *</Label><Input value={street} onChange={e => setStreet(e.target.value)} /></div>
-                      </div>
-                      <div className="grid grid-cols-[80px_1fr] gap-3">
-                        <div className="space-y-1"><Label className="text-xs">Nº *</Label><Input value={number} onChange={e => setNumber(e.target.value)} /></div>
-                        <div className="space-y-1"><Label className="text-xs">Complemento</Label><Input value={complement} onChange={e => setComplement(e.target.value)} /></div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1"><Label className="text-xs">Bairro *</Label><Input value={neighborhood} onChange={e => setNeighborhood(e.target.value)} /></div>
-                        <div className="space-y-1"><Label className="text-xs">Cidade *</Label><Input value={city} onChange={e => setCity(e.target.value)} /></div>
-                      </div>
-                    </div>
                   </div>
                 )}
               </div>
 
               {cart.length > 0 && (
-                <div className="p-5 border-t border-border bg-card/80 backdrop-blur">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-muted-foreground font-medium">Total:</span>
-                    <span className="text-2xl font-black text-primary">{formatBRL(cartTotal)}</span>
+                <div className="p-6 border-t border-border/50 bg-background shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-muted-foreground">Total do Pedido</span>
+                    <span className="text-2xl font-extrabold text-foreground">{formatBRL(cartTotal)}</span>
                   </div>
-                  <Button onClick={checkout} className="w-full h-12 text-lg font-semibold bg-brand text-brand-foreground hover:bg-brand/90 shadow-lg">
-                    Finalizar no WhatsApp
+
+                  <div className="space-y-4 mb-6">
+                    <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Dados de Entrega</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1 col-span-2">
+                        <Label className="text-xs">Nome Completo</Label>
+                        <Input value={name} onChange={e => setName(e.target.value)} className="h-9 text-sm" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Telefone / WhatsApp</Label>
+                        <Input value={phone} onChange={e => setPhone(e.target.value)} className="h-9 text-sm" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">CEP</Label>
+                        <Input value={cep} onChange={e => setCep(e.target.value)} className="h-9 text-sm" />
+                      </div>
+                      <div className="space-y-1 col-span-2">
+                        <Label className="text-xs">Rua / Avenida</Label>
+                        <Input value={street} onChange={e => setStreet(e.target.value)} className="h-9 text-sm" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Número</Label>
+                        <Input value={number} onChange={e => setNumber(e.target.value)} className="h-9 text-sm" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Complemento</Label>
+                        <Input value={complement} onChange={e => setComplement(e.target.value)} className="h-9 text-sm" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Bairro</Label>
+                        <Input value={neighborhood} onChange={e => setNeighborhood(e.target.value)} className="h-9 text-sm" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Cidade</Label>
+                        <Input value={city} onChange={e => setCity(e.target.value)} className="h-9 text-sm" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button className="w-full h-12 text-base font-bold bg-[#25D366] hover:bg-[#128C7E] text-white shadow-lg shadow-[#25D366]/30" onClick={checkout}>
+                    Enviar Pedido pelo WhatsApp
                   </Button>
                 </div>
               )}
@@ -264,54 +308,94 @@ function CatalogPage() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-5 py-10">
-        {products.length === 0 ? (
-          <div className="text-center py-20 text-muted-foreground">
-            <Store className="h-16 w-16 mx-auto mb-4 opacity-20" />
-            <h2 className="text-xl font-medium">Nenhum produto disponível</h2>
-            <p className="mt-2">O lojista ainda não adicionou produtos ao catálogo.</p>
+      {/* TOP BANNERS */}
+      {topBanners.length > 0 && (
+        <div className="w-full overflow-hidden mb-6 bg-muted/20">
+          <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
+            {topBanners.map((b, i) => (
+              <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[400px]">
+                <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[3/1]" />
+              </div>
+            ))}
           </div>
-        ) : (
+        </div>
+      )}
+
+      {/* MAIN CONTENT */}
+      <main className="max-w-6xl mx-auto px-5 py-8 space-y-12">
+        {/* STORE INFO (if no top banner or to reinforce) */}
+        {settings.description && (
+          <div className="max-w-3xl mx-auto text-center space-y-4">
+            <h2 className="text-2xl md:text-3xl font-extrabold">Bem-vindo à {settings.companyName}</h2>
+            <p className="text-lg text-muted-foreground leading-relaxed">{settings.description}</p>
+          </div>
+        )}
+
+        {/* PRODUCTS GRID */}
+        <div>
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <Store className="h-5 w-5 text-brand" /> Produtos em Destaque
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map(p => {
-              const price = priceFromCostMargin(p.cost, p.margin);
-              const hasVars = p.variations.length > 0;
+              const price = p.cost * (1 + p.margin/100);
+              const hasVariations = p.variations && p.variations.length > 0;
+              
               return (
-                <div key={p.id} className="rounded-2xl border border-border bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col group">
-                  <div className="aspect-square bg-muted relative overflow-hidden">
+                <div key={p.id} className="group bg-card rounded-3xl overflow-hidden border border-border/50 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col hover:-translate-y-1">
+                  <div className="relative aspect-square overflow-hidden bg-muted">
                     {p.image ? (
-                      <img src={p.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={p.image} alt={p.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">Sem imagem</div>
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground opacity-30">
+                        <Store className="h-12 w-12" />
+                      </div>
                     )}
-                  </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="font-bold text-lg mb-1 line-clamp-1">{p.name}</h3>
-                    {p.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">{p.description}</p>
-                    )}
-                    
-                    {!hasVars ? (
-                      <div className="mt-auto pt-4 flex items-center justify-between">
-                        <span className="font-black text-primary text-xl">{formatBRL(price)}</span>
-                        <Button size="sm" className="rounded-full bg-brand text-brand-foreground hover:bg-brand/90" onClick={() => addToCart(p)}>
-                          <Plus className="h-4 w-4" />
+                    {/* Add to cart overlay for no-variation products */}
+                    {!hasVariations && (
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                        <Button 
+                          onClick={() => addToCart(p)}
+                          className="bg-brand text-white hover:bg-brand/90 hover:scale-105 transition-transform shadow-lg rounded-full px-6 h-12"
+                        >
+                          <ShoppingCart className="mr-2 h-5 w-5" /> Adicionar
                         </Button>
                       </div>
-                    ) : (
-                      <div className="mt-auto pt-4 space-y-3">
-                        <span className="font-black text-primary text-xl block">A partir de {formatBRL(Math.min(...p.variations.map(v => v.cost * (1+v.margin/100))))}</span>
-                        <div className="grid grid-cols-2 gap-2">
+                    )}
+                  </div>
+                  
+                  <div className="p-5 flex flex-col flex-1">
+                    <h3 className="font-bold text-lg leading-tight mb-1 group-hover:text-brand transition-colors line-clamp-2">{p.name}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">{p.description}</p>
+                    
+                    {hasVariations ? (
+                      <div className="space-y-3 mt-auto">
+                        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                          <Info className="h-3 w-3" /> Opções disponíveis:
+                        </div>
+                        <div className="grid grid-cols-1 gap-2">
                           {p.variations.map(v => {
                             const vPrice = v.cost * (1 + v.margin/100);
                             return (
-                              <Button key={v.id} variant="outline" size="sm" className="flex flex-col h-auto py-1.5 px-2 border-border text-xs" onClick={() => addToCart(p, v)}>
-                                <span className="font-medium truncate w-full">{v.name}</span>
-                                <span className="text-brand font-bold">{formatBRL(vPrice)}</span>
-                              </Button>
-                            )
+                              <div key={v.id} className="flex items-center justify-between p-2.5 rounded-xl border border-border/50 bg-muted/20 hover:border-brand/30 transition-colors">
+                                <span className="text-sm font-medium">{v.name}</span>
+                                <div className="flex items-center gap-3">
+                                  <span className="font-bold text-brand">{formatBRL(vPrice)}</span>
+                                  <Button size="icon" className="h-8 w-8 rounded-full bg-foreground text-background hover:bg-brand hover:text-white transition-colors" onClick={() => addToCart(p, v)}>
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            );
                           })}
                         </div>
+                      </div>
+                    ) : (
+                      <div className="mt-auto flex items-end justify-between">
+                        <div className="font-black text-2xl text-foreground">{formatBRL(price)}</div>
+                        <Button className="md:hidden h-10 w-10 rounded-full p-0 bg-foreground text-background" onClick={() => addToCart(p)}>
+                          <Plus className="h-5 w-5" />
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -319,8 +403,62 @@ function CatalogPage() {
               );
             })}
           </div>
+        </div>
+
+        {/* MIDDLE BANNERS */}
+        {middleBanners.length > 0 && (
+          <div className="w-full overflow-hidden rounded-3xl shadow-lg border border-border/50 my-12">
+             <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
+              {middleBanners.map((b, i) => (
+                <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[300px]">
+                  <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[4/1]" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* BOTTOM BANNERS */}
+        {bottomBanners.length > 0 && (
+          <div className="w-full overflow-hidden rounded-3xl shadow-lg border border-border/50 mt-12">
+             <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
+              {bottomBanners.map((b, i) => (
+                <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[300px]">
+                  <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[4/1]" />
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </main>
+
+      {/* FOOTER */}
+      <footer className="bg-card border-t border-border mt-12 py-12 px-5">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div>
+            <h3 className="font-bold text-lg mb-2">{settings.companyName}</h3>
+            {settings.address && <p className="text-sm text-muted-foreground max-w-sm">{settings.address}</p>}
+          </div>
+          <div className="text-xs text-muted-foreground flex flex-col items-center md:items-end gap-1">
+            <span>Catálogo gerado por ControleJá</span>
+            <span>&copy; {new Date().getFullYear()} Todos os direitos reservados.</span>
+          </div>
+        </div>
+      </footer>
+
+      {/* FLOATING SUPPORT BUTTON */}
+      <button 
+        onClick={openSupport}
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-3 pr-6 pl-4 py-3 rounded-full bg-foreground text-background shadow-[0_10px_40px_rgba(0,0,0,0.15)] hover:shadow-[0_10px_50px_rgba(0,0,0,0.25)] hover:-translate-y-1 transition-all duration-300 group"
+      >
+        <div className="bg-[#25D366] h-10 w-10 rounded-full flex items-center justify-center text-white shadow-inner group-hover:scale-110 transition-transform">
+          <MessageCircle className="h-5 w-5" />
+        </div>
+        <div className="flex flex-col items-start">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">Precisa de Ajuda?</span>
+          <span className="text-sm font-extrabold leading-none mt-0.5">Falar com o Suporte</span>
+        </div>
+      </button>
     </div>
   );
 }

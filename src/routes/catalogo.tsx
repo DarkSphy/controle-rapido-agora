@@ -9,8 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useStore, Product, Kit, CatalogSettings, actions, formatBRL } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Copy, ExternalLink, Plus, Trash2 } from "lucide-react";
+import { Copy, ExternalLink, Plus, Trash2, Image as ImageIcon } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { CatalogBanner } from "@/lib/store";
 
 export const Route = createFileRoute("/catalogo")({
   head: () => ({
@@ -30,24 +31,25 @@ function CatalogoPage() {
 
   const [whatsapp, setWhatsapp] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [address, setAddress] = useState("");
+  const [description, setDescription] = useState("");
   const [font, setFont] = useState("Inter");
   const [primary, setPrimary] = useState("#2C3E50");
   const [accent, setAccent] = useState("#7FB69D");
-  const [bannerUrl, setBannerUrl] = useState("");
-  const [bannerText, setBannerText] = useState("");
-  const [bannerEnabled, setBannerEnabled] = useState(false);
+  const [banners, setBanners] = useState<CatalogBanner[]>([]);
   const [saving, setSaving] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
 
   useEffect(() => {
     if (settings) {
       setWhatsapp(settings.whatsappNumber || "");
       setCompanyName(settings.companyName || "");
+      setAddress(settings.address || "");
+      setDescription(settings.description || "");
       setFont(settings.fontFamily || "Inter");
       setPrimary(settings.colors?.primary || "#2C3E50");
       setAccent(settings.colors?.accent || "#7FB69D");
-      setBannerUrl(settings.bannerUrl || "");
-      setBannerText(settings.bannerText || "");
-      setBannerEnabled(settings.bannerEnabled || false);
+      setBanners(settings.banners || []);
     }
   }, [settings]);
 
@@ -58,21 +60,41 @@ function CatalogoPage() {
       id: user.id,
       whatsapp_number: whatsapp,
       company_name: companyName,
+      address,
+      description,
       font_family: font,
       colors: { primary, accent, background: "#F9FBF9", card: "#FFFFFF" },
-      banner_url: bannerUrl,
-      banner_text: bannerText,
-      banner_enabled: bannerEnabled,
+      banners: banners,
     };
     
+    // Check if session is valid by just doing upsert (supabase client handles auto-refresh usually)
     const { error } = await supabase.from("catalog_settings").upsert(payload);
     if (error) {
-      toast.error(error.message);
+      toast.error("Erro ao salvar: " + error.message);
     } else {
       toast.success("Configurações do catálogo salvas!");
       actions.loadAll(); // Reload settings
     }
     setSaving(false);
+  }
+
+  async function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setUploadingBanner(true);
+    const url = await actions.uploadImage(f, "catalog_images", "banner");
+    if (url) {
+      setBanners(prev => [...prev, { id: Math.random().toString(), url, position: "top" }]);
+    }
+    setUploadingBanner(false);
+  }
+
+  function removeBanner(id: string) {
+    setBanners(prev => prev.filter(b => b.id !== id));
+  }
+
+  function updateBannerPosition(id: string, pos: "top" | "middle" | "bottom") {
+    setBanners(prev => prev.map(b => b.id === id ? { ...b, position: pos } : b));
   }
 
   function copyLink() {
@@ -106,6 +128,7 @@ function CatalogoPage() {
       <Tabs defaultValue="geral" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="geral">Configurações</TabsTrigger>
+          <TabsTrigger value="banners">Banners</TabsTrigger>
           <TabsTrigger value="produtos">Produtos</TabsTrigger>
           <TabsTrigger value="kits">Kits</TabsTrigger>
         </TabsList>
@@ -119,7 +142,15 @@ function CatalogoPage() {
                 <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Ex: Minha Loja" />
               </div>
               <div className="space-y-2">
-                <Label>WhatsApp para Receber Pedidos</Label>
+                <Label>Endereço Físico</Label>
+                <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Ex: Rua das Flores, 123" />
+              </div>
+              <div className="space-y-2">
+                <Label>Descrição da Loja</Label>
+                <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Breve descrição da sua loja..." />
+              </div>
+              <div className="space-y-2">
+                <Label>WhatsApp (Suporte / Pedidos)</Label>
                 <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="Ex: 5511999999999" />
                 <p className="text-xs text-muted-foreground">Inclua o código do país (55) e DDD. Apenas números.</p>
               </div>
@@ -159,29 +190,72 @@ function CatalogoPage() {
               </div>
             </div>
 
-            <div className="space-y-4 rounded-xl border border-border bg-card p-5 md:col-span-2">
-              <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-lg">Banner Promocional</h2>
-                <Switch checked={bannerEnabled} onCheckedChange={setBannerEnabled} />
-              </div>
-              {bannerEnabled && (
-                <div className="grid md:grid-cols-2 gap-4 mt-4">
-                  <div className="space-y-2">
-                    <Label>Texto do Banner</Label>
-                    <Input value={bannerText} onChange={(e) => setBannerText(e.target.value)} placeholder="Ex: Frete Grátis nas compras acima de R$ 200" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>URL da Imagem de Fundo (opcional)</Label>
-                    <Input value={bannerUrl} onChange={(e) => setBannerUrl(e.target.value)} placeholder="Ex: https://img.com/banner.jpg" />
-                  </div>
-                </div>
-              )}
             </div>
           </div>
           
           <div className="flex justify-end">
             <Button onClick={saveSettings} disabled={saving} size="lg">
               {saving ? "Salvando..." : "Salvar Configurações"}
+            </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="banners" className="space-y-6">
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="p-4 border-b border-border bg-muted/30">
+              <h2 className="font-semibold">Banners Rotativos</h2>
+              <p className="text-sm text-muted-foreground">Faça upload de banners para exibir na sua vitrine online.</p>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="flex flex-col md:flex-row gap-6">
+                <label className="flex-shrink-0 h-32 w-full md:w-64 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition relative overflow-hidden group">
+                  <input type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} disabled={uploadingBanner} />
+                  {uploadingBanner ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />
+                      <span className="text-xs text-muted-foreground font-medium">Enviando...</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <ImageIcon className="h-8 w-8 opacity-50 group-hover:scale-110 transition" />
+                      <span className="text-xs font-medium text-center px-4">Upload de Banner<br/>(Recomendado: 1200x400)</span>
+                    </div>
+                  )}
+                </label>
+                
+                <div className="flex-1 space-y-4">
+                  {banners.length === 0 && (
+                    <div className="h-full flex items-center justify-center border rounded-xl border-dashed bg-muted/20 text-muted-foreground text-sm">
+                      Nenhum banner configurado.
+                    </div>
+                  )}
+                  {banners.map((b) => (
+                    <div key={b.id} className="flex flex-col md:flex-row items-center gap-4 p-3 border rounded-xl bg-card shadow-sm">
+                      <img src={b.url} alt="Banner" className="w-full md:w-40 h-20 object-cover rounded-md border" />
+                      <div className="flex-1 space-y-2 w-full">
+                        <Label className="text-xs text-muted-foreground">Posição de exibição</Label>
+                        <select 
+                          value={b.position}
+                          onChange={(e) => updateBannerPosition(b.id, e.target.value as any)}
+                          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
+                        >
+                          <option value="top">Topo da Página (Destaque)</option>
+                          <option value="middle">Meio da Página</option>
+                          <option value="bottom">Fim da Página</option>
+                        </select>
+                      </div>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => removeBanner(b.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={saveSettings} disabled={saving} size="lg">
+              {saving ? "Salvando..." : "Salvar Banners"}
             </Button>
           </div>
         </TabsContent>
