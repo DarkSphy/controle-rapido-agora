@@ -24,15 +24,15 @@ export const Route = createFileRoute("/c/$userId")({
     
     const settings: CatalogSettings = sets ? {
       id: sets.id,
-      whatsappNumber: sets.whatsapp_number,
-      companyName: sets.company_name,
-      address: sets.address,
-      description: sets.description,
-      banners: sets.banners || [],
-      colors: sets.colors || { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
+      whatsappNumber: sets.whatsapp_number ?? undefined,
+      companyName: sets.company_name ?? undefined,
+      address: (sets as any).address ?? undefined,
+      description: (sets as any).description ?? undefined,
+      banners: ((sets as any).banners as any) || [],
+      colors: (sets.colors as any) || { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
       fontFamily: sets.font_family || "Inter",
-      bannerUrl: sets.banner_url,
-      bannerText: sets.banner_text,
+      bannerUrl: sets.banner_url ?? undefined,
+      bannerText: sets.banner_text ?? undefined,
       bannerEnabled: sets.banner_enabled || false,
     } : {
       id: params.userId,
@@ -163,9 +163,9 @@ function CatalogPage() {
     window.open(url, "_blank");
   }
 
-  const topBanners = settings.banners?.filter(b => b.position === "top") || [];
-  const middleBanners = settings.banners?.filter(b => b.position === "middle") || [];
-  const bottomBanners = settings.banners?.filter(b => b.position === "bottom") || [];
+  const topBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "top") || [];
+  const middleBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "middle") || [];
+  const bottomBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "bottom") || [];
 
   return (
     <div className="catalog-theme min-h-screen bg-background text-foreground font-sans pb-24 relative selection:bg-brand selection:text-white">
