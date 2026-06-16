@@ -50,6 +50,54 @@ export type Database = {
         }
         Relationships: []
       }
+      catalog_settings: {
+        Row: {
+          address: string | null
+          banner_enabled: boolean | null
+          banner_text: string | null
+          banner_url: string | null
+          banners: Json | null
+          colors: Json | null
+          company_name: string | null
+          created_at: string
+          description: string | null
+          font_family: string | null
+          id: string
+          updated_at: string
+          whatsapp_number: string | null
+        }
+        Insert: {
+          address?: string | null
+          banner_enabled?: boolean | null
+          banner_text?: string | null
+          banner_url?: string | null
+          banners?: Json | null
+          colors?: Json | null
+          company_name?: string | null
+          created_at?: string
+          description?: string | null
+          font_family?: string | null
+          id: string
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Update: {
+          address?: string | null
+          banner_enabled?: boolean | null
+          banner_text?: string | null
+          banner_url?: string | null
+          banners?: Json | null
+          colors?: Json | null
+          company_name?: string | null
+          created_at?: string
+          description?: string | null
+          font_family?: string | null
+          id?: string
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -262,8 +310,10 @@ export type Database = {
           category_id: string | null
           cost: number
           created_at: string
+          description: string | null
           id: string
           image: string | null
+          in_catalog: boolean
           is_service: boolean | null
           margin: number
           min_stock: number
@@ -278,8 +328,10 @@ export type Database = {
           category_id?: string | null
           cost?: number
           created_at?: string
+          description?: string | null
           id?: string
           image?: string | null
+          in_catalog?: boolean
           is_service?: boolean | null
           margin?: number
           min_stock?: number
@@ -294,8 +346,10 @@ export type Database = {
           category_id?: string | null
           cost?: number
           created_at?: string
+          description?: string | null
           id?: string
           image?: string | null
+          in_catalog?: boolean
           is_service?: boolean | null
           margin?: number
           min_stock?: number
