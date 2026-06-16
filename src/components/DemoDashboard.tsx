@@ -2,7 +2,7 @@ import { useState, createContext, useContext, useEffect } from "react";
 import { 
   LayoutDashboard, ShoppingBag, Package, Users, Truck,
   Plus, Minus, X, Check, Search, Bell, Menu, ShoppingCart, Info, ExternalLink,
-  Receipt, BarChart3, ChartBar, Settings, Store, Storefront, Wrench, Tags, Layers, Lightbulb, ArrowLeftRight, AlertTriangle
+  Receipt, BarChart3, ChartBar, Settings, Store, Store as Storefront, Wrench, Tags, Layers, Lightbulb, ArrowLeftRight, AlertTriangle
 } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
@@ -276,7 +276,7 @@ export function DemoDashboard() {
   </div>
 )}
 
-            {activeTab === "relatorios" && (
+            {(activeTab as string) === "relatorios" && (
   <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 space-y-4">
     <ExplanationBanner icon={ChartBar} title="Relatórios" text="Analise o desempenho da sua loja com relatórios detalhados de vendas e produtos mais lucrativos." />
     <div className="bg-card rounded-xl p-4 border border-border">
