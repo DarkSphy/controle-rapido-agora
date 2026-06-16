@@ -66,9 +66,10 @@ function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="relative px-5 md:px-10 pt-12 md:pt-20 pb-16 md:pb-24 overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-brand/10 via-background to-background" />
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] -z-10 rounded-full bg-brand/15 blur-3xl translate-x-1/3 -translate-y-1/3" />
+      <section className="relative px-5 md:px-10 pt-16 md:pt-28 pb-20 md:pb-32 overflow-hidden bg-background">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-brand/20 via-background to-background opacity-70" />
+        <div className="absolute top-20 right-0 w-[600px] h-[600px] -z-10 rounded-full bg-brand/10 blur-[100px] translate-x-1/3" />
+        <div className="absolute bottom-0 left-0 w-[800px] h-[400px] -z-10 rounded-full bg-primary/5 blur-[120px] -translate-x-1/4" />
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div>
 
@@ -88,27 +89,15 @@ function Landing() {
                 </li>
               ))}
             </ul>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
-              <Button asChild size="lg" className="text-base h-12 px-7 shadow-lg">
+            <div className="mt-10 flex flex-col sm:flex-row gap-4">
+              <Button asChild size="lg" className="text-base h-14 px-8 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:shadow-[0_10px_40px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-300">
                 <a href={WA_HIRE_URL}>
-                  Quero contratar agora <ArrowRight className="h-4 w-4" />
+                  Quero contratar agora <ArrowRight className="h-5 w-5 ml-2" />
                 </a>
               </Button>
-              <Button asChild size="lg" variant="outline" className="text-base h-12 px-6 border-[#25D366] text-[#1ebe5a] hover:bg-[#25D366]/10 hover:text-[#1ebe5a]">
+              <Button asChild size="lg" variant="outline" className="text-base h-14 px-8 rounded-full border-2 border-[#25D366]/30 text-[#1ebe5a] bg-white/50 backdrop-blur-sm hover:bg-[#25D366]/10 hover:border-[#25D366] hover:-translate-y-1 transition-all duration-300 shadow-sm">
                 <a href={WA_HELP_URL} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="h-4 w-4" /> Falar no WhatsApp
-                </a>
-              </Button>
-            </div>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
-              <Button asChild size="lg" className="text-base h-12 px-7 shadow-lg">
-                <a href={WA_HIRE_URL}>
-                  Quero contratar agora <ArrowRight className="h-4 w-4" />
-                </a>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="text-base h-12 px-6 border-[#25D366] text-[#1ebe5a] hover:bg-[#25D366]/10 hover:text-[#1ebe5a]">
-                <a href={WA_HELP_URL} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="h-4 w-4" /> Falar no WhatsApp
+                  <MessageCircle className="h-5 w-5 mr-2" /> Falar no WhatsApp
                 </a>
               </Button>
             </div>
@@ -160,7 +149,7 @@ function Landing() {
           
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Card Sistema */}
-            <div className="bg-card border border-border hover:border-brand/50 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center group">
+            <div className="bg-white/80 backdrop-blur-xl border border-white/20 hover:border-brand/30 rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center group relative overflow-hidden">
               <div className="h-20 w-20 bg-brand/10 text-brand rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
                 <LayoutDashboard className="h-10 w-10" />
               </div>
@@ -170,7 +159,7 @@ function Landing() {
               </p>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button size="lg" className="w-full h-14 text-lg group-hover:bg-brand/90 transition-colors">
+                  <Button size="lg" className="w-full h-14 text-lg rounded-full group-hover:bg-brand/90 transition-colors shadow-lg group-hover:shadow-brand/20">
                     <Play className="h-5 w-5 mr-2" /> Testar o Sistema
                   </Button>
                 </DialogTrigger>
@@ -182,7 +171,7 @@ function Landing() {
             </div>
 
             {/* Card Catálogo */}
-            <div className="bg-card border border-border hover:border-brand/50 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center group">
+            <div className="bg-white/80 backdrop-blur-xl border border-white/20 hover:border-brand/30 rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center group relative overflow-hidden">
               <div className="h-20 w-20 bg-brand/10 text-brand rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform">
                 <Store className="h-10 w-10" />
               </div>
@@ -192,7 +181,7 @@ function Landing() {
               </p>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button size="lg" variant="outline" className="w-full h-14 text-lg border-2 hover:bg-brand hover:text-white transition-colors">
+                  <Button size="lg" variant="outline" className="w-full h-14 text-lg rounded-full border-2 hover:bg-brand hover:text-white transition-colors shadow-sm">
                     <Store className="h-5 w-5 mr-2" /> Exemplo de Catálogo
                   </Button>
                 </DialogTrigger>
@@ -412,7 +401,7 @@ function Landing() {
 
         <div className="grid md:grid-cols-2 gap-5 items-stretch">
           {/* Primeiro mês */}
-          <div className="relative rounded-3xl border-2 border-brand bg-card p-7 md:p-8 shadow-2xl flex flex-col">
+          <div className="relative rounded-[2rem] border-2 border-brand bg-white/90 backdrop-blur p-7 md:p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-500 flex flex-col">
             <span className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-brand text-brand-foreground text-[10px] font-bold uppercase tracking-wider">
               Comece por aqui
             </span>
@@ -429,15 +418,15 @@ function Landing() {
               <li className="flex gap-2"><Check className="h-4 w-4 text-brand-foreground mt-0.5 shrink-0" /> Atendimento prioritário no WhatsApp</li>
             </ul>
 
-            <Button asChild size="lg" className="mt-7 h-12 text-base font-bold w-full shadow-[var(--shadow-glow)]">
+            <Button asChild size="lg" className="mt-7 h-14 rounded-full text-base font-bold w-full shadow-xl shadow-brand/20">
               <a href={WA_HIRE_URL}>
-                Quero contratar agora <ArrowRight className="h-5 w-5" />
+                Quero contratar agora <ArrowRight className="h-5 w-5 ml-2" />
               </a>
             </Button>
           </div>
 
           {/* Mensalidade */}
-          <div className="relative rounded-3xl border border-border bg-card p-7 md:p-8 shadow-lg flex flex-col">
+          <div className="relative rounded-[2rem] border border-white/40 bg-white/60 backdrop-blur p-7 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-500 flex flex-col">
             <div className="text-xs uppercase tracking-widest font-bold text-muted-foreground">A partir do 2º mês</div>
             <div className="mt-3 flex items-baseline gap-1">
               <span className="text-5xl md:text-6xl font-extrabold">R$39,90</span>
@@ -456,9 +445,9 @@ function Landing() {
               href={WA_HELP_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-7 inline-flex items-center justify-center gap-2 h-12 rounded-md border border-[#25D366] text-[#1ebe5a] font-semibold hover:bg-[#25D366]/10 transition-colors"
+              className="mt-7 inline-flex items-center justify-center gap-2 h-14 rounded-full border-2 border-[#25D366]/30 text-[#1ebe5a] font-semibold hover:bg-[#25D366]/10 hover:border-[#25D366] transition-all duration-300"
             >
-              <MessageCircle className="h-4 w-4" /> Tirar dúvidas no WhatsApp
+              <MessageCircle className="h-5 w-5" /> Tirar dúvidas no WhatsApp
             </a>
           </div>
         </div>
