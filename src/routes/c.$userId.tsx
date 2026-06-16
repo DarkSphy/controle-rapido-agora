@@ -24,15 +24,15 @@ export const Route = createFileRoute("/c/$userId")({
     
     const settings: CatalogSettings = sets ? {
       id: sets.id,
-      whatsappNumber: sets.whatsapp_number,
-      companyName: sets.company_name,
-      address: sets.address,
-      description: sets.description,
-      banners: sets.banners || [],
-      colors: sets.colors || { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
+      whatsappNumber: sets.whatsapp_number ?? undefined,
+      companyName: sets.company_name ?? undefined,
+      address: (sets as any).address ?? undefined,
+      description: (sets as any).description ?? undefined,
+      banners: ((sets as any).banners as any) || [],
+      colors: (sets.colors as any) || { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
       fontFamily: sets.font_family || "Inter",
-      bannerUrl: sets.banner_url,
-      bannerText: sets.banner_text,
+      bannerUrl: sets.banner_url ?? undefined,
+      bannerText: sets.banner_text ?? undefined,
       bannerEnabled: sets.banner_enabled || false,
     } : {
       id: params.userId,
@@ -91,13 +91,17 @@ function CatalogPage() {
   const [neighborhood, setNeighborhood] = useState("");
   const [city, setCity] = useState("");
 
+  const safeHex = (v: any, fallback: string) =>
+    typeof v === "string" && /^#[0-9a-fA-F]{3,8}$/.test(v) ? v : fallback;
+  const safeFont = (v: any, fallback: string) =>
+    typeof v === "string" && /^[a-zA-Z0-9 _-]{1,40}$/.test(v) ? v : fallback;
   const themeStyles = `
     .catalog-theme {
-      --color-primary: ${settings.colors?.primary};
-      --color-brand: ${settings.colors?.accent};
-      --color-background: ${settings.colors?.background};
-      --color-card: ${settings.colors?.card};
-      --font-sans: '${settings.fontFamily}', sans-serif;
+      --color-primary: ${safeHex(settings.colors?.primary, "#38bdf8")};
+      --color-brand: ${safeHex(settings.colors?.accent, "#0284c7")};
+      --color-background: ${safeHex(settings.colors?.background, "#f8fafc")};
+      --color-card: ${safeHex(settings.colors?.card, "#ffffff")};
+      --font-sans: '${safeFont(settings.fontFamily, "Inter")}', sans-serif;
     }
     body { background-color: var(--color-background); }
   `;
@@ -163,9 +167,9 @@ function CatalogPage() {
     window.open(url, "_blank");
   }
 
-  const topBanners = settings.banners?.filter(b => b.position === "top") || [];
-  const middleBanners = settings.banners?.filter(b => b.position === "middle") || [];
-  const bottomBanners = settings.banners?.filter(b => b.position === "bottom") || [];
+  const topBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "top") || [];
+  const middleBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "middle") || [];
+  const bottomBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "bottom") || [];
 
   return (
     <div className="catalog-theme min-h-screen bg-background text-foreground font-sans pb-24 relative selection:bg-brand selection:text-white">
@@ -312,7 +316,7 @@ function CatalogPage() {
       {topBanners.length > 0 && (
         <div className="w-full overflow-hidden mb-6 bg-muted/20">
           <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
-            {topBanners.map((b, i) => (
+            {topBanners.map((b: any, i: number) => (
               <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[400px]">
                 <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[3/1]" />
               </div>
@@ -337,7 +341,7 @@ function CatalogPage() {
             <Store className="h-5 w-5 text-brand" /> Produtos em Destaque
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map(p => {
+            {products.map((p: any) => {
               const price = p.cost * (1 + p.margin/100);
               const hasVariations = p.variations && p.variations.length > 0;
               
@@ -374,7 +378,7 @@ function CatalogPage() {
                           <Info className="h-3 w-3" /> Opções disponíveis:
                         </div>
                         <div className="grid grid-cols-1 gap-2">
-                          {p.variations.map(v => {
+                          {p.variations.map((v: any) => {
                             const vPrice = v.cost * (1 + v.margin/100);
                             return (
                               <div key={v.id} className="flex items-center justify-between p-2.5 rounded-xl border border-border/50 bg-muted/20 hover:border-brand/30 transition-colors">
@@ -409,7 +413,7 @@ function CatalogPage() {
         {middleBanners.length > 0 && (
           <div className="w-full overflow-hidden rounded-3xl shadow-lg border border-border/50 my-12">
              <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
-              {middleBanners.map((b, i) => (
+              {middleBanners.map((b: any, i: number) => (
                 <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[300px]">
                   <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[4/1]" />
                 </div>
@@ -422,7 +426,7 @@ function CatalogPage() {
         {bottomBanners.length > 0 && (
           <div className="w-full overflow-hidden rounded-3xl shadow-lg border border-border/50 mt-12">
              <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
-              {bottomBanners.map((b, i) => (
+              {bottomBanners.map((b: any, i: number) => (
                 <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[300px]">
                   <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[4/1]" />
                 </div>

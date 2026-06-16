@@ -545,6 +545,7 @@ export const actions = {
       purchaseItems,
       serviceOrders,
       serviceOrderItems,
+      quotes,
       quoteItems,
       businessSettingsData,
       catalogSettingsData,

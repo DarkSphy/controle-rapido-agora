@@ -27,11 +27,13 @@ import { Route as ComprasRouteImport } from './routes/compras'
 import { Route as ClientesRouteImport } from './routes/clientes'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriesRouteImport } from './routes/categories'
+import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as BalcaoRouteImport } from './routes/balcao'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as CUserIdRouteImport } from './routes/c.$userId'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const VendasRoute = VendasRouteImport.update({
@@ -124,6 +126,11 @@ const CategoriesRoute = CategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CatalogoRoute = CatalogoRouteImport.update({
+  id: '/catalogo',
+  path: '/catalogo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BalcaoRoute = BalcaoRouteImport.update({
   id: '/balcao',
   path: '/balcao',
@@ -149,6 +156,11 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   path: '/return',
   getParentRoute: () => CheckoutRoute,
 } as any)
+const CUserIdRoute = CUserIdRouteImport.update({
+  id: '/c/$userId',
+  path: '/c/$userId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -161,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/balcao': typeof BalcaoRoute
+  '/catalogo': typeof CatalogoRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRouteWithChildren
   '/clientes': typeof ClientesRoute
@@ -179,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/servicos': typeof ServicosRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
+  '/c/$userId': typeof CUserIdRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -187,6 +201,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/balcao': typeof BalcaoRoute
+  '/catalogo': typeof CatalogoRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRouteWithChildren
   '/clientes': typeof ClientesRoute
@@ -205,6 +220,7 @@ export interface FileRoutesByTo {
   '/servicos': typeof ServicosRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
+  '/c/$userId': typeof CUserIdRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -214,6 +230,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/balcao': typeof BalcaoRoute
+  '/catalogo': typeof CatalogoRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRouteWithChildren
   '/clientes': typeof ClientesRoute
@@ -232,6 +249,7 @@ export interface FileRoutesById {
   '/servicos': typeof ServicosRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
+  '/c/$userId': typeof CUserIdRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -242,6 +260,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/balcao'
+    | '/catalogo'
     | '/categories'
     | '/checkout'
     | '/clientes'
@@ -260,6 +279,7 @@ export interface FileRouteTypes {
     | '/servicos'
     | '/suppliers'
     | '/vendas'
+    | '/c/$userId'
     | '/checkout/return'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -268,6 +288,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/balcao'
+    | '/catalogo'
     | '/categories'
     | '/checkout'
     | '/clientes'
@@ -286,6 +307,7 @@ export interface FileRouteTypes {
     | '/servicos'
     | '/suppliers'
     | '/vendas'
+    | '/c/$userId'
     | '/checkout/return'
     | '/api/public/payments/webhook'
   id:
@@ -294,6 +316,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/balcao'
+    | '/catalogo'
     | '/categories'
     | '/checkout'
     | '/clientes'
@@ -312,6 +335,7 @@ export interface FileRouteTypes {
     | '/servicos'
     | '/suppliers'
     | '/vendas'
+    | '/c/$userId'
     | '/checkout/return'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
@@ -321,6 +345,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   BalcaoRoute: typeof BalcaoRoute
+  CatalogoRoute: typeof CatalogoRoute
   CategoriesRoute: typeof CategoriesRoute
   CheckoutRoute: typeof CheckoutRouteWithChildren
   ClientesRoute: typeof ClientesRoute
@@ -339,6 +364,7 @@ export interface RootRouteChildren {
   ServicosRoute: typeof ServicosRoute
   SuppliersRoute: typeof SuppliersRoute
   VendasRoute: typeof VendasRoute
+  CUserIdRoute: typeof CUserIdRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -470,6 +496,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/catalogo': {
+      id: '/catalogo'
+      path: '/catalogo'
+      fullPath: '/catalogo'
+      preLoaderRoute: typeof CatalogoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/balcao': {
       id: '/balcao'
       path: '/balcao'
@@ -505,6 +538,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof CheckoutRoute
     }
+    '/c/$userId': {
+      id: '/c/$userId'
+      path: '/c/$userId'
+      fullPath: '/c/$userId'
+      preLoaderRoute: typeof CUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -532,6 +572,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   BalcaoRoute: BalcaoRoute,
+  CatalogoRoute: CatalogoRoute,
   CategoriesRoute: CategoriesRoute,
   CheckoutRoute: CheckoutRouteWithChildren,
   ClientesRoute: ClientesRoute,
@@ -550,17 +591,9 @@ const rootRouteChildren: RootRouteChildren = {
   ServicosRoute: ServicosRoute,
   SuppliersRoute: SuppliersRoute,
   VendasRoute: VendasRoute,
+  CUserIdRoute: CUserIdRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
