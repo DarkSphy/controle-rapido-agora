@@ -324,5 +324,6 @@ export function DemoDashboard() {
         </div>
       </main>
     </div>
+</DemoContext.Provider>
   );
 }
