@@ -40,6 +40,8 @@ export type Product = {
   supplierId?: string;
   categoryId?: string;
   isService?: boolean;
+  description?: string;
+  inCatalog?: boolean;
 };
 
 export type PriceHistory = {
@@ -53,13 +55,19 @@ export type PriceHistory = {
 export type Kit = {
   id: string;
   name: string;
+  image?: string;
+  price?: number;
+  description?: string;
+  inCatalog?: boolean;
   createdAt: number;
   updatedAt: number;
 };
 
 export type KitItem = {
+  id?: string;
   kitId: string;
   productId: string;
+  variationId?: string;
   quantity: number;
 };
 
@@ -162,6 +170,17 @@ export type QuoteItem = {
   isService: boolean;
 };
 
+export type CatalogSettings = {
+  id: string;
+  whatsappNumber?: string;
+  companyName?: string;
+  colors?: { primary: string; accent: string; background: string; card: string };
+  fontFamily?: string;
+  bannerUrl?: string;
+  bannerText?: string;
+  bannerEnabled: boolean;
+};
+
 export type BusinessSettings = {
   id: string;
   name: string | null;
@@ -191,6 +210,7 @@ type State = {
   businessSettings: BusinessSettings | null;
   taxRate: number;
   taxMode: "margin" | "final";
+  settings: CatalogSettings | null;
   loaded: boolean;
 };
 
@@ -199,7 +219,7 @@ let state: State = {
   kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
   purchases: [], purchaseItems: [], serviceOrders: [], serviceOrderItems: [],
   quotes: [], quoteItems: [], businessSettings: null,
-  taxRate: 0, taxMode: "margin", loaded: false 
+  taxRate: 0, taxMode: "margin", settings: null, loaded: false 
 };
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
@@ -218,7 +238,7 @@ const serverSnap: State = {
   kits: [], kitItems: [], customers: [], sales: [], saleItems: [], 
   purchases: [], purchaseItems: [], serviceOrders: [], serviceOrderItems: [],
   quotes: [], quoteItems: [], businessSettings: null,
-  taxRate: 0, taxMode: "margin", loaded: false 
+  taxRate: 0, taxMode: "margin", settings: null, loaded: false 
 };
 const getServer = () => serverSnap;
 
@@ -296,6 +316,8 @@ function rowToProduct(p: any, vars: any[]): Product {
     stock: p.stock,
     minStock: p.min_stock,
     usage: p.usage,
+    description: p.description ?? undefined,
+    inCatalog: p.in_catalog ?? false,
     createdAt: new Date(p.created_at).getTime(),
     supplierId: p.supplier_id ?? undefined,
     categoryId: p.category_id ?? undefined,
@@ -359,6 +381,10 @@ function rowToKit(k: any): Kit {
   return {
     id: k.id,
     name: k.name,
+    image: k.image ?? undefined,
+    price: Number(k.price),
+    description: k.description ?? undefined,
+    inCatalog: k.in_catalog ?? true,
     createdAt: new Date(k.created_at).getTime(),
     updatedAt: new Date(k.updated_at).getTime(),
   };
@@ -509,9 +535,9 @@ export const actions = {
       purchaseItems,
       serviceOrders,
       serviceOrderItems,
-      quotes,
       quoteItems,
       businessSettingsData,
+      catalogSettingsData,
     ] = await Promise.all([
       fetchTable("products", supabase.from("products").select("*").order("created_at", { ascending: false })),
       fetchTable("variations"),
@@ -531,6 +557,7 @@ export const actions = {
       fetchTable("quotes", supabase.from("quotes").select("*").order("created_at", { ascending: false })),
       fetchTable("quote_items"),
       fetchTable("business_settings", supabase.from("business_settings").select("*").limit(1)),
+      fetchTable("catalog_settings", supabase.from("catalog_settings").select("*").eq("id", user?.id).maybeSingle()),
     ]);
 
     const products = (prods ?? []).map((p: any) => rowToProduct(p, vars ?? []));
@@ -563,6 +590,20 @@ export const actions = {
       };
     }
 
+    let settings: CatalogSettings | null = null;
+    if (catalogSettingsData) {
+      settings = {
+        id: catalogSettingsData.id,
+        whatsappNumber: catalogSettingsData.whatsapp_number ?? undefined,
+        companyName: catalogSettingsData.company_name ?? undefined,
+        colors: catalogSettingsData.colors ?? { primary: "#2C3E50", accent: "#7FB69D", background: "#F9FBF9", card: "#FFFFFF" },
+        fontFamily: catalogSettingsData.font_family ?? "Inter",
+        bannerUrl: catalogSettingsData.banner_url ?? undefined,
+        bannerText: catalogSettingsData.banner_text ?? undefined,
+        bannerEnabled: catalogSettingsData.banner_enabled ?? false,
+      };
+    }
+
     setState({
       products,
       movements,
@@ -582,6 +623,7 @@ export const actions = {
       businessSettings,
       taxRate,
       taxMode,
+      settings,
       loaded: true,
     });
   },
@@ -615,11 +657,13 @@ export const actions = {
       .insert({
         user_id: user.user.id,
         name: p.name,
+        description: p.description,
         image: p.image,
         cost: p.cost,
         margin: p.margin,
         stock: p.stock,
         min_stock: p.minStock,
+        in_catalog: p.inCatalog ?? false,
         supplier_id: (p as any).supplierId,
         category_id: (p as any).categoryId,
         is_service: (p as any).isService ?? false,
@@ -651,11 +695,13 @@ export const actions = {
   async updateProduct(id: string, patch: Partial<Omit<Product, "variations">> & { variations?: (Omit<Variation, "id"> & { id?: string })[] }) {
     const update: any = {};
     if (patch.name !== undefined) update.name = patch.name;
+    if (patch.description !== undefined) update.description = patch.description;
     if (patch.image !== undefined) update.image = patch.image;
     if (patch.cost !== undefined) update.cost = patch.cost;
     if (patch.margin !== undefined) update.margin = patch.margin;
     if (patch.stock !== undefined) update.stock = patch.stock;
     if (patch.minStock !== undefined) update.min_stock = patch.minStock;
+    if (patch.inCatalog !== undefined) update.in_catalog = patch.inCatalog;
     if ((patch as any).supplierId !== undefined) update.supplier_id = (patch as any).supplierId;
     if ((patch as any).categoryId !== undefined) update.category_id = (patch as any).categoryId;
     if ((patch as any).isService !== undefined) update.is_service = (patch as any).isService;
@@ -701,11 +747,13 @@ export const actions = {
           ? {
               ...p,
               ...(patch.name !== undefined && { name: patch.name }),
+              ...(patch.description !== undefined && { description: patch.description }),
               ...(patch.image !== undefined && { image: patch.image }),
               ...(patch.cost !== undefined && { cost: patch.cost }),
               ...(patch.margin !== undefined && { margin: patch.margin }),
               ...(patch.stock !== undefined && { stock: patch.stock }),
               ...(patch.minStock !== undefined && { minStock: patch.minStock }),
+              ...(patch.inCatalog !== undefined && { inCatalog: patch.inCatalog }),
               ...(patch as any).supplierId !== undefined && { supplierId: (patch as any).supplierId },
               ...(patch as any).categoryId !== undefined && { categoryId: (patch as any).categoryId },
               ...(patch as any).isService !== undefined && { isService: (patch as any).isService },
