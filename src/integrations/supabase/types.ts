@@ -838,6 +838,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       variations: {
         Row: {
           cost: number
@@ -884,13 +905,47 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_delete_client: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
+      admin_get_clients: {
+        Args: never
+        Returns: {
+          display_name: string
+          document: string
+          email: string
+          expires_at: string
+          id: string
+          start_date: string
+          whatsapp: string
+        }[]
+      }
+      admin_upsert_subscription: {
+        Args: {
+          p_document: string
+          p_expires_at: string
+          p_start_date: string
+          p_whatsapp: string
+          target_user_id: string
+        }
+        Returns: undefined
+      }
       has_active_subscription: {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_current_user_admin: { Args: never; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1017,6 +1072,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
