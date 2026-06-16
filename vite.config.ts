@@ -6,4 +6,23 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig();
+export default defineConfig({
+  vite: {
+    optimizeDeps: {
+      include: ['jspdf-autotable'],
+    },
+    ssr: {
+      noExternal: ['jspdf-autotable'],
+    },
+    resolve: {
+      alias: {
+        'jspdf-autotable': 'jspdf-autotable/dist/jspdf.plugin.autotable.js',
+      },
+    },
+    build: {
+      rollupOptions: {
+        external: []
+      }
+    }
+  }
+});
