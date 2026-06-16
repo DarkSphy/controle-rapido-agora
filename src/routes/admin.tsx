@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { supabase as supabaseTyped } from "@/integrations/supabase/client";
 const supabase: any = supabaseTyped;
+import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,36 +19,46 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-const ADMIN_USER = "adm.controle";
-const ADMIN_PASS = "controleadm$";
-
 function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loginUser, setLoginUser] = useState("");
-  const [loginPass, setLoginPass] = useState("");
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [signingIn, setSigningIn] = useState(false);
 
   useEffect(() => {
-    if (sessionStorage.getItem("adminAuth") === "true") {
-      setIsAuthenticated(true);
-    }
-  }, []);
+    if (authLoading) return;
+    if (!user) { setIsAdmin(false); return; }
+    (async () => {
+      const { data, error } = await supabase.rpc("is_current_user_admin");
+      if (error) {
+        console.error(error);
+        setIsAdmin(false);
+        return;
+      }
+      setIsAdmin(!!data);
+    })();
+  }, [user, authLoading]);
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    if (loginUser === ADMIN_USER && loginPass === ADMIN_PASS) {
-      sessionStorage.setItem("adminAuth", "true");
-      setIsAuthenticated(true);
-    } else {
-      toast.error("Credenciais inválidas");
-    }
+    setSigningIn(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setSigningIn(false);
+    if (error) toast.error("Credenciais inválidas");
   }
 
-  function handleLogout() {
-    sessionStorage.removeItem("adminAuth");
-    setIsAuthenticated(false);
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    navigate({ to: "/" });
   }
 
-  if (!isAuthenticated) {
+  if (authLoading || (user && isAdmin === null)) {
+    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Carregando...</div>;
+  }
+
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/40 px-5">
         <div className="w-full max-w-sm bg-card p-8 rounded-2xl border border-border shadow-xl">
@@ -55,15 +66,30 @@ function AdminPage() {
           <h1 className="text-xl font-bold text-center mb-6">Painel Administrativo</h1>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Usuário</Label>
-              <Input value={loginUser} onChange={(e) => setLoginUser(e.target.value)} />
+              <Label>E-mail</Label>
+              <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <Label>Senha</Label>
-              <Input type="password" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} />
+              <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
-            <Button type="submit" className="w-full">Entrar no Painel</Button>
+            <Button type="submit" className="w-full" disabled={signingIn}>{signingIn ? "Entrando..." : "Entrar"}</Button>
           </form>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/40 px-5">
+        <div className="w-full max-w-sm bg-card p-8 rounded-2xl border border-border shadow-xl text-center space-y-4">
+          <div className="flex justify-center"><Logo /></div>
+          <h1 className="text-xl font-bold">Acesso negado</h1>
+          <p className="text-sm text-muted-foreground">Sua conta não possui permissão de administrador.</p>
+          <Button variant="outline" className="w-full" onClick={handleLogout}>
+            <LogOut className="h-4 w-4 mr-2" /> Sair
+          </Button>
         </div>
       </div>
     );
@@ -79,18 +105,13 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   async function loadClients() {
     setLoading(true);
-    const { data, error } = await supabase.rpc("admin_get_clients", { admin_pass: ADMIN_PASS });
-    if (error) {
-      toast.error("Erro ao carregar clientes: " + error.message);
-    } else {
-      setClients(data || []);
-    }
+    const { data, error } = await supabase.rpc("admin_get_clients");
+    if (error) toast.error("Erro ao carregar clientes: " + error.message);
+    else setClients(data || []);
     setLoading(false);
   }
 
-  useEffect(() => {
-    loadClients();
-  }, []);
+  useEffect(() => { loadClients(); }, []);
 
   const filtered = clients.filter((c) =>
     (c.display_name?.toLowerCase() || "").includes(search.toLowerCase()) ||
@@ -180,25 +201,20 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
 function ExpirationBadge({ date }: { date: string | null }) {
   if (!date) return <span className="text-xs text-muted-foreground">—</span>;
-  
   const d = new Date(date);
   const diff = differenceInDays(d, new Date());
-  
   if (diff < 0) {
     return <span className="inline-flex items-center gap-1 text-xs font-bold text-destructive bg-destructive/10 px-2 py-1 rounded-full"><AlertCircle className="h-3 w-3" /> Vencido</span>;
   }
   if (diff <= 5) {
     return <span className="inline-flex items-center gap-1 text-xs font-bold text-warning-foreground bg-warning/15 px-2 py-1 rounded-full"><AlertCircle className="h-3 w-3" /> Vence em {diff} dias</span>;
   }
-  
   return <span className="text-xs text-muted-foreground">{format(d, "dd/MM/yyyy")}</span>;
 }
 
 function CreateClientModal({ onCreated }: { onCreated: () => void }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  
-  // Fields
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -210,38 +226,27 @@ function CreateClientModal({ onCreated }: { onCreated: () => void }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    
     try {
-      // 1. Create user in Supabase Auth (this logs them in temporarily)
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { display_name: name } }
       });
-      
       if (authError) throw authError;
       const userId = authData.user?.id;
       if (!userId) throw new Error("Usuário não foi criado corretamente.");
-      
-      // 2. Log out the newly created user so admin session remains clean
       await supabase.auth.signOut();
-      
-      // 3. Insert CRM details using RPC
       const { error: rpcError } = await supabase.rpc("admin_upsert_subscription", {
-        admin_pass: ADMIN_PASS,
         target_user_id: userId,
         p_document: document,
         p_whatsapp: whatsapp,
         p_start_date: new Date(startDate).toISOString(),
         p_expires_at: new Date(expiresAt).toISOString(),
       });
-      
       if (rpcError) throw rpcError;
-      
       toast.success("Cliente criado com sucesso!");
       setOpen(false);
       onCreated();
-      
     } catch (err: any) {
       toast.error(err.message || "Erro ao criar cliente");
     } finally {
@@ -255,43 +260,20 @@ function CreateClientModal({ onCreated }: { onCreated: () => void }) {
         <Button className="gap-2"><Plus className="h-4 w-4" /> Nova Conta</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Criar Novo Cliente</DialogTitle>
-        </DialogHeader>
+        <DialogHeader><DialogTitle>Criar Novo Cliente</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label>Nome</Label>
-              <Input required value={name} onChange={e => setName(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label>CPF/CNPJ</Label>
-              <Input value={document} onChange={e => setDocument(e.target.value)} />
-            </div>
+            <div className="space-y-1"><Label>Nome</Label><Input required value={name} onChange={e => setName(e.target.value)} /></div>
+            <div className="space-y-1"><Label>CPF/CNPJ</Label><Input value={document} onChange={e => setDocument(e.target.value)} /></div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label>E-mail (Login)</Label>
-              <Input type="email" required value={email} onChange={e => setEmail(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label>Senha Temporária</Label>
-              <Input required minLength={6} value={password} onChange={e => setPassword(e.target.value)} />
-            </div>
+            <div className="space-y-1"><Label>E-mail (Login)</Label><Input type="email" required value={email} onChange={e => setEmail(e.target.value)} /></div>
+            <div className="space-y-1"><Label>Senha Temporária</Label><Input required minLength={6} value={password} onChange={e => setPassword(e.target.value)} /></div>
           </div>
-          <div className="space-y-1">
-            <Label>WhatsApp</Label>
-            <Input value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="55319..." />
-          </div>
+          <div className="space-y-1"><Label>WhatsApp</Label><Input value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="55319..." /></div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label>Início da Assinatura</Label>
-              <Input type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label>Data de Vencimento</Label>
-              <Input type="date" required value={expiresAt} onChange={e => setExpiresAt(e.target.value)} />
-            </div>
+            <div className="space-y-1"><Label>Início da Assinatura</Label><Input type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
+            <div className="space-y-1"><Label>Data de Vencimento</Label><Input type="date" required value={expiresAt} onChange={e => setExpiresAt(e.target.value)} /></div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
@@ -306,7 +288,6 @@ function CreateClientModal({ onCreated }: { onCreated: () => void }) {
 function EditClientModal({ client, onUpdated }: { client: any; onUpdated: () => void }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  
   const [document, setDocument] = useState(client.document || "");
   const [whatsapp, setWhatsapp] = useState(client.whatsapp || "");
   const [startDate, setStartDate] = useState(client.start_date ? format(new Date(client.start_date), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"));
@@ -315,23 +296,18 @@ function EditClientModal({ client, onUpdated }: { client: any; onUpdated: () => 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    
     try {
       const { error: rpcError } = await supabase.rpc("admin_upsert_subscription", {
-        admin_pass: ADMIN_PASS,
         target_user_id: client.id,
         p_document: document,
         p_whatsapp: whatsapp,
         p_start_date: new Date(startDate).toISOString(),
         p_expires_at: new Date(expiresAt).toISOString(),
       });
-      
       if (rpcError) throw rpcError;
-      
       toast.success("Dados atualizados!");
       setOpen(false);
       onUpdated();
-      
     } catch (err: any) {
       toast.error(err.message || "Erro ao atualizar");
     } finally {
@@ -341,31 +317,15 @@ function EditClientModal({ client, onUpdated }: { client: any; onUpdated: () => 
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>
-      </DialogTrigger>
+      <DialogTrigger asChild><Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button></DialogTrigger>
       <DialogContent className="sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle>Editar {client.display_name || client.email}</DialogTitle>
-        </DialogHeader>
+        <DialogHeader><DialogTitle>Editar {client.display_name || client.email}</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <Label>CPF/CNPJ</Label>
-            <Input value={document} onChange={e => setDocument(e.target.value)} />
-          </div>
-          <div className="space-y-1">
-            <Label>WhatsApp</Label>
-            <Input value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="55319..." />
-          </div>
+          <div className="space-y-1"><Label>CPF/CNPJ</Label><Input value={document} onChange={e => setDocument(e.target.value)} /></div>
+          <div className="space-y-1"><Label>WhatsApp</Label><Input value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="55319..." /></div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label>Início</Label>
-              <Input type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label>Vencimento</Label>
-              <Input type="date" required value={expiresAt} onChange={e => setExpiresAt(e.target.value)} />
-            </div>
+            <div className="space-y-1"><Label>Início</Label><Input type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
+            <div className="space-y-1"><Label>Vencimento</Label><Input type="date" required value={expiresAt} onChange={e => setExpiresAt(e.target.value)} /></div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
@@ -384,10 +344,7 @@ function DeleteClientModal({ client, onDeleted }: { client: any; onDeleted: () =
   async function handleDelete() {
     setLoading(true);
     try {
-      const { error } = await supabase.rpc("admin_delete_client", {
-        admin_pass: ADMIN_PASS,
-        target_user_id: client.id,
-      });
+      const { error } = await supabase.rpc("admin_delete_client", { target_user_id: client.id });
       if (error) throw error;
       toast.success("Cliente excluído.");
       setOpen(false);
@@ -405,9 +362,7 @@ function DeleteClientModal({ client, onDeleted }: { client: any; onDeleted: () =
         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle>Excluir acesso?</DialogTitle>
-        </DialogHeader>
+        <DialogHeader><DialogTitle>Excluir acesso?</DialogTitle></DialogHeader>
         <p className="text-sm text-muted-foreground">
           Tem certeza que deseja excluir o acesso de <strong>{client.email}</strong>? Isso apagará a conta e todos os dados do cliente para sempre.
         </p>
