@@ -130,7 +130,7 @@ export function DemoDashboard() {
             <button onClick={() => { setActiveTab("orcamentos"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "orcamentos" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Receipt className="h-4 w-4" /> Orçamentos</button>
             <button onClick={() => { setActiveTab("os"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "os" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Info className="h-4 w-4" /> Ordem de Serviço</button>
             <button onClick={() => { setActiveTab("balcao"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "balcao" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Store className="h-4 w-4" /> Balcão</button>
-            <button onClick={() => { setActiveTab("catalogo"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "catalogo" ? "bg-sidebar-accent font-medium text-brand bg-brand/10" : "hover:bg-muted"}`}><Store as Storefront className="h-4 w-4" /> Catálogo</button>
+            <button onClick={() => { setActiveTab("catalogo"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "catalogo" ? "bg-sidebar-accent font-medium text-brand bg-brand/10" : "hover:bg-muted"}`}><Storefront className="h-4 w-4" /> Catálogo</button>
 
             <div className="text-xs font-bold text-muted-foreground mb-2 mt-6 uppercase tracking-wider">Cadastros</div>
             <button onClick={() => { setActiveTab("produtos"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "produtos" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Package className="h-4 w-4" /> Produtos</button>
@@ -339,7 +339,7 @@ export function DemoDashboard() {
           {activeTab === "catalogo" && (
             <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 space-y-8">
               <ExplanationBanner 
-                icon={Store as Storefront}
+                icon={Storefront}
                 title="Catálogo Digital"
                 text="Mostre seus produtos com uma vitrine virtual encantadora. (Visão do seu cliente final)"
               />
