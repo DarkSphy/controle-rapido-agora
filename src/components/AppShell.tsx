@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { 
   LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut, 
-  Truck, Tag, Box, BarChart3, DollarSign, Users, Lightbulb, ShoppingBasket, Briefcase, Wrench, FileText, Settings
+  Truck, Tag, Box, BarChart3, DollarSign, Users, Lightbulb, ShoppingBasket, Briefcase, Wrench, FileText, Settings, Store
 } from "lucide-react";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,7 @@ const navGroups = [
       { to: "/orcamentos", label: "Orçamentos", icon: FileText },
       { to: "/os", label: "Ordem de Serviço", icon: Wrench },
       { to: "/balcao", label: "Balcão", icon: ShoppingBag },
+      { to: "/catalogo", label: "Catálogo", icon: Store },
     ]
   },
   {
@@ -55,7 +56,7 @@ export function AppShell() {
   const navigate = useNavigate();
   const { user, role, loading } = useAuth();
   const { isActive, loading: subLoading } = useSubscription();
-  const isPublic = PUBLIC_ROUTES.includes(loc.pathname);
+  const isPublic = PUBLIC_ROUTES.includes(loc.pathname) || loc.pathname.startsWith("/c/");
 
   useEffect(() => {
     if (user) actions.loadAll();

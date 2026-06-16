@@ -3,6 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Product, Variation, actions, formatBRL, priceFromCostMargin, formatProductPrice, useStore } from "@/lib/store";
 import { toast } from "sonner";
 import { Plus, Trash2, Share2, History } from "lucide-react";
@@ -10,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 type Draft = {
   name: string;
+  description: string;
   image?: string;
   cost: string;
   margin: string;
@@ -17,17 +20,20 @@ type Draft = {
   minStock: string;
   categoryId?: string;
   supplierId?: string;
+  inCatalog: boolean;
   variations: { id?: string; name: string; stock: string; cost: string; margin: string }[];
 };
 
 const empty: Draft = {
   name: "",
+  description: "",
   cost: "",
   margin: "50",
   stock: "0",
   minStock: "0",
   categoryId: "",
   supplierId: "",
+  inCatalog: false,
   variations: [],
 };
 
@@ -55,6 +61,7 @@ export function ProductDialog({
       if (product) {
         setD({
           name: product.name,
+          description: product.description ?? "",
           image: product.image,
           cost: String(product.cost),
           margin: String(product.margin),
@@ -62,6 +69,7 @@ export function ProductDialog({
           minStock: String(product.minStock),
           categoryId: product.categoryId ?? "",
           supplierId: product.supplierId ?? "",
+          inCatalog: product.inCatalog ?? false,
           variations: product.variations.map(v => ({ 
             ...v, 
             stock: String(v.stock), 
@@ -98,6 +106,7 @@ export function ProductDialog({
     const margin = parseFloat(d.margin) || 0;
     const payload = {
       name: d.name.trim(),
+      description: d.description.trim() || undefined,
       image: d.image,
       cost,
       margin,
@@ -105,6 +114,7 @@ export function ProductDialog({
       minStock: parseInt(d.minStock) || 0,
       categoryId: d.categoryId || undefined,
       supplierId: d.supplierId || undefined,
+      inCatalog: d.inCatalog,
       variations: d.variations.map((v) => ({
         id: v.id ?? Math.random().toString(36).slice(2, 10),
         name: v.name,
@@ -199,6 +209,19 @@ export function ProductDialog({
                 </select>
               </div>
             </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="desc">Descrição do produto</Label>
+            <Textarea id="desc" value={d.description} onChange={(e) => setD({ ...d, description: e.target.value })} placeholder="Detalhes, material, tamanho, etc." className="resize-none h-20" />
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border border-border bg-card p-3 shadow-sm">
+            <div className="space-y-0.5">
+              <Label className="text-base">Exibir no Catálogo Público</Label>
+              <p className="text-sm text-muted-foreground">Permite que seus clientes vejam e comprem este produto.</p>
+            </div>
+            <Switch checked={d.inCatalog} onCheckedChange={(c) => setD({ ...d, inCatalog: c })} />
+          </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-2">
