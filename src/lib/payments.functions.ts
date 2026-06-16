@@ -9,6 +9,7 @@ import { type StripeEnv, createStripeClient } from "@/lib/stripe.server";
  * Resultado: primeiro mês R$ 139,90, depois R$ 39,90/mês.
  */
 export const createSignupCheckout = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: {
     email: string;
     userId: string;
@@ -19,7 +20,10 @@ export const createSignupCheckout = createServerFn({ method: "POST" })
     if (!data.userId) throw new Error("userId obrigatório");
     return data;
   })
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    if (data.userId !== context.userId) {
+      throw new Error("userId não corresponde ao usuário autenticado");
+    }
     const stripe = createStripeClient(data.environment);
 
     const [monthly, activation] = await Promise.all([
