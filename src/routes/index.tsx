@@ -7,7 +7,7 @@ import {
   Package, Zap, Smartphone, ShoppingBag, AlertTriangle, ArrowRight, Check,
   Plus, ArrowLeftRight, BarChart3, Store, ShoppingCart, Shirt, Wrench,
   ShieldCheck, Headphones, XCircle, Sparkles, MessageCircle, Star,
-  Users, TrendingUp, Receipt, Tag, ChevronDown, Minus, FileText, Boxes, Play
+  Users, TrendingUp, Receipt, Tag, ChevronDown, Minus, FileText, Boxes, Play, LayoutDashboard
 } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
