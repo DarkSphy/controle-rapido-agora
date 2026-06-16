@@ -100,30 +100,17 @@ function Landing() {
                 </a>
               </Button>
             </div>
-            <div className="mt-4 flex flex-col sm:flex-row gap-3">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button size="lg" variant="secondary" className="text-sm h-11 px-5 w-full sm:w-auto hover:bg-brand hover:text-white transition-colors group">
-                    <Play className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" /> Testar o Sistema
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] p-0 overflow-hidden bg-background border-border">
-                  <DialogTitle className="sr-only">Simulação do Sistema</DialogTitle>
-                  <DemoDashboard />
-                </DialogContent>
-              </Dialog>
-
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button size="lg" variant="secondary" className="text-sm h-11 px-5 w-full sm:w-auto hover:bg-brand hover:text-white transition-colors group">
-                    <Store className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" /> Exemplo de Catálogo
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] p-0 overflow-hidden bg-background border-border">
-                  <DialogTitle className="sr-only">Simulação de Catálogo</DialogTitle>
-                  <DemoCatalog />
-                </DialogContent>
-              </Dialog>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <Button asChild size="lg" className="text-base h-12 px-7 shadow-lg">
+                <a href={WA_HIRE_URL}>
+                  Quero contratar agora <ArrowRight className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="text-base h-12 px-6 border-[#25D366] text-[#1ebe5a] hover:bg-[#25D366]/10 hover:text-[#1ebe5a]">
+                <a href={WA_HELP_URL} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="h-4 w-4" /> Falar no WhatsApp
+                </a>
+              </Button>
             </div>
             <p className="mt-6 text-xs text-muted-foreground">
               Sem fidelidade • Cancele quando quiser • Garantia de 7 dias
@@ -152,6 +139,70 @@ function Landing() {
           <p className="text-sm md:text-base font-semibold text-center md:text-right">
             Centenas de pequenos negócios já organizaram o estoque com o ControleJá
           </p>
+        </div>
+      </section>
+
+      {/* Live Demo Section */}
+      <section id="demo" className="px-5 md:px-10 py-20 bg-muted/30 border-y border-border">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 text-brand text-xs font-bold uppercase tracking-widest mb-3">
+              <Sparkles className="h-3 w-3" /> Exclusividade
+            </span>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
+              Experimente na Prática.
+              <span className="block text-muted-foreground mt-2">Sem precisar criar conta.</span>
+            </h2>
+            <p className="text-muted-foreground mt-5 text-lg">
+              Clique nos botões abaixo e sinta como é usar o ControleJá. Separamos dois ambientes de simulação para você testar tudo agora mesmo.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Card Sistema */}
+            <div className="bg-card border border-border hover:border-brand/50 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center group">
+              <div className="h-20 w-20 bg-brand/10 text-brand rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                <LayoutDashboard className="h-10 w-10" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3">Painel do Lojista</h3>
+              <p className="text-muted-foreground mb-8 flex-1">
+                Acesse o balcão de vendas, veja o dashboard financeiro, simule a gestão de produtos, clientes e compras. Tudo interativo.
+              </p>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="lg" className="w-full h-14 text-lg group-hover:bg-brand/90 transition-colors">
+                    <Play className="h-5 w-5 mr-2" /> Testar o Sistema
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] p-0 overflow-hidden bg-background border-border">
+                  <DialogTitle className="sr-only">Simulação do Sistema</DialogTitle>
+                  <DemoDashboard />
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {/* Card Catálogo */}
+            <div className="bg-card border border-border hover:border-brand/50 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center group">
+              <div className="h-20 w-20 bg-brand/10 text-brand rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform">
+                <Store className="h-10 w-10" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3">Catálogo Público</h3>
+              <p className="text-muted-foreground mb-8 flex-1">
+                Veja como os seus clientes enxergarão os seus produtos. Um link exclusivo, com design premium e integração direta com o seu WhatsApp.
+              </p>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="lg" variant="outline" className="w-full h-14 text-lg border-2 hover:bg-brand hover:text-white transition-colors">
+                    <Store className="h-5 w-5 mr-2" /> Exemplo de Catálogo
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] p-0 overflow-hidden bg-background border-border">
+                  <DialogTitle className="sr-only">Simulação de Catálogo</DialogTitle>
+                  <DemoCatalog />
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
         </div>
       </section>
 

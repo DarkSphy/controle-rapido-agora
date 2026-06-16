@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { 
   LayoutDashboard, ShoppingBag, Package, Users, Truck,
-  Plus, Minus, X, Check, Search, Bell, Menu
+  Plus, Minus, X, Check, Search, Bell, Menu, ShoppingCart, Info, ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,10 +10,21 @@ import { toast } from "sonner";
 import { formatBRL } from "@/lib/store";
 
 const mockProducts = [
-  { id: "1", name: "Camiseta Básica Preta", price: 49.90, stock: 12, img: "👕" },
-  { id: "2", name: "Caneca Mágica", price: 35.00, stock: 5, img: "☕" },
-  { id: "3", name: "Cabo USB-C 2 Metros", price: 29.90, stock: 45, img: "🔌" },
-  { id: "4", name: "Caderno Inteligente", price: 89.90, stock: 2, img: "📓" },
+  { id: "1", name: "Camiseta Básica Preta", price: 49.90, cost: 20.00, stock: 12, category: "Roupas", img: "👕" },
+  { id: "2", name: "Caneca Mágica", price: 35.00, cost: 15.00, stock: 5, category: "Acessórios", img: "☕" },
+  { id: "3", name: "Cabo USB-C 2 Metros", price: 29.90, cost: 10.00, stock: 45, category: "Eletrônicos", img: "🔌" },
+  { id: "4", name: "Caderno Inteligente", price: 89.90, cost: 40.00, stock: 2, category: "Papelaria", img: "📓" },
+];
+
+const mockClients = [
+  { id: "1", name: "Maria Silva", phone: "(31) 99887-7665", orders: 4, total: 345.50 },
+  { id: "2", name: "João Pedro", phone: "(11) 98765-4321", orders: 1, total: 49.90 },
+  { id: "3", name: "Ana Beatriz", phone: "(21) 99999-8888", orders: 12, total: 1250.00 },
+];
+
+const mockOrders = [
+  { id: "1", supplier: "Distribuidora Tech", date: "Hoje", total: 450.00, status: "Entregue" },
+  { id: "2", supplier: "Fábrica Têxtil Ltda", date: "Ontem", total: 1200.00, status: "Pendente" },
 ];
 
 export function DemoDashboard() {
@@ -62,6 +73,23 @@ export function DemoDashboard() {
     });
     setActiveTab("dashboard");
   };
+
+  const ExplanationBanner = ({ title, text, icon: Icon }: { title: string, text: string, icon: any }) => (
+    <div className="mb-6 bg-brand/10 border border-brand/20 rounded-xl p-5 flex items-start gap-4">
+      <div className="bg-brand text-white p-3 rounded-xl shadow-sm shrink-0">
+        <Icon className="h-6 w-6" />
+      </div>
+      <div className="flex-1">
+        <h3 className="font-bold text-lg text-foreground mb-1">{title}</h3>
+        <p className="text-muted-foreground text-sm leading-relaxed">{text}</p>
+        <div className="mt-4 flex gap-3">
+          <Button onClick={() => window.open('https://wa.me/5531973175882?text=Gostaria%20de%20contratar%20o%20controle%20já.', '_blank')} size="sm" className="bg-[#25D366] hover:bg-[#128C7E] text-white">
+            <Check className="mr-2 h-4 w-4" /> Quero usar no meu negócio
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="flex h-[80vh] w-full bg-background rounded-xl overflow-hidden border border-border shadow-2xl relative text-left">
@@ -269,36 +297,123 @@ export function DemoDashboard() {
             </div>
           )}
 
-          {(activeTab === "produtos" || activeTab === "clientes" || activeTab === "compras") && (
-            <div className="flex flex-col items-center justify-center h-full max-w-lg mx-auto text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
-              <div className="h-24 w-24 bg-brand/10 text-brand rounded-full flex items-center justify-center mb-2">
-                {activeTab === "produtos" && <Package className="h-10 w-10" />}
-                {activeTab === "clientes" && <Users className="h-10 w-10" />}
-                {activeTab === "compras" && <Truck className="h-10 w-10" />}
-              </div>
-              <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
-                {activeTab === "produtos" && "Controle de Estoque"}
-                {activeTab === "clientes" && "Gestão de Clientes"}
-                {activeTab === "compras" && "Entradas e Fornecedores"}
-              </h2>
-              <p className="text-muted-foreground text-lg leading-relaxed">
-                {activeTab === "produtos" && "Cadastre seus produtos com foto, custo, margem de lucro e variações. O estoque desconta automaticamente a cada venda."}
-                {activeTab === "clientes" && "Guarde o histórico de compras de cada cliente. Saiba quem são os seus melhores compradores e tenha o WhatsApp de todos."}
-                {activeTab === "compras" && "Lance compras para reabastecer o estoque, gerencie notas de fornecedores e controle o custo real dos produtos."}
-              </p>
-              <div className="pt-6 w-full">
-                <div className="bg-muted/30 border border-border p-4 rounded-xl flex items-center justify-between text-left">
-                  <div>
-                    <div className="font-bold text-sm">Gostou das funcionalidades?</div>
-                    <div className="text-xs text-muted-foreground">Experimente grátis na sua conta real.</div>
-                  </div>
-                  <Button onClick={() => window.open('https://wa.me/5531973175882?text=Gostaria%20de%20contratar%20o%20controle%20já.', '_blank')} className="bg-[#25D366] hover:bg-[#128C7E] text-white">
-                    Assinar Agora
-                  </Button>
+          {activeTab === "produtos" && (
+            <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4">
+              <ExplanationBanner 
+                icon={Package}
+                title="Gestão de Estoque Completa"
+                text="Nesta tela do sistema real, você poderá cadastrar seus produtos com foto, controlar o custo de compra, definir a margem de lucro e gerenciar variações (tamanhos, cores). O estoque é descontado automaticamente a cada venda."
+              />
+              <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden opacity-70 pointer-events-none">
+                <div className="p-4 border-b border-border flex justify-between items-center bg-muted/20">
+                  <Input className="max-w-xs bg-background" placeholder="Buscar produtos..." />
+                  <Button><Plus className="mr-2 h-4 w-4" /> Novo Produto</Button>
                 </div>
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-muted/50 border-b border-border text-muted-foreground font-semibold">
+                    <tr>
+                      <th className="p-4">Produto</th>
+                      <th className="p-4">Categoria</th>
+                      <th className="p-4 text-right">Custo</th>
+                      <th className="p-4 text-right">Venda</th>
+                      <th className="p-4 text-center">Estoque</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mockProducts.map(p => (
+                      <tr key={p.id} className="border-b border-border/50">
+                        <td className="p-4 font-medium flex items-center gap-3">
+                          <div className="h-8 w-8 bg-muted rounded flex items-center justify-center text-lg">{p.img}</div>
+                          {p.name}
+                        </td>
+                        <td className="p-4 text-muted-foreground">{p.category}</td>
+                        <td className="p-4 text-right text-muted-foreground">{formatBRL(p.cost)}</td>
+                        <td className="p-4 text-right font-semibold">{formatBRL(p.price)}</td>
+                        <td className="p-4 text-center font-bold text-brand">{p.stock}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           )}
+
+          {activeTab === "clientes" && (
+            <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4">
+              <ExplanationBanner 
+                icon={Users}
+                title="Sua Base de Clientes"
+                text="Guarde o histórico de compras de cada pessoa. No sistema real, você saberá quem são os clientes que mais compram, poderá enviar mensagens no WhatsApp com um clique e manter um relacionamento próximo para vender mais."
+              />
+              <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden opacity-70 pointer-events-none">
+                <div className="p-4 border-b border-border flex justify-between items-center bg-muted/20">
+                  <Input className="max-w-xs bg-background" placeholder="Buscar clientes..." />
+                  <Button><Plus className="mr-2 h-4 w-4" /> Novo Cliente</Button>
+                </div>
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-muted/50 border-b border-border text-muted-foreground font-semibold">
+                    <tr>
+                      <th className="p-4">Nome</th>
+                      <th className="p-4">Telefone / WhatsApp</th>
+                      <th className="p-4 text-center">Nº de Pedidos</th>
+                      <th className="p-4 text-right">Total Gasto</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mockClients.map(c => (
+                      <tr key={c.id} className="border-b border-border/50">
+                        <td className="p-4 font-bold">{c.name}</td>
+                        <td className="p-4 text-brand font-medium">{c.phone}</td>
+                        <td className="p-4 text-center">{c.orders}</td>
+                        <td className="p-4 text-right font-semibold">{formatBRL(c.total)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "compras" && (
+            <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4">
+              <ExplanationBanner 
+                icon={Truck}
+                title="Compras e Fornecedores"
+                text="Lance todas as suas compras para reabastecer o estoque automaticamente. O sistema real permite cadastrar fornecedores, organizar o que você comprou e recalcular o custo real de cada item que entra na sua loja."
+              />
+              <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden opacity-70 pointer-events-none">
+                <div className="p-4 border-b border-border flex justify-between items-center bg-muted/20">
+                  <Input className="max-w-xs bg-background" placeholder="Buscar compras..." />
+                  <Button><Plus className="mr-2 h-4 w-4" /> Registrar Compra</Button>
+                </div>
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-muted/50 border-b border-border text-muted-foreground font-semibold">
+                    <tr>
+                      <th className="p-4">Fornecedor</th>
+                      <th className="p-4">Data</th>
+                      <th className="p-4 text-center">Status</th>
+                      <th className="p-4 text-right">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mockOrders.map(o => (
+                      <tr key={o.id} className="border-b border-border/50">
+                        <td className="p-4 font-semibold">{o.supplier}</td>
+                        <td className="p-4 text-muted-foreground">{o.date}</td>
+                        <td className="p-4 text-center">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${o.status === 'Entregue' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                            {o.status}
+                          </span>
+                        </td>
+                        <td className="p-4 text-right font-bold">{formatBRL(o.total)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
         </div>
       </main>
     </div>
