@@ -11,6 +11,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { actions } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { InstallPWA } from "@/components/InstallPWA";
 
 const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin"];
 
@@ -140,6 +141,9 @@ export function AppShell() {
                 <div className="text-[10px] text-muted-foreground truncate uppercase tracking-wider">{role}</div>
               </div>
             </div>
+            <div className="mb-2">
+              <InstallPWA />
+            </div>
             <button
               onClick={logout}
               className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[11px] font-bold uppercase tracking-widest rounded-lg text-destructive hover:bg-destructive/10 transition-colors border border-destructive/10"
@@ -154,9 +158,12 @@ export function AppShell() {
         <Link to="/dashboard">
           <Logo size="sm" />
         </Link>
-        <button onClick={logout} className="text-muted-foreground hover:text-foreground p-2">
-          <LogOut className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <InstallPWA />
+          <button onClick={logout} className="text-muted-foreground hover:text-foreground p-2">
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 min-w-0 pb-20 md:pb-8">

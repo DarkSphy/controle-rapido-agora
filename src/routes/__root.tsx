@@ -34,7 +34,24 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" },
+      { rel: "manifest", href: "/manifest.json" },
+      { rel: "apple-touch-icon", href: "/icon.svg" },
+      { rel: "theme-color", content: "#38bdf8" },
     ],
+    scripts: [
+      {
+        type: "module",
+        children: `
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/sw.js').catch(err => {
+                console.error('ServiceWorker registration failed: ', err);
+              });
+            });
+          }
+        `
+      }
+    ]
   }),
   shellComponent: RootShell,
   component: RootComponent,
