@@ -312,7 +312,7 @@ function CatalogPage() {
       {topBanners.length > 0 && (
         <div className="w-full overflow-hidden mb-6 bg-muted/20">
           <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
-            {topBanners.map((b, i) => (
+            {topBanners.map((b: any, i: number) => (
               <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[400px]">
                 <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[3/1]" />
               </div>
@@ -337,7 +337,7 @@ function CatalogPage() {
             <Store className="h-5 w-5 text-brand" /> Produtos em Destaque
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map(p => {
+            {products.map((p: any) => {
               const price = p.cost * (1 + p.margin/100);
               const hasVariations = p.variations && p.variations.length > 0;
               
@@ -374,7 +374,7 @@ function CatalogPage() {
                           <Info className="h-3 w-3" /> Opções disponíveis:
                         </div>
                         <div className="grid grid-cols-1 gap-2">
-                          {p.variations.map(v => {
+                          {p.variations.map((v: any) => {
                             const vPrice = v.cost * (1 + v.margin/100);
                             return (
                               <div key={v.id} className="flex items-center justify-between p-2.5 rounded-xl border border-border/50 bg-muted/20 hover:border-brand/30 transition-colors">
@@ -409,7 +409,7 @@ function CatalogPage() {
         {middleBanners.length > 0 && (
           <div className="w-full overflow-hidden rounded-3xl shadow-lg border border-border/50 my-12">
              <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
-              {middleBanners.map((b, i) => (
+              {middleBanners.map((b: any, i: number) => (
                 <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[300px]">
                   <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[4/1]" />
                 </div>
@@ -422,7 +422,7 @@ function CatalogPage() {
         {bottomBanners.length > 0 && (
           <div className="w-full overflow-hidden rounded-3xl shadow-lg border border-border/50 mt-12">
              <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
-              {bottomBanners.map((b, i) => (
+              {bottomBanners.map((b: any, i: number) => (
                 <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[300px]">
                   <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[4/1]" />
                 </div>
