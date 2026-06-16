@@ -91,13 +91,17 @@ function CatalogPage() {
   const [neighborhood, setNeighborhood] = useState("");
   const [city, setCity] = useState("");
 
+  const safeHex = (v: any, fallback: string) =>
+    typeof v === "string" && /^#[0-9a-fA-F]{3,8}$/.test(v) ? v : fallback;
+  const safeFont = (v: any, fallback: string) =>
+    typeof v === "string" && /^[a-zA-Z0-9 _-]{1,40}$/.test(v) ? v : fallback;
   const themeStyles = `
     .catalog-theme {
-      --color-primary: ${settings.colors?.primary};
-      --color-brand: ${settings.colors?.accent};
-      --color-background: ${settings.colors?.background};
-      --color-card: ${settings.colors?.card};
-      --font-sans: '${settings.fontFamily}', sans-serif;
+      --color-primary: ${safeHex(settings.colors?.primary, "#38bdf8")};
+      --color-brand: ${safeHex(settings.colors?.accent, "#0284c7")};
+      --color-background: ${safeHex(settings.colors?.background, "#f8fafc")};
+      --color-card: ${safeHex(settings.colors?.card, "#ffffff")};
+      --font-sans: '${safeFont(settings.fontFamily, "Inter")}', sans-serif;
     }
     body { background-color: var(--color-background); }
   `;
