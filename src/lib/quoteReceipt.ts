@@ -158,8 +158,8 @@ export async function generateQuotePDF(a: Args) {
   
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
-  doc.text("TOTAL:", 145, y + 2, { align: "right" });
-  doc.text(formatBRL(a.total), right - 5, y + 2, { align: "right" });
+  doc.text("TOTAL:", 130, y + 4, { align: "right" });
+  doc.text(formatBRL(a.total), right - 5, y + 4, { align: "right" });
   y += 15;
 
   // Conditions & Notes
