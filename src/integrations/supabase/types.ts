@@ -979,6 +979,27 @@ export type Database = {
       }
     }
     Views: {
+      business_settings_public: {
+        Row: {
+          address: string | null
+          logo_url: string | null
+          name: string | null
+          user_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          logo_url?: string | null
+          name?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          logo_url?: string | null
+          name?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       catalog_products_public: {
         Row: {
           category_id: string | null
