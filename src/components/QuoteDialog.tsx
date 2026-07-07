@@ -14,6 +14,7 @@ type Draft = {
   customerId: string;
   status: "Pendente" | "Aprovado" | "Recusado" | "Expirado";
   laborValue: string;
+  laborLabel: string;
   discount: string;
   validityDate: string;
   notes: string;

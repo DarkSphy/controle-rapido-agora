@@ -14,6 +14,7 @@ type Args = {
   notes?: string;
   items: Item[];
   laborValue: number;
+  laborLabel?: string;
   subtotal: number;
   discount: number;
   total: number;
