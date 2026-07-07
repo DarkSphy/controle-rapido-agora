@@ -448,7 +448,8 @@ function CatalogPage() {
                 </div>
               );
             })}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* MIDDLE BANNERS */}
