@@ -20,6 +20,7 @@ export const Route = createFileRoute("/c/$userId")({
       supabase.from("catalog_settings").select("*").eq("id", params.userId).maybeSingle(),
       (supabase.from as any)("catalog_products_public").select("*").eq("user_id", params.userId),
       (supabase.from as any)("catalog_variations_public").select("*").eq("user_id", params.userId),
+      supabase.from("business_settings").select("logo_url").eq("user_id", params.userId).maybeSingle(),
     ]);
 
     const settings: CatalogSettings = sets ? {
@@ -64,7 +65,7 @@ export const Route = createFileRoute("/c/$userId")({
       }))
     }));
 
-    return { settings, products };
+    return { settings, products, logoUrl: biz?.logo_url };
   },
   component: CatalogPage
 });
@@ -77,7 +78,7 @@ type CartItem = {
 };
 
 function CatalogPage() {
-  const { settings, products } = Route.useLoaderData();
+  const { settings, products, logoUrl } = Route.useLoaderData();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -183,9 +184,13 @@ function CatalogPage() {
       <header className="px-5 py-4 border-b border-border/50 bg-card/80 backdrop-blur-lg shadow-sm sticky top-0 z-40 transition-all duration-300">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-brand flex items-center justify-center text-white shadow-lg shadow-brand/30">
-              <Store className="h-5 w-5" />
-            </div>
+            {logoUrl ? (
+              <img src={logoUrl} alt="Logo" className="h-10 w-10 md:h-12 md:w-12 rounded-xl object-contain bg-white shadow-sm" />
+            ) : (
+              <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-brand flex items-center justify-center text-white shadow-lg shadow-brand/30">
+                <Store className="h-5 w-5 md:h-6 md:w-6" />
+              </div>
+            )}
             <div>
               <h1 className="font-extrabold text-xl leading-tight">{settings.companyName || "Catálogo Online"}</h1>
               {settings.address && (

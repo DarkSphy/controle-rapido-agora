@@ -97,6 +97,19 @@ function CatalogoPage() {
     setBanners(prev => prev.map(b => b.id === id ? { ...b, position: pos } : b));
   }
 
+  async function addAllProducts(inCatalog: boolean) {
+    setSaving(true);
+    toast.loading(inCatalog ? "Adicionando todos..." : "Removendo todos...", { id: "bulk-catalog" });
+    try {
+      const updates = products.map(p => actions.updateProduct(p.id, { inCatalog }));
+      await Promise.all(updates);
+      toast.success(inCatalog ? "Todos os produtos foram adicionados ao catálogo!" : "Todos os produtos foram removidos do catálogo!", { id: "bulk-catalog" });
+    } catch (e: any) {
+      toast.error("Erro ao atualizar: " + e.message, { id: "bulk-catalog" });
+    }
+    setSaving(false);
+  }
+
   function copyLink() {
     if (!user) return;
     const url = `${window.location.origin}/c/${user.id}`;
@@ -260,9 +273,19 @@ function CatalogoPage() {
 
         <TabsContent value="produtos">
           <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="p-4 border-b border-border bg-muted/30">
-              <h2 className="font-semibold">Visibilidade dos Produtos</h2>
-              <p className="text-sm text-muted-foreground">Selecione quais produtos da sua base aparecerão no catálogo online.</p>
+            <div className="p-4 border-b border-border bg-muted/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="font-semibold">Visibilidade dos Produtos</h2>
+                <p className="text-sm text-muted-foreground">Selecione quais produtos da sua base aparecerão no catálogo online.</p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => addAllProducts(true)} disabled={saving}>
+                  Adicionar Todos
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => addAllProducts(false)} disabled={saving}>
+                  Remover Todos
+                </Button>
+              </div>
             </div>
             <div className="divide-y divide-border max-h-[60vh] overflow-y-auto">
               {products.length === 0 && (
