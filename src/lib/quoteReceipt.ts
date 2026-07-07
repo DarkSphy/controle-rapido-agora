@@ -138,19 +138,19 @@ export async function generateQuotePDF(a: Args) {
   if (y > 240) { doc.addPage(); y = 20; }
   
   doc.setFontSize(11);
-  doc.text("Subtotal:", 150, y);
+  doc.text("Subtotal:", 145, y, { align: "right" });
   doc.text(formatBRL(a.subtotal), right - 5, y, { align: "right" });
   y += 6;
 
   if ((a.laborValue || 0) > 0) {
-    doc.text("Mão de Obra:", 150, y);
+    doc.text("Mão de Obra:", 145, y, { align: "right" });
     doc.text(formatBRL(a.laborValue || 0), right - 5, y, { align: "right" });
     y += 6;
   }
   
   if (a.discount > 0) {
     doc.setTextColor(220, 38, 38); // red
-    doc.text("Desconto:", 150, y);
+    doc.text("Desconto:", 145, y, { align: "right" });
     doc.text(`-${formatBRL(a.discount)}`, right - 5, y, { align: "right" });
     doc.setTextColor(0, 0, 0);
     y += 6;
@@ -158,7 +158,7 @@ export async function generateQuotePDF(a: Args) {
   
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
-  doc.text("TOTAL:", 150, y + 2);
+  doc.text("TOTAL:", 145, y + 2, { align: "right" });
   doc.text(formatBRL(a.total), right - 5, y + 2, { align: "right" });
   y += 15;
 
