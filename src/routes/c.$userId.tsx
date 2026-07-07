@@ -97,13 +97,17 @@ function CatalogPage() {
     typeof v === "string" && /^[a-zA-Z0-9 _-]{1,40}$/.test(v) ? v : fallback;
   const themeStyles = `
     .catalog-theme {
+      --primary: ${safeHex(settings.colors?.primary, "#38bdf8")};
       --color-primary: ${safeHex(settings.colors?.primary, "#38bdf8")};
+      --brand: ${safeHex(settings.colors?.accent, "#0284c7")};
       --color-brand: ${safeHex(settings.colors?.accent, "#0284c7")};
+      --background: ${safeHex(settings.colors?.background, "#f8fafc")};
       --color-background: ${safeHex(settings.colors?.background, "#f8fafc")};
+      --card: ${safeHex(settings.colors?.card, "#ffffff")};
       --color-card: ${safeHex(settings.colors?.card, "#ffffff")};
       --font-sans: '${safeFont(settings.fontFamily, "Inter")}', sans-serif;
     }
-    body { background-color: var(--color-background); }
+    body { background-color: var(--background); }
   `;
 
   function addToCart(product: Product, variation?: Variation) {
