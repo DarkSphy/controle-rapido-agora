@@ -17,11 +17,13 @@ export const Route = createFileRoute("/c/$userId")({
       { data: prods },
       { data: vars },
       { data: biz },
+      { data: cats },
     ] = await Promise.all([
       supabase.from("catalog_settings").select("*").eq("id", params.userId).maybeSingle(),
       (supabase.from as any)("catalog_products_public").select("*").eq("user_id", params.userId),
       (supabase.from as any)("catalog_variations_public").select("*").eq("user_id", params.userId),
       (supabase.from as any)("business_settings").select("logo_url, name, phone, address").eq("user_id", params.userId).maybeSingle(),
+      (supabase.from as any)("categories").select("*").eq("user_id", params.userId),
     ]);
 
     const settings: CatalogSettings = sets ? {
@@ -36,6 +38,7 @@ export const Route = createFileRoute("/c/$userId")({
       bannerUrl: sets.banner_url ?? undefined,
       bannerText: sets.banner_text ?? undefined,
       bannerEnabled: sets.banner_enabled || false,
+      categories: cats || []
     } : {
       id: params.userId,
       bannerEnabled: false,
@@ -44,7 +47,8 @@ export const Route = createFileRoute("/c/$userId")({
       address: biz?.address || undefined,
       colors: { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
       fontFamily: "Inter",
-      banners: []
+      banners: [],
+      categories: cats || []
     };
 
     const products: Product[] = (prods || []).map((p: any) => ({
@@ -69,7 +73,7 @@ export const Route = createFileRoute("/c/$userId")({
       }))
     }));
 
-    return { settings, products, logoUrl: biz?.logo_url };
+    return { settings, products, logoUrl: biz?.logo_url || null };
   },
   component: CatalogPage
 });
@@ -86,6 +90,7 @@ function CatalogPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Checkout Form State
   const [name, setName] = useState("");
@@ -180,11 +185,14 @@ function CatalogPage() {
   const topBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "top") || [];
   const middleBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "middle") || [];
   const bottomBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "bottom") || [];
+  const categories = (settings as any).categories || [];
 
-  const filteredProducts = products.filter((p: any) => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesCat = selectedCategory ? p.categoryId === selectedCategory : true;
+    return matchesSearch && matchesCat;
+  });
 
   return (
     <div className="catalog-theme min-h-screen bg-background text-foreground font-sans pb-24 relative selection:bg-brand selection:text-white">
@@ -338,11 +346,11 @@ function CatalogPage() {
 
       {/* TOP BANNERS */}
       {topBanners.length > 0 && (
-        <div className="w-full overflow-hidden mb-6 bg-muted/20">
+        <div className="w-full overflow-hidden mb-6 bg-muted/10 border-b border-border/30">
           <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
             {topBanners.map((b: any, i: number) => (
-              <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[400px]">
-                <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[3/1]" />
+              <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative">
+                <img src={b.url} alt="Banner" className="w-full h-auto max-h-[350px] object-contain" />
               </div>
             ))}
           </div>
@@ -361,6 +369,39 @@ function CatalogPage() {
           />
         </div>
       </div>
+      
+      {/* CATEGORIES BAR */}
+      {categories.length > 0 && (
+        <div className="bg-background border-b border-border/50 sticky top-[122px] md:top-[130px] z-20">
+          <div className="max-w-6xl mx-auto px-5 py-2 flex overflow-x-auto gap-2 scrollbar-none snap-x">
+            <button
+              onClick={() => setSelectedCategory(null)}
+              className={cn(
+                "snap-start whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors border",
+                selectedCategory === null 
+                  ? "bg-primary text-white border-primary" 
+                  : "bg-card text-muted-foreground border-border hover:bg-muted"
+              )}
+            >
+              Todos
+            </button>
+            {categories.map((c: any) => (
+              <button
+                key={c.id}
+                onClick={() => setSelectedCategory(c.id)}
+                className={cn(
+                  "snap-start whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors border",
+                  selectedCategory === c.id 
+                    ? "bg-primary text-white border-primary" 
+                    : "bg-card text-muted-foreground border-border hover:bg-muted"
+                )}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <main className="max-w-6xl mx-auto px-5 py-8 space-y-10">
         {/* STORE INFO (if no top banner or to reinforce) */}
