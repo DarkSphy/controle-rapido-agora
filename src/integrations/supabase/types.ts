@@ -393,6 +393,13 @@ export type Database = {
             foreignKeyName: "products_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
+            referencedRelation: "catalog_categories_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
             referencedRelation: "categories"
             referencedColumns: ["id"]
           },
@@ -1003,6 +1010,24 @@ export type Database = {
         }
         Relationships: []
       }
+      catalog_categories_public: {
+        Row: {
+          id: string | null
+          name: string | null
+          user_id: string | null
+        }
+        Insert: {
+          id?: string | null
+          name?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          id?: string | null
+          name?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       catalog_products_public: {
         Row: {
           category_id: string | null
@@ -1038,6 +1063,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_categories_public"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "products_category_id_fkey"
             columns: ["category_id"]
