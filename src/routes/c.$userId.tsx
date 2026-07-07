@@ -218,9 +218,9 @@ function CatalogPage() {
           </div>
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <Button className="relative h-11 px-5 rounded-full bg-primary text-white hover:bg-primary/90 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 border-none">
+              <Button className="relative h-11 px-5 rounded-full bg-primary text-white hover:bg-primary/90 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 border-none hidden sm:flex">
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                <span className="font-semibold hidden sm:inline">Ver Carrinho</span>
+                <span className="font-semibold">Ver Carrinho</span>
                 {cart.length > 0 && (
                   <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-brand text-white text-xs grid place-items-center font-bold border-2 border-card shadow-sm animate-in zoom-in">
                     {cart.reduce((s, i) => s + i.quantity, 0)}
@@ -349,8 +349,20 @@ function CatalogPage() {
         </div>
       )}
 
-      {/* MAIN CONTENT */}
-      <main className="max-w-6xl mx-auto px-5 py-8 space-y-12">
+      {/* STICKY SEARCH BAR */}
+      <div className="sticky top-[73px] md:top-[81px] z-30 bg-background/90 backdrop-blur-md px-5 py-3 border-b border-border/50 shadow-sm">
+        <div className="max-w-6xl mx-auto relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input 
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Buscar por nome ou descrição do produto..." 
+            className="pl-12 h-12 bg-card border-border/60 shadow-inner rounded-full text-base font-medium w-full focus-visible:ring-primary"
+          />
+        </div>
+      </div>
+
+      <main className="max-w-6xl mx-auto px-5 py-8 space-y-10">
         {/* STORE INFO (if no top banner or to reinforce) */}
         {settings.description && (
           <div className="max-w-3xl mx-auto text-center space-y-4">
@@ -363,17 +375,8 @@ function CatalogPage() {
         <div>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <h3 className="text-xl font-bold flex items-center gap-2">
-              <Store className="h-5 w-5 text-brand" /> Produtos em Destaque
+              <Store className="h-5 w-5 text-brand" /> Todos os Produtos
             </h3>
-            <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Buscar produtos..." 
-                className="pl-9 bg-card border-border/50 shadow-sm rounded-full"
-              />
-            </div>
           </div>
           
           {filteredProducts.length === 0 ? (
@@ -506,6 +509,24 @@ function CatalogPage() {
           <span className="text-sm font-extrabold leading-none mt-0.5">Falar com o Suporte</span>
         </div>
       </button>
+
+      {/* FLOATING ACTION BUTTON (MOBILE) */}
+      <div className="sm:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-sm">
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetTrigger asChild>
+            <Button className="w-full h-14 rounded-2xl bg-primary text-white shadow-xl shadow-primary/30 border-none flex items-center justify-center gap-3 animate-in slide-in-from-bottom-8">
+              <ShoppingCart className="h-6 w-6" />
+              <span className="font-bold text-lg">Ver Carrinho</span>
+              {cart.length > 0 && (
+                <span className="ml-2 px-2.5 py-0.5 rounded-full bg-white text-primary text-sm font-black">
+                  {cart.reduce((s, i) => s + i.quantity, 0)}
+                </span>
+              )}
+            </Button>
+          </SheetTrigger>
+        </Sheet>
+      </div>
+
     </div>
   );
 }

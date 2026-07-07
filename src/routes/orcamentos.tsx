@@ -105,6 +105,7 @@ function OrcamentosPage() {
         items,
         subtotal: quote.subtotal,
         laborValue: quote.laborValue || 0,
+        laborLabel: quote.laborLabel,
         discount: quote.discount,
         total: quote.total,
         businessName: bs?.name,
