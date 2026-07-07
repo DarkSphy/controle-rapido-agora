@@ -22,13 +22,13 @@ export const Route = createFileRoute("/c/$userId")({
       supabase.from("catalog_settings").select("*").eq("id", params.userId).maybeSingle(),
       (supabase.from as any)("catalog_products_public").select("*").eq("user_id", params.userId),
       (supabase.from as any)("catalog_variations_public").select("*").eq("user_id", params.userId),
-      (supabase.from as any)("business_settings").select("logo_url, name, phone, address").eq("user_id", params.userId).maybeSingle(),
-      (supabase.from as any)("categories").select("*").eq("user_id", params.userId),
+      (supabase.from as any)("business_settings_public").select("logo_url, name, address").eq("user_id", params.userId).maybeSingle(),
+      (supabase.from as any)("catalog_categories_public").select("*").eq("user_id", params.userId),
     ]);
 
-    const settings: CatalogSettings = sets ? {
+    const settings: CatalogSettings = sets ? ({
       id: sets.id,
-      whatsappNumber: sets.whatsapp_number || biz?.phone || undefined,
+      whatsappNumber: sets.whatsapp_number || undefined,
       companyName: sets.company_name || biz?.name || undefined,
       address: (sets as any).address || biz?.address || undefined,
       description: (sets as any).description || undefined,
@@ -39,17 +39,17 @@ export const Route = createFileRoute("/c/$userId")({
       bannerText: sets.banner_text ?? undefined,
       bannerEnabled: sets.banner_enabled || false,
       categories: cats || []
-    } : {
+    } as any) : ({
       id: params.userId,
       bannerEnabled: false,
-      whatsappNumber: biz?.phone || undefined,
+      whatsappNumber: undefined,
       companyName: biz?.name || undefined,
       address: biz?.address || undefined,
       colors: { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
       fontFamily: "Inter",
       banners: [],
       categories: cats || []
-    };
+    } as any);
 
     const products: Product[] = (prods || []).map((p: any) => ({
       id: p.id,
@@ -187,7 +187,7 @@ function CatalogPage() {
   const bottomBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "bottom") || [];
   const categories = (settings as any).categories || [];
 
-  const filteredProducts = products.filter(p => {
+  const filteredProducts = products.filter((p: Product) => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCat = selectedCategory ? p.categoryId === selectedCategory : true;
