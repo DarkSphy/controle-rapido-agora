@@ -16,11 +16,12 @@ export const Route = createFileRoute("/c/$userId")({
       { data: sets },
       { data: prods },
       { data: vars },
+      { data: biz },
     ] = await Promise.all([
       supabase.from("catalog_settings").select("*").eq("id", params.userId).maybeSingle(),
       (supabase.from as any)("catalog_products_public").select("*").eq("user_id", params.userId),
       (supabase.from as any)("catalog_variations_public").select("*").eq("user_id", params.userId),
-      (supabase.from as any)("business_settings").select("logo_url").eq("user_id", params.userId).maybeSingle(),
+      (supabase.from as any)("business_settings_public").select("logo_url").eq("user_id", params.userId).maybeSingle(),
     ]);
 
     const settings: CatalogSettings = sets ? {
