@@ -20,7 +20,7 @@ export const Route = createFileRoute("/c/$userId")({
       supabase.from("catalog_settings").select("*").eq("id", params.userId).maybeSingle(),
       (supabase.from as any)("catalog_products_public").select("*").eq("user_id", params.userId),
       (supabase.from as any)("catalog_variations_public").select("*").eq("user_id", params.userId),
-      supabase.from("business_settings").select("logo_url").eq("user_id", params.userId).maybeSingle(),
+      (supabase.from as any)("business_settings").select("logo_url").eq("user_id", params.userId).maybeSingle(),
     ]);
 
     const settings: CatalogSettings = sets ? {
