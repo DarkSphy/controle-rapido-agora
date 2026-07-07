@@ -143,7 +143,8 @@ export async function generateQuotePDF(a: Args) {
   y += 6;
 
   if ((a.laborValue || 0) > 0) {
-    doc.text("Mão de Obra:", 145, y, { align: "right" });
+    const label = a.laborLabel || "Mão de Obra";
+    doc.text(`${label}:`, 145, y, { align: "right" });
     doc.text(formatBRL(a.laborValue || 0), right - 5, y, { align: "right" });
     y += 6;
   }
