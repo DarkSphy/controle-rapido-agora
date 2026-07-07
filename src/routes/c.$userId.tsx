@@ -181,7 +181,7 @@ function CatalogPage() {
   const middleBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "middle") || [];
   const bottomBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "bottom") || [];
 
-  const filteredProducts = products.filter(p => 
+  const filteredProducts = products.filter((p: any) => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
