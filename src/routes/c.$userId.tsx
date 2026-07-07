@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Product, Variation, CatalogSettings, formatBRL } from "@/lib/store";
-import { ShoppingCart, Plus, Minus, X, Store, MapPin, MessageCircle, Info } from "lucide-react";
+import { ShoppingCart, Plus, Minus, X, Store, MapPin, MessageCircle, Info, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,15 +21,15 @@ export const Route = createFileRoute("/c/$userId")({
       supabase.from("catalog_settings").select("*").eq("id", params.userId).maybeSingle(),
       (supabase.from as any)("catalog_products_public").select("*").eq("user_id", params.userId),
       (supabase.from as any)("catalog_variations_public").select("*").eq("user_id", params.userId),
-      (supabase.from as any)("business_settings_public").select("logo_url").eq("user_id", params.userId).maybeSingle(),
+      (supabase.from as any)("business_settings").select("logo_url, name, phone, address").eq("user_id", params.userId).maybeSingle(),
     ]);
 
     const settings: CatalogSettings = sets ? {
       id: sets.id,
-      whatsappNumber: sets.whatsapp_number ?? undefined,
-      companyName: sets.company_name ?? undefined,
-      address: (sets as any).address ?? undefined,
-      description: (sets as any).description ?? undefined,
+      whatsappNumber: sets.whatsapp_number || biz?.phone || undefined,
+      companyName: sets.company_name || biz?.name || undefined,
+      address: (sets as any).address || biz?.address || undefined,
+      description: (sets as any).description || undefined,
       banners: ((sets as any).banners as any) || [],
       colors: (sets.colors as any) || { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
       fontFamily: sets.font_family || "Inter",
@@ -39,6 +39,9 @@ export const Route = createFileRoute("/c/$userId")({
     } : {
       id: params.userId,
       bannerEnabled: false,
+      whatsappNumber: biz?.phone || undefined,
+      companyName: biz?.name || undefined,
+      address: biz?.address || undefined,
       colors: { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
       fontFamily: "Inter",
       banners: []
@@ -82,6 +85,7 @@ function CatalogPage() {
   const { settings, products, logoUrl } = Route.useLoaderData();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Checkout Form State
   const [name, setName] = useState("");
@@ -176,6 +180,11 @@ function CatalogPage() {
   const topBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "top") || [];
   const middleBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "middle") || [];
   const bottomBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "bottom") || [];
+
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   return (
     <div className="catalog-theme min-h-screen bg-background text-foreground font-sans pb-24 relative selection:bg-brand selection:text-white">
@@ -347,12 +356,30 @@ function CatalogPage() {
 
         {/* PRODUCTS GRID */}
         <div>
-          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-            <Store className="h-5 w-5 text-brand" /> Produtos em Destaque
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((p: any) => {
-              const price = p.cost * (1 + p.margin/100);
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <h3 className="text-xl font-bold flex items-center gap-2">
+              <Store className="h-5 w-5 text-brand" /> Produtos em Destaque
+            </h3>
+            <div className="relative w-full md:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Buscar produtos..." 
+                className="pl-9 bg-card border-border/50 shadow-sm rounded-full"
+              />
+            </div>
+          </div>
+          
+          {filteredProducts.length === 0 ? (
+            <div className="text-center py-12 bg-card rounded-3xl border border-border/50">
+              <Search className="h-12 w-12 text-muted-foreground opacity-20 mx-auto mb-3" />
+              <p className="text-muted-foreground font-medium">Nenhum produto encontrado.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {filteredProducts.map((p: any) => {
+                const price = p.cost * (1 + p.margin/100);
               const hasVariations = p.variations && p.variations.length > 0;
               
               return (
