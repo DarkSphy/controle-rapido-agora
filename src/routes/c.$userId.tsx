@@ -187,7 +187,7 @@ function CatalogPage() {
   const bottomBanners = (settings.banners as any[] | undefined)?.filter((b: any) => b.position === "bottom") || [];
   const categories = (settings as any).categories || [];
 
-  const filteredProducts = products.filter(p => {
+  const filteredProducts = products.filter((p: Product) => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCat = selectedCategory ? p.categoryId === selectedCategory : true;
