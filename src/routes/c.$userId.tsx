@@ -205,15 +205,20 @@ function CatalogPage() {
               <h1 className="font-extrabold text-xl leading-tight">{settings.companyName || "Catálogo Online"}</h1>
               {settings.address && (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-                  <MapPin className="h-3 w-3" />
+                  <MapPin className="h-3 w-3 shrink-0" />
                   <span className="truncate max-w-[200px] md:max-w-sm">{settings.address}</span>
                 </div>
+              )}
+              {settings.description && (
+                <p className="text-xs text-muted-foreground mt-1 max-w-sm line-clamp-2">
+                  {settings.description}
+                </p>
               )}
             </div>
           </div>
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <Button className="relative h-11 px-5 rounded-full bg-foreground text-background hover:bg-foreground/90 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
+              <Button className="relative h-11 px-5 rounded-full bg-primary text-white hover:bg-primary/90 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 border-none">
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 <span className="font-semibold hidden sm:inline">Ver Carrinho</span>
                 {cart.length > 0 && (

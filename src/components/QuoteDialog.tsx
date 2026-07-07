@@ -34,6 +34,7 @@ const empty: Draft = {
   customerId: "",
   status: "Pendente",
   laborValue: "0",
+  laborLabel: "Mão de Obra",
   discount: "0",
   validityDate: "",
   notes: "",
@@ -75,6 +76,7 @@ export function QuoteDialog({
           notes: quote.notes ?? "",
           paymentConditions: quote.paymentConditions ?? "",
           laborValue: String(quote.laborValue ?? 0),
+          laborLabel: quote.laborLabel ?? "Mão de Obra",
         });
         
         const currentItems = quoteItems.filter(i => i.quoteId === quote.id).map(qi => {
@@ -193,6 +195,7 @@ export function QuoteDialog({
         customerId: d.customerId || undefined,
         status: d.status,
         laborValue: labor,
+        laborLabel: d.laborLabel,
         subtotal,
         discount,
         total,
@@ -205,6 +208,7 @@ export function QuoteDialog({
         customerId: d.customerId || undefined,
         status: d.status,
         laborValue: labor,
+        laborLabel: d.laborLabel,
         subtotal,
         discount,
         total,
@@ -466,7 +470,19 @@ export function QuoteDialog({
                   <span>{formatBRL(subtotal)}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground font-semibold">Mão de Obra (R$)</span>
+                  {!isApproved ? (
+                    <select
+                      value={d.laborLabel || "Mão de Obra"}
+                      onChange={(e) => setD({ ...d, laborLabel: e.target.value })}
+                      className="text-muted-foreground font-semibold bg-transparent border-0 p-0 hover:bg-muted/50 rounded cursor-pointer outline-none focus:ring-0"
+                    >
+                      <option value="Mão de Obra">Mão de Obra (R$)</option>
+                      <option value="Frete">Frete (R$)</option>
+                      <option value="Taxa Extra">Taxa Extra (R$)</option>
+                    </select>
+                  ) : (
+                    <span className="text-muted-foreground font-semibold">{d.laborLabel || "Mão de Obra"} (R$)</span>
+                  )}
                   {!isApproved ? (
                     <Input 
                       type="number" 

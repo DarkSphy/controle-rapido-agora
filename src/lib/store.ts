@@ -150,6 +150,7 @@ export type Quote = {
   customerId?: string;
   status: "Pendente" | "Aprovado" | "Recusado" | "Expirado";
   laborValue: number;
+  laborLabel?: string;
   subtotal: number;
   discount: number;
   total: number;
@@ -490,6 +491,7 @@ function rowToQuote(q: any): Quote {
     customerId: q.customer_id ?? undefined,
     status: q.status as any,
     laborValue: Number(q.labor_value || 0),
+    laborLabel: q.labor_label ?? "Mão de Obra",
     subtotal: Number(q.subtotal),
     discount: Number(q.discount),
     total: Number(q.total),
@@ -1311,6 +1313,7 @@ export const actions = {
       status: q.status || "Pendente",
       subtotal: q.subtotal,
       labor_value: q.laborValue,
+      labor_label: q.laborLabel || "Mão de Obra",
       discount: q.discount,
       total: q.total,
       validity_date: q.validityDate || null,
