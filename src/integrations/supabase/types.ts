@@ -585,6 +585,7 @@ export type Database = {
           customer_id: string | null
           discount: number | null
           id: string
+          labor_label: string | null
           labor_value: number | null
           notes: string | null
           payment_conditions: string | null
@@ -599,6 +600,7 @@ export type Database = {
           customer_id?: string | null
           discount?: number | null
           id?: string
+          labor_label?: string | null
           labor_value?: number | null
           notes?: string | null
           payment_conditions?: string | null
@@ -613,6 +615,7 @@ export type Database = {
           customer_id?: string | null
           discount?: number | null
           id?: string
+          labor_label?: string | null
           labor_value?: number | null
           notes?: string | null
           payment_conditions?: string | null
