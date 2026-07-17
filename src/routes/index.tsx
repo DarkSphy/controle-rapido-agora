@@ -54,7 +54,7 @@ function Landing() {
             </Button>
           ) : (
             <>
-              <Button asChild variant="ghost" className="hidden sm:inline-flex">
+              <Button asChild variant="ghost">
                 <Link to="/auth">Entrar</Link>
               </Button>
               <Button asChild className="shadow-md">
