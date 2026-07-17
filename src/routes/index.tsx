@@ -53,14 +53,14 @@ function Landing() {
               <Link to="/dashboard">Acessar app <ArrowRight className="h-4 w-4" /></Link>
             </Button>
           ) : (
-            <>
-              <Button asChild variant="ghost">
-                <Link to="/auth">Entrar</Link>
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 ml-auto">
+              <Button asChild variant="outline" className="border-brand/30 text-brand hover:bg-brand/10 w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10">
+                <Link to="/auth">Entrar na conta</Link>
               </Button>
-              <Button asChild className="shadow-md">
+              <Button asChild className="shadow-md w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10">
                 <a href={WA_HIRE_URL}>Assinar agora</a>
               </Button>
-            </>
+            </div>
           )}
         </div>
       </header>

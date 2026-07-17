@@ -2,7 +2,7 @@ import { useState, createContext, useContext, useEffect } from "react";
 import { 
   LayoutDashboard, ShoppingBag, Package, Users, Truck,
   Plus, Minus, X, Check, Search, Bell, Menu, ShoppingCart, Info, ExternalLink,
-  Receipt, BarChart3, ChartBar, Settings, Store, Store as Storefront, Wrench, Tags, Layers, Lightbulb, ArrowLeftRight, AlertTriangle
+  Receipt, BarChart3, ChartBar, Settings, Store, Store as Storefront, Wrench, Tags, Layers, Lightbulb, ArrowLeftRight, AlertTriangle, Smartphone, Download, Share, PlusSquare
 } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ const DemoSettings = ({ shopInfo, setShopInfo }: any) => (
 );
 
 export function DemoDashboard() {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "vendas" | "compras" | "orcamentos" | "os" | "balcao" | "catalogo" | "produtos" | "servicos" | "categorias" | "clientes" | "fornecedores" | "kits" | "financeiro" | "insights" | "historico" | "reposicao" | "configuracoes">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "vendas" | "compras" | "orcamentos" | "os" | "balcao" | "catalogo" | "produtos" | "servicos" | "categorias" | "clientes" | "fornecedores" | "kits" | "financeiro" | "insights" | "historico" | "reposicao" | "configuracoes" | "pwa">("dashboard");
   const [cart, setCart] = useState<{product: typeof mockProducts[0], qty: number}[]>([]);
   const [search, setSearch] = useState("");
   const [todaySales, setTodaySales] = useState(845.50);
@@ -146,6 +146,10 @@ export function DemoDashboard() {
             <button onClick={() => { setActiveTab("historico"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "historico" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><ArrowLeftRight className="h-4 w-4" /> Histórico</button>
             <button onClick={() => { setActiveTab("reposicao"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "reposicao" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><AlertTriangle className="h-4 w-4" /> Reposição</button>
             <button onClick={() => { setActiveTab("configuracoes"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg ${activeTab === "configuracoes" ? "bg-sidebar-accent font-medium" : "hover:bg-muted"}`}><Settings className="h-4 w-4" /> Configurações</button>
+            
+            <div className="mt-6 pt-4 border-t border-border">
+              <button onClick={() => { setActiveTab("pwa"); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg ${activeTab === "pwa" ? "bg-brand text-brand-foreground font-medium shadow-md" : "bg-brand/10 text-brand hover:bg-brand/20"} font-bold`}><Smartphone className="h-5 w-5" /> Instalar App</button>
+            </div>
           </div>
         </aside>
 
@@ -403,6 +407,67 @@ export function DemoDashboard() {
                 </div>
                 <p>A interface detalhada deste módulo não está incluída nesta demonstração rápida.</p>
                 <Button variant="outline" onClick={() => setActiveTab("dashboard")}>Voltar ao Resumo</Button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "pwa" && (
+            <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 space-y-8">
+              <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
+                <div className="bg-brand/10 p-8 flex flex-col items-center text-center">
+                  {/* Usando Logo do sistema, caso a imagem do link quebre */}
+                  <div className="bg-white p-4 rounded-3xl shadow-sm mb-6 flex items-center justify-center w-24 h-24">
+                    <Logo />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-extrabold mb-2 text-foreground">Tenha o ControleJá no seu celular</h2>
+                  <p className="text-muted-foreground max-w-md">
+                    Instale o nosso aplicativo para acessar todas as funcionalidades de forma rápida, como um app nativo, sem precisar abrir o navegador toda vez.
+                  </p>
+                </div>
+                
+                <div className="p-6 md:p-8 space-y-8">
+                  {/* iOS Instructions */}
+                  <div className="flex gap-4">
+                    <div className="bg-muted w-12 h-12 rounded-full flex items-center justify-center shrink-0">
+                      <Smartphone className="w-6 h-6 text-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg mb-2">Se você usa iPhone (iOS)</h3>
+                      <ol className="space-y-3 text-muted-foreground">
+                        <li className="flex gap-2 items-center">
+                          <span className="font-bold bg-muted w-6 h-6 rounded-full flex items-center justify-center text-xs text-foreground">1</span>
+                          <span>Abra este site no <strong>Safari</strong></span>
+                        </li>
+                        <li className="flex gap-2 items-start">
+                          <span className="font-bold bg-muted w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 mt-0.5 text-foreground">2</span>
+                          <span>Toque no botão de compartilhar <Share className="w-4 h-4 inline mx-1" /> na barra inferior do navegador</span>
+                        </li>
+                        <li className="flex gap-2 items-start">
+                          <span className="font-bold bg-muted w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 mt-0.5 text-foreground">3</span>
+                          <span>Role para baixo e selecione <strong>"Adicionar à Tela de Início"</strong> <PlusSquare className="w-4 h-4 inline mx-1" /></span>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+
+                  <div className="w-full h-px bg-border" />
+
+                  {/* Android Instructions */}
+                  <div className="flex gap-4">
+                    <div className="bg-muted w-12 h-12 rounded-full flex items-center justify-center shrink-0">
+                      <Download className="w-6 h-6 text-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg mb-2">Se você usa Android</h3>
+                      <p className="text-muted-foreground mb-4">
+                        O seu navegador (Chrome) perguntará automaticamente se você deseja instalar o aplicativo na sua tela inicial.
+                      </p>
+                      <Button className="w-full sm:w-auto font-semibold" onClick={() => alert("Ao clicar aqui no sistema real, o Android exibe o pop-up de instalação do PWA!")}>
+                        <Download className="w-4 h-4 mr-2" /> Instalar Automaticamente
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
