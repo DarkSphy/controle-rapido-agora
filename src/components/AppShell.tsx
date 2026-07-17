@@ -1,9 +1,9 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { 
   LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut, 
-  Truck, Tag, Box, BarChart3, DollarSign, Users, Lightbulb, ShoppingBasket, Briefcase, Wrench, FileText, Settings, Store
+  Truck, Tag, Box, BarChart3, DollarSign, Users, Lightbulb, ShoppingBasket, Briefcase, Wrench, FileText, Settings, Store, Menu
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
@@ -12,6 +12,7 @@ import { actions } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { InstallPWA } from "@/components/InstallPWA";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
 const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin"];
 
@@ -58,6 +59,11 @@ export function AppShell() {
   const { user, role, loading } = useAuth();
   const { isActive, loading: subLoading } = useSubscription();
   const isPublic = PUBLIC_ROUTES.includes(loc.pathname) || loc.pathname.startsWith("/c/");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [loc.pathname]);
 
   useEffect(() => {
     if (user) actions.loadAll();
@@ -171,7 +177,7 @@ export function AppShell() {
       </main>
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card border-t border-border flex justify-around h-16">
-        {navGroups.flatMap(g => g.items).filter(n => !n.adminOnly || role === "admin").slice(0, 5).map((n) => {
+        {navGroups.flatMap(g => g.items).filter(n => !n.adminOnly || role === "admin").slice(0, 4).map((n) => {
           const active = loc.pathname === n.to;
           const Icon = n.icon;
           return (
@@ -188,6 +194,71 @@ export function AppShell() {
             </Link>
           );
         })}
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <button className="flex flex-col items-center justify-center gap-1 flex-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+              <Menu className="h-5 w-5" />
+              Menu
+            </button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 flex flex-col w-64 border-r-0">
+            <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
+            <div className="px-6 py-6 border-b border-border/50">
+              <Link to="/dashboard">
+                <Logo size="sm" />
+              </Link>
+            </div>
+            
+            <div className="px-3 py-4 flex-1 space-y-6 overflow-y-auto scrollbar-none">
+              {navGroups.map((group) => (
+                <div key={group.title} className="space-y-1">
+                  <h3 className="px-4 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">
+                    {group.title}
+                  </h3>
+                  <nav className="space-y-1">
+                    {group.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
+                      const active = loc.pathname === n.to;
+                      const Icon = n.icon;
+                      return (
+                        <Link
+                          key={n.to}
+                          to={n.to}
+                          className={cn(
+                            "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all duration-200 group",
+                            active
+                              ? "bg-sidebar-accent text-sidebar-accent-foreground font-bold shadow-sm"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                          )}
+                        >
+                          <Icon className={cn("h-4 w-4 transition-transform group-hover:scale-110", active ? "text-brand" : "text-muted-foreground/60")} />
+                          {n.label}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                </div>
+              ))}
+            </div>
+
+            <div className="p-4 mt-auto border-t border-border/50 bg-muted/10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-full bg-brand/20 flex items-center justify-center text-brand font-bold">
+                  {user?.email?.[0].toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-bold truncate">{user?.email?.split('@')[0]}</div>
+                  <div className="text-[10px] text-muted-foreground truncate uppercase tracking-wider">{role}</div>
+                </div>
+              </div>
+              <button
+                onClick={logout}
+                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold uppercase tracking-widest rounded-lg text-destructive bg-destructive/5 hover:bg-destructive/10 transition-colors border border-destructive/10"
+              >
+                <LogOut className="h-4 w-4" /> Sair
+              </button>
+            </div>
+          </SheetContent>
+        </Sheet>
       </nav>
     </div>
   );
