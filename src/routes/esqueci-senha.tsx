@@ -65,13 +65,16 @@ function ForgotPasswordPage() {
               Enviamos um link de redefinição para <strong>{email}</strong>. O link expira em pouco tempo — nenhum
               dado da sua conta é alterado até você criar a nova senha.
             </p>
+            <p className="text-xs text-muted-foreground mt-3">
+              Não achou o e-mail? Verifique a caixa de spam ou promoções.
+            </p>
           </div>
         ) : (
           <>
             <h1 className="text-2xl font-bold tracking-tight mt-8">Esqueceu sua senha?</h1>
             <p className="text-muted-foreground text-sm mt-1 mb-6">
-              Informe seu e-mail e enviaremos um link para criar uma nova senha. Seus produtos, vendas e clientes
-              permanecem intactos.
+              Informe seu e-mail e enviaremos um link para criar uma nova senha. Funciona para qualquer conta, inclusive
+              as que foram criadas com o Google. Seus produtos, vendas e clientes permanecem intactos.
             </p>
             <form onSubmit={submit} className="space-y-4">
               <div className="space-y-1.5">
