@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { InstallPWA } from "@/components/InstallPWA";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
-const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin"];
+const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin", "/esqueci-senha", "/reset-password"];
 
 const navGroups = [
   {

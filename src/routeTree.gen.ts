@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VendasRouteImport } from './routes/vendas'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as ServicosRouteImport } from './routes/servicos'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ReposicaoRouteImport } from './routes/reposicao'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ProdutosRouteImport } from './routes/produtos'
@@ -21,6 +22,7 @@ import { Route as MovimentacoesRouteImport } from './routes/movimentacoes'
 import { Route as KitsRouteImport } from './routes/kits'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
+import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as ComprasRouteImport } from './routes/compras'
@@ -49,6 +51,11 @@ const SuppliersRoute = SuppliersRouteImport.update({
 const ServicosRoute = ServicosRouteImport.update({
   id: '/servicos',
   path: '/servicos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReposicaoRoute = ReposicaoRouteImport.update({
@@ -94,6 +101,11 @@ const InsightsRoute = InsightsRouteImport.update({
 const FinanceiroRoute = FinanceiroRouteImport.update({
   id: '/financeiro',
   path: '/financeiro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
+  id: '/esqueci-senha',
+  path: '/esqueci-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -180,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/compras': typeof ComprasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/dashboard': typeof DashboardRoute
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/financeiro': typeof FinanceiroRoute
   '/insights': typeof InsightsRoute
   '/kits': typeof KitsRoute
@@ -189,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/produtos': typeof ProdutosRoute
   '/reports': typeof ReportsRoute
   '/reposicao': typeof ReposicaoRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/servicos': typeof ServicosRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
@@ -208,6 +222,7 @@ export interface FileRoutesByTo {
   '/compras': typeof ComprasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/dashboard': typeof DashboardRoute
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/financeiro': typeof FinanceiroRoute
   '/insights': typeof InsightsRoute
   '/kits': typeof KitsRoute
@@ -217,6 +232,7 @@ export interface FileRoutesByTo {
   '/produtos': typeof ProdutosRoute
   '/reports': typeof ReportsRoute
   '/reposicao': typeof ReposicaoRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/servicos': typeof ServicosRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
@@ -237,6 +253,7 @@ export interface FileRoutesById {
   '/compras': typeof ComprasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/dashboard': typeof DashboardRoute
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/financeiro': typeof FinanceiroRoute
   '/insights': typeof InsightsRoute
   '/kits': typeof KitsRoute
@@ -246,6 +263,7 @@ export interface FileRoutesById {
   '/produtos': typeof ProdutosRoute
   '/reports': typeof ReportsRoute
   '/reposicao': typeof ReposicaoRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/servicos': typeof ServicosRoute
   '/suppliers': typeof SuppliersRoute
   '/vendas': typeof VendasRoute
@@ -267,6 +285,7 @@ export interface FileRouteTypes {
     | '/compras'
     | '/configuracoes'
     | '/dashboard'
+    | '/esqueci-senha'
     | '/financeiro'
     | '/insights'
     | '/kits'
@@ -276,6 +295,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/reports'
     | '/reposicao'
+    | '/reset-password'
     | '/servicos'
     | '/suppliers'
     | '/vendas'
@@ -295,6 +315,7 @@ export interface FileRouteTypes {
     | '/compras'
     | '/configuracoes'
     | '/dashboard'
+    | '/esqueci-senha'
     | '/financeiro'
     | '/insights'
     | '/kits'
@@ -304,6 +325,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/reports'
     | '/reposicao'
+    | '/reset-password'
     | '/servicos'
     | '/suppliers'
     | '/vendas'
@@ -323,6 +345,7 @@ export interface FileRouteTypes {
     | '/compras'
     | '/configuracoes'
     | '/dashboard'
+    | '/esqueci-senha'
     | '/financeiro'
     | '/insights'
     | '/kits'
@@ -332,6 +355,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/reports'
     | '/reposicao'
+    | '/reset-password'
     | '/servicos'
     | '/suppliers'
     | '/vendas'
@@ -352,6 +376,7 @@ export interface RootRouteChildren {
   ComprasRoute: typeof ComprasRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   DashboardRoute: typeof DashboardRoute
+  EsqueciSenhaRoute: typeof EsqueciSenhaRoute
   FinanceiroRoute: typeof FinanceiroRoute
   InsightsRoute: typeof InsightsRoute
   KitsRoute: typeof KitsRoute
@@ -361,6 +386,7 @@ export interface RootRouteChildren {
   ProdutosRoute: typeof ProdutosRoute
   ReportsRoute: typeof ReportsRoute
   ReposicaoRoute: typeof ReposicaoRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ServicosRoute: typeof ServicosRoute
   SuppliersRoute: typeof SuppliersRoute
   VendasRoute: typeof VendasRoute
@@ -389,6 +415,13 @@ declare module '@tanstack/react-router' {
       path: '/servicos'
       fullPath: '/servicos'
       preLoaderRoute: typeof ServicosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reposicao': {
@@ -452,6 +485,13 @@ declare module '@tanstack/react-router' {
       path: '/financeiro'
       fullPath: '/financeiro'
       preLoaderRoute: typeof FinanceiroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/esqueci-senha': {
+      id: '/esqueci-senha'
+      path: '/esqueci-senha'
+      fullPath: '/esqueci-senha'
+      preLoaderRoute: typeof EsqueciSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -579,6 +619,7 @@ const rootRouteChildren: RootRouteChildren = {
   ComprasRoute: ComprasRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
   DashboardRoute: DashboardRoute,
+  EsqueciSenhaRoute: EsqueciSenhaRoute,
   FinanceiroRoute: FinanceiroRoute,
   InsightsRoute: InsightsRoute,
   KitsRoute: KitsRoute,
@@ -588,6 +629,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProdutosRoute: ProdutosRoute,
   ReportsRoute: ReportsRoute,
   ReposicaoRoute: ReposicaoRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ServicosRoute: ServicosRoute,
   SuppliersRoute: SuppliersRoute,
   VendasRoute: VendasRoute,
