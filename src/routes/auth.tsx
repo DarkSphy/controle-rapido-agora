@@ -103,6 +103,12 @@ function AuthPage() {
             </Button>
           </form>
 
+          <p className="text-sm text-center mt-4">
+            <Link to="/esqueci-senha" className="text-muted-foreground hover:text-foreground hover:underline">
+              Esqueci minha senha
+            </Link>
+          </p>
+
           <p className="text-sm text-center text-muted-foreground mt-8">
             Precisa de ajuda para acessar?{" "}
             <a href="https://wa.me/5531973175882?text=Preciso%20de%20ajuda%20para%20acessar%20minha%20conta" target="_blank" rel="noopener noreferrer" className="text-brand-foreground font-semibold hover:underline">
