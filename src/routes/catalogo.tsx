@@ -78,32 +78,46 @@ function CatalogoPage() {
     setSaving(false);
   }
 
-  async function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  function addNewBannerSlot() {
+    setBanners(prev => [
+      ...prev,
+      { id: Math.random().toString(36).slice(2, 10), url: "", position: "top" }
+    ]);
+    toast.success("Novo banner criado! Adicione as imagens para Celular e Computador.");
+  }
+
+  async function handleDesktopBannerUpload(id: string, e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
-    setUploadingBanner(true);
-    const url = await actions.uploadImage(f, "catalog_images", "banner");
+    toast.loading("Enviando imagem de Computador...", { id: "desktop-banner-upload" });
+    const url = await actions.uploadImage(f, "catalog_images", "banner-desktop");
     if (url) {
-      setBanners(prev => [...prev, { id: Math.random().toString(), url, position: "top" }]);
+      setBanners(prev => prev.map(b => b.id === id ? { ...b, url } : b));
+      toast.success("Imagem para Computador adicionada!", { id: "desktop-banner-upload" });
+    } else {
+      toast.error("Erro ao enviar imagem.", { id: "desktop-banner-upload" });
     }
-    setUploadingBanner(false);
   }
 
   async function handleMobileBannerUpload(id: string, e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
-    toast.loading("Enviando versão mobile...", { id: "mobile-banner-upload" });
+    toast.loading("Enviando imagem de Celular...", { id: "mobile-banner-upload" });
     const url = await actions.uploadImage(f, "catalog_images", "banner-mobile");
     if (url) {
       setBanners(prev => prev.map(b => b.id === id ? { ...b, mobileUrl: url } : b));
-      toast.success("Versão mobile adicionada!", { id: "mobile-banner-upload" });
+      toast.success("Imagem para Celular adicionada!", { id: "mobile-banner-upload" });
     } else {
-      toast.error("Erro ao enviar imagem mobile.", { id: "mobile-banner-upload" });
+      toast.error("Erro ao enviar imagem.", { id: "mobile-banner-upload" });
     }
   }
 
   function removeBanner(id: string) {
     setBanners(prev => prev.filter(b => b.id !== id));
+  }
+
+  function removeDesktopBanner(id: string) {
+    setBanners(prev => prev.map(b => b.id === id ? { ...b, url: "" } : b));
   }
 
   function removeMobileBanner(id: string) {
@@ -264,98 +278,134 @@ function CatalogoPage() {
           </div>
 
           <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="p-4 border-b border-border bg-muted/30">
-              <h2 className="font-semibold">Banners Rotativos</h2>
-              <p className="text-sm text-muted-foreground">Adicione banners e configure versões dedicadas para celular e computador.</p>
+            <div className="p-4 border-b border-border bg-muted/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="font-semibold text-base">Banners do Catálogo</h2>
+                <p className="text-xs text-muted-foreground">Gerencie imagens separadas para Celular e Computador para cada banner.</p>
+              </div>
+              <Button onClick={addNewBannerSlot} size="sm" className="bg-primary text-white hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-1.5" /> Adicionar Novo Banner
+              </Button>
             </div>
+            
             <div className="p-6 space-y-6">
-              <div className="flex flex-col md:flex-row gap-6">
-                <label className="flex-shrink-0 h-36 w-full md:w-64 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition relative overflow-hidden group">
-                  <input type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} disabled={uploadingBanner} />
-                  {uploadingBanner ? (
-                    <div className="flex flex-col items-center gap-2">
-                      <span className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />
-                      <span className="text-xs text-muted-foreground font-medium">Enviando...</span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground p-4 text-center">
-                      <ImageIcon className="h-8 w-8 opacity-50 group-hover:scale-110 transition text-primary" />
-                      <span className="text-xs font-bold text-foreground">Adicionar Novo Banner</span>
-                      <span className="text-[11px] text-muted-foreground">Clique para escolher a imagem principal (Computador)</span>
-                    </div>
-                  )}
-                </label>
-                
-                <div className="flex-1 space-y-4">
-                  {banners.length === 0 && (
-                    <div className="h-36 flex items-center justify-center border rounded-xl border-dashed bg-muted/20 text-muted-foreground text-sm">
-                      Nenhum banner configurado. Adicione o primeiro no botão ao lado.
-                    </div>
-                  )}
-                  {banners.map((b) => (
-                    <div key={b.id} className="flex flex-col gap-4 p-4 border rounded-xl bg-card shadow-sm">
-                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-3 border-b border-border/50">
-                        <div className="flex-1 space-y-1">
-                          <Label className="text-xs text-muted-foreground font-semibold">Posição na Página</Label>
-                          <select 
-                            value={b.position}
-                            onChange={(e) => updateBannerPosition(b.id, e.target.value as any)}
-                            className="flex h-9 w-full md:w-64 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
-                          >
-                            <option value="top">Topo da Página (Destaque Principal)</option>
-                            <option value="middle">Meio da Página</option>
-                            <option value="bottom">Fim da Página</option>
-                          </select>
+              {banners.length === 0 ? (
+                <div className="py-12 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center text-center bg-muted/10 p-6 space-y-3">
+                  <ImageIcon className="h-10 w-10 text-muted-foreground/40" />
+                  <div>
+                    <h3 className="font-bold text-sm text-foreground">Nenhum banner cadastrado</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">Clique no botão abaixo para criar um slot de banner com envio separado para Computador e Celular.</p>
+                  </div>
+                  <Button onClick={addNewBannerSlot} size="sm" variant="outline">
+                    <Plus className="h-4 w-4 mr-1" /> Adicionar Primeiro Banner
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {banners.map((b, index) => (
+                    <div key={b.id} className="p-5 border rounded-2xl bg-card shadow-sm space-y-4 relative group">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-border/50">
+                        <div className="flex items-center gap-3">
+                          <span className="h-6 px-2.5 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
+                            Banner #{index + 1}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs text-muted-foreground font-medium">Posição:</Label>
+                            <select 
+                              value={b.position}
+                              onChange={(e) => updateBannerPosition(b.id, e.target.value as any)}
+                              className="h-8 rounded-lg border border-input bg-background px-2.5 text-xs font-semibold shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                            >
+                              <option value="top">Topo da Página (Destaque Principal)</option>
+                              <option value="middle">Meio da Página</option>
+                              <option value="bottom">Fim da Página</option>
+                            </select>
+                          </div>
                         </div>
-                        <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 self-end md:self-auto" onClick={() => removeBanner(b.id)}>
-                          <Trash2 className="h-4 w-4 mr-1" /> Excluir Banner
+
+                        <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 text-xs h-8" onClick={() => removeBanner(b.id)}>
+                          <Trash2 className="h-3.5 w-3.5 mr-1" /> Excluir Este Banner
                         </Button>
                       </div>
 
-                      {/* DUAL IMAGE UPLOAD (DESKTOP & MOBILE) */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {/* DESKTOP VERSION */}
-                        <div className="space-y-2 bg-muted/20 p-3 rounded-lg border border-border/40">
-                          <div className="flex items-center justify-between text-xs font-semibold text-foreground">
-                            <span className="flex items-center gap-1.5"><Monitor className="h-3.5 w-3.5 text-blue-500" /> Imagem Computador (1200x400)</span>
+                      {/* SIDE BY SIDE DESKTOP & MOBILE UPLOAD SLOTS */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* 🖥️ DESKTOP UPLOAD SLOT */}
+                        <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-xs">
+                              <Monitor className="h-4 w-4" />
+                              <span>IMAGEM PARA COMPUTADOR (DESKTOP)</span>
+                            </div>
+                            <span className="text-[10px] font-semibold text-muted-foreground">1200 x 400 px</span>
                           </div>
-                          <div className="relative h-24 rounded-lg overflow-hidden border bg-background flex items-center justify-center">
-                            <img src={b.url} alt="Banner Computador" className="w-full h-full object-contain" />
-                          </div>
+
+                          {b.url ? (
+                            <div className="space-y-2">
+                              <div className="relative h-28 rounded-lg overflow-hidden border border-border bg-background flex items-center justify-center">
+                                <img src={b.url} alt="Desktop" className="w-full h-full object-contain p-1" />
+                              </div>
+                              <div className="flex items-center justify-between gap-2">
+                                <label className="cursor-pointer text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                                  <Upload className="h-3.5 w-3.5" /> Trocar Imagem Desktop
+                                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleDesktopBannerUpload(b.id, e)} />
+                                </label>
+                                <button onClick={() => removeDesktopBanner(b.id)} className="text-xs text-destructive hover:underline">
+                                  Remover
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <label className="h-28 rounded-lg border-2 border-dashed border-blue-500/30 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-500/10 transition text-center p-3">
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleDesktopBannerUpload(b.id, e)} />
+                              <Upload className="h-6 w-6 text-blue-500 mb-1.5" />
+                              <span className="text-xs font-bold text-foreground">Upload Imagem Computador</span>
+                              <span className="text-[11px] text-muted-foreground">Clique para selecionar (1200 x 400)</span>
+                            </label>
+                          )}
                         </div>
 
-                        {/* MOBILE VERSION */}
-                        <div className="space-y-2 bg-muted/20 p-3 rounded-lg border border-border/40">
-                          <div className="flex items-center justify-between text-xs font-semibold text-foreground">
-                            <span className="flex items-center gap-1.5"><Smartphone className="h-3.5 w-3.5 text-emerald-500" /> Imagem Celular (800x800)</span>
-                            {b.mobileUrl && (
-                              <button onClick={() => removeMobileBanner(b.id)} className="text-[11px] text-destructive hover:underline">
-                                Usar mesma do PC
-                              </button>
-                            )}
+                        {/* 📱 MOBILE UPLOAD SLOT */}
+                        <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+                              <Smartphone className="h-4 w-4" />
+                              <span>IMAGEM PARA CELULAR (MOBILE)</span>
+                            </div>
+                            <span className="text-[10px] font-semibold text-muted-foreground">800 x 800 px</span>
                           </div>
-                          <div className="relative h-24 rounded-lg overflow-hidden border bg-background flex items-center justify-center">
-                            {b.mobileUrl ? (
-                              <img src={b.mobileUrl} alt="Banner Celular" className="w-full h-full object-contain" />
-                            ) : (
-                              <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer hover:bg-muted/40 transition">
-                                <input 
-                                  type="file" 
-                                  accept="image/*" 
-                                  className="hidden" 
-                                  onChange={(e) => handleMobileBannerUpload(b.id, e)} 
-                                />
-                                <Upload className="h-4 w-4 text-emerald-500 mb-1" />
-                                <span className="text-xs text-muted-foreground font-medium text-center">Enviar para Celular</span>
-                              </label>
-                            )}
-                          </div>
+
+                          {b.mobileUrl ? (
+                            <div className="space-y-2">
+                              <div className="relative h-28 rounded-lg overflow-hidden border border-border bg-background flex items-center justify-center">
+                                <img src={b.mobileUrl} alt="Mobile" className="w-full h-full object-contain p-1" />
+                              </div>
+                              <div className="flex items-center justify-between gap-2">
+                                <label className="cursor-pointer text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
+                                  <Upload className="h-3.5 w-3.5" /> Trocar Imagem Celular
+                                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleMobileBannerUpload(b.id, e)} />
+                                </label>
+                                <button onClick={() => removeMobileBanner(b.id)} className="text-xs text-destructive hover:underline">
+                                  Remover
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <label className="h-28 rounded-lg border-2 border-dashed border-emerald-500/30 flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-500/10 transition text-center p-3">
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleMobileBannerUpload(b.id, e)} />
+                              <Upload className="h-6 w-6 text-emerald-500 mb-1.5" />
+                              <span className="text-xs font-bold text-foreground">Upload Imagem Celular</span>
+                              <span className="text-[11px] text-muted-foreground">Clique para selecionar (800 x 800)</span>
+                            </label>
+                          )}
                         </div>
+
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              )}
             </div>
           </div>
           <div className="flex justify-end">

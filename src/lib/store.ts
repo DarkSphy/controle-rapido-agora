@@ -574,7 +574,21 @@ export const actions = {
       fetchTable("catalog_settings", supabase.from("catalog_settings").select("*").eq("id", user?.id).maybeSingle()),
     ]);
 
-    const products = (prods ?? []).map((p: any) => rowToProduct(p, vars ?? []));
+    // Deduplicate variations if duplicate names exist for the same product due to legacy bug
+    const seenMap = new Map<string, string>();
+    const cleanedVars: any[] = [];
+    (vars ?? []).forEach((v: any) => {
+      const key = `${v.product_id}_${v.name.trim().toLowerCase()}`;
+      if (!seenMap.has(key)) {
+        seenMap.set(key, v.id);
+        cleanedVars.push(v);
+      } else {
+        // Clean up duplicate row from database in background
+        supabase.from("variations").delete().eq("id", v.id).then();
+      }
+    });
+
+    const products = (prods ?? []).map((p: any) => rowToProduct(p, cleanedVars));
     const movements = (movs ?? []).map(rowToMovement);
     const suppliers = (sups ?? []).map(rowToSupplier);
     const categories = (cats ?? []).map(rowToCategory);
@@ -749,31 +763,71 @@ export const actions = {
     let newVars: Variation[] | undefined;
     if (patch.variations) {
       const { data: user } = await supabase.auth.getUser();
-      if (!user.user) return;
-      await supabase.from("variations").delete().eq("product_id", id);
-      if (patch.variations.length > 0) {
-        const { data: inserted } = await supabase
-          .from("variations")
-          .insert(
-            patch.variations.map((v) => ({
-              user_id: user.user!.id,
-              product_id: id,
+      if (user?.user) {
+        const isUuid = (str?: string) => typeof str === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+        
+        // Fetch current DB variations for this product
+        const { data: existingVars } = await supabase.from("variations").select("id").eq("product_id", id);
+        const existingIds = new Set((existingVars || []).map((v: any) => v.id));
+
+        const payloadVars = patch.variations;
+        const keepIds = new Set(payloadVars.map((v) => v.id).filter(isUuid));
+
+        // Delete variations removed by user
+        const idsToDelete = Array.from(existingIds).filter((idInDb) => !keepIds.has(idInDb));
+        if (idsToDelete.length > 0) {
+          const { error: delErr } = await supabase.from("variations").delete().in("id", idsToDelete);
+          if (delErr) {
+            console.warn("Foreign key or delete error on variations:", delErr.message);
+          }
+        }
+
+        // Separate updates vs inserts
+        const toUpdate = payloadVars.filter((v) => v.id && isUuid(v.id) && existingIds.has(v.id));
+        const toInsert = payloadVars.filter((v) => !v.id || !isUuid(v.id) || !existingIds.has(v.id));
+
+        let updatedVars: any[] = [];
+        for (const v of toUpdate) {
+          const { data: uData } = await supabase
+            .from("variations")
+            .update({
               name: v.name,
               stock: v.stock,
               cost: v.cost,
               margin: v.margin,
-            })),
-          )
-          .select();
-        newVars = (inserted ?? []).map((v: any) => ({
+            })
+            .eq("id", v.id!)
+            .select()
+            .single();
+          if (uData) updatedVars.push(uData);
+        }
+
+        let insertedVars: any[] = [];
+        if (toInsert.length > 0) {
+          const { data: iData } = await supabase
+            .from("variations")
+            .insert(
+              toInsert.map((v) => ({
+                user_id: user.user!.id,
+                product_id: id,
+                name: v.name,
+                stock: v.stock,
+                cost: v.cost,
+                margin: v.margin,
+              })),
+            )
+            .select();
+          if (iData) insertedVars = iData;
+        }
+
+        const allSaved = [...updatedVars, ...insertedVars];
+        newVars = allSaved.map((v: any) => ({
           id: v.id,
           name: v.name,
-          stock: v.stock,
+          stock: Number(v.stock),
           cost: Number(v.cost),
           margin: Number(v.margin),
         }));
-      } else {
-        newVars = [];
       }
     }
 

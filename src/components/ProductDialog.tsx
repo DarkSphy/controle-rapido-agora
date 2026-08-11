@@ -116,7 +116,7 @@ export function ProductDialog({
       supplierId: d.supplierId || undefined,
       inCatalog: d.inCatalog,
       variations: d.variations.map((v) => ({
-        id: v.id ?? Math.random().toString(36).slice(2, 10),
+        id: v.id,
         name: v.name,
         stock: Number(v.stock) || 0,
         cost: Number(v.cost) || 0,
