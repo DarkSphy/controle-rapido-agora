@@ -174,6 +174,7 @@ export type QuoteItem = {
 export type CatalogBanner = {
   id: string;
   url: string;
+  mobileUrl?: string;
   position: "top" | "middle" | "bottom";
   link?: string;
 };

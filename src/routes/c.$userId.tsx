@@ -362,8 +362,15 @@ function CatalogPage() {
         <div className="w-full overflow-hidden mb-6 bg-muted/10 border-b border-border/30">
           <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
             {topBanners.map((b: any, i: number) => (
-              <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative">
-                <img src={b.url} alt="Banner" className="w-full h-auto max-h-[350px] object-contain" />
+              <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative flex justify-center items-center">
+                <picture className="w-full flex justify-center">
+                  {b.mobileUrl && <source media="(max-width: 767px)" srcSet={b.mobileUrl} />}
+                  <img 
+                    src={b.url} 
+                    alt="Banner" 
+                    className="w-full h-auto max-h-[350px] md:max-h-[450px] object-contain mx-auto" 
+                  />
+                </picture>
               </div>
             ))}
           </div>
@@ -498,11 +505,14 @@ function CatalogPage() {
 
         {/* MIDDLE BANNERS */}
         {middleBanners.length > 0 && (
-          <div className="w-full overflow-hidden rounded-3xl shadow-lg border border-border/50 my-12">
+          <div className="w-full overflow-hidden rounded-3xl shadow-lg border border-border/50 my-12 bg-muted/10">
              <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
               {middleBanners.map((b: any, i: number) => (
-                <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[300px]">
-                  <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[4/1]" />
+                <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative flex justify-center items-center">
+                  <picture className="w-full flex justify-center">
+                    {b.mobileUrl && <source media="(max-width: 767px)" srcSet={b.mobileUrl} />}
+                    <img src={b.url} alt="Banner" className="w-full h-auto max-h-[350px] object-contain rounded-3xl" />
+                  </picture>
                 </div>
               ))}
             </div>
@@ -511,11 +521,14 @@ function CatalogPage() {
         
         {/* BOTTOM BANNERS */}
         {bottomBanners.length > 0 && (
-          <div className="w-full overflow-hidden rounded-3xl shadow-lg border border-border/50 mt-12">
+          <div className="w-full overflow-hidden rounded-3xl shadow-lg border border-border/50 mt-12 bg-muted/10">
              <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none">
               {bottomBanners.map((b: any, i: number) => (
-                <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative max-h-[300px]">
-                  <img src={b.url} alt="Banner" className="w-full h-full object-cover aspect-[21/9] md:aspect-[4/1]" />
+                <div key={b.id || i} className="min-w-full snap-center flex-shrink-0 relative flex justify-center items-center">
+                  <picture className="w-full flex justify-center">
+                    {b.mobileUrl && <source media="(max-width: 767px)" srcSet={b.mobileUrl} />}
+                    <img src={b.url} alt="Banner" className="w-full h-auto max-h-[350px] object-contain rounded-3xl" />
+                  </picture>
                 </div>
               ))}
             </div>

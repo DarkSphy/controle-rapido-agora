@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useStore, Product, Kit, CatalogSettings, actions, formatBRL } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Copy, ExternalLink, Plus, Trash2, Image as ImageIcon } from "lucide-react";
+import { Copy, ExternalLink, Plus, Trash2, Image as ImageIcon, Monitor, Smartphone, Upload, Info } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { CatalogBanner } from "@/lib/store";
 
@@ -89,8 +89,25 @@ function CatalogoPage() {
     setUploadingBanner(false);
   }
 
+  async function handleMobileBannerUpload(id: string, e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    toast.loading("Enviando versão mobile...", { id: "mobile-banner-upload" });
+    const url = await actions.uploadImage(f, "catalog_images", "banner-mobile");
+    if (url) {
+      setBanners(prev => prev.map(b => b.id === id ? { ...b, mobileUrl: url } : b));
+      toast.success("Versão mobile adicionada!", { id: "mobile-banner-upload" });
+    } else {
+      toast.error("Erro ao enviar imagem mobile.", { id: "mobile-banner-upload" });
+    }
+  }
+
   function removeBanner(id: string) {
     setBanners(prev => prev.filter(b => b.id !== id));
+  }
+
+  function removeMobileBanner(id: string) {
+    setBanners(prev => prev.map(b => b.id === id ? { ...b, mobileUrl: undefined } : b));
   }
 
   function updateBannerPosition(id: string, pos: "top" | "middle" | "bottom") {
@@ -212,14 +229,48 @@ function CatalogoPage() {
         </TabsContent>
 
         <TabsContent value="banners" className="space-y-6">
+          {/* BANNER SIZE TUTORIAL GUIDE */}
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 space-y-3">
+            <div className="flex items-center gap-2 text-primary font-bold text-base">
+              <Info className="h-5 w-5 shrink-0" />
+              <span>Guia de Tamanhos Recomendados para Banners sem Cortar</span>
+            </div>
+            <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+              Para garantir que seus banners apareçam perfeitamente em qualquer dispositivo sem cortes indesejados, disponibilizamos o upload separado para Computador e Celular:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+              <div className="bg-card border border-border/80 rounded-xl p-3.5 flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                  <Monitor className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs uppercase tracking-wide text-foreground">Computador (Desktop)</h4>
+                  <p className="text-sm font-semibold text-primary mt-0.5">1200 x 400 pixels <span className="text-xs font-normal text-muted-foreground">(Proporção 3:1)</span></p>
+                  <p className="text-xs text-muted-foreground mt-1">Formato horizontal amplo ideal para telas grandes de PC e notebook.</p>
+                </div>
+              </div>
+
+              <div className="bg-card border border-border/80 rounded-xl p-3.5 flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <Smartphone className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs uppercase tracking-wide text-foreground">Celular (Smartphone)</h4>
+                  <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">800 x 800 pixels <span className="text-xs font-normal text-muted-foreground">(Proporção 1:1)</span> ou <span className="font-semibold">600 x 800</span></p>
+                  <p className="text-xs text-muted-foreground mt-1">Formato vertical/quadrado otimizado para a tela em pé dos smartphones.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-xl border border-border bg-card overflow-hidden">
             <div className="p-4 border-b border-border bg-muted/30">
               <h2 className="font-semibold">Banners Rotativos</h2>
-              <p className="text-sm text-muted-foreground">Faça upload de banners para exibir na sua vitrine online.</p>
+              <p className="text-sm text-muted-foreground">Adicione banners e configure versões dedicadas para celular e computador.</p>
             </div>
             <div className="p-6 space-y-6">
               <div className="flex flex-col md:flex-row gap-6">
-                <label className="flex-shrink-0 h-32 w-full md:w-64 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition relative overflow-hidden group">
+                <label className="flex-shrink-0 h-36 w-full md:w-64 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition relative overflow-hidden group">
                   <input type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} disabled={uploadingBanner} />
                   {uploadingBanner ? (
                     <div className="flex flex-col items-center gap-2">
@@ -227,37 +278,80 @@ function CatalogoPage() {
                       <span className="text-xs text-muted-foreground font-medium">Enviando...</span>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                      <ImageIcon className="h-8 w-8 opacity-50 group-hover:scale-110 transition" />
-                      <span className="text-xs font-medium text-center px-4">Upload de Banner<br/>(Recomendado: 1200x400)</span>
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground p-4 text-center">
+                      <ImageIcon className="h-8 w-8 opacity-50 group-hover:scale-110 transition text-primary" />
+                      <span className="text-xs font-bold text-foreground">Adicionar Novo Banner</span>
+                      <span className="text-[11px] text-muted-foreground">Clique para escolher a imagem principal (Computador)</span>
                     </div>
                   )}
                 </label>
                 
                 <div className="flex-1 space-y-4">
                   {banners.length === 0 && (
-                    <div className="h-full flex items-center justify-center border rounded-xl border-dashed bg-muted/20 text-muted-foreground text-sm">
-                      Nenhum banner configurado.
+                    <div className="h-36 flex items-center justify-center border rounded-xl border-dashed bg-muted/20 text-muted-foreground text-sm">
+                      Nenhum banner configurado. Adicione o primeiro no botão ao lado.
                     </div>
                   )}
                   {banners.map((b) => (
-                    <div key={b.id} className="flex flex-col md:flex-row items-center gap-4 p-3 border rounded-xl bg-card shadow-sm">
-                      <img src={b.url} alt="Banner" className="w-full md:w-40 h-20 object-cover rounded-md border" />
-                      <div className="flex-1 space-y-2 w-full">
-                        <Label className="text-xs text-muted-foreground">Posição de exibição</Label>
-                        <select 
-                          value={b.position}
-                          onChange={(e) => updateBannerPosition(b.id, e.target.value as any)}
-                          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
-                        >
-                          <option value="top">Topo da Página (Destaque)</option>
-                          <option value="middle">Meio da Página</option>
-                          <option value="bottom">Fim da Página</option>
-                        </select>
+                    <div key={b.id} className="flex flex-col gap-4 p-4 border rounded-xl bg-card shadow-sm">
+                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-3 border-b border-border/50">
+                        <div className="flex-1 space-y-1">
+                          <Label className="text-xs text-muted-foreground font-semibold">Posição na Página</Label>
+                          <select 
+                            value={b.position}
+                            onChange={(e) => updateBannerPosition(b.id, e.target.value as any)}
+                            className="flex h-9 w-full md:w-64 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
+                          >
+                            <option value="top">Topo da Página (Destaque Principal)</option>
+                            <option value="middle">Meio da Página</option>
+                            <option value="bottom">Fim da Página</option>
+                          </select>
+                        </div>
+                        <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 self-end md:self-auto" onClick={() => removeBanner(b.id)}>
+                          <Trash2 className="h-4 w-4 mr-1" /> Excluir Banner
+                        </Button>
                       </div>
-                      <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => removeBanner(b.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+
+                      {/* DUAL IMAGE UPLOAD (DESKTOP & MOBILE) */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* DESKTOP VERSION */}
+                        <div className="space-y-2 bg-muted/20 p-3 rounded-lg border border-border/40">
+                          <div className="flex items-center justify-between text-xs font-semibold text-foreground">
+                            <span className="flex items-center gap-1.5"><Monitor className="h-3.5 w-3.5 text-blue-500" /> Imagem Computador (1200x400)</span>
+                          </div>
+                          <div className="relative h-24 rounded-lg overflow-hidden border bg-background flex items-center justify-center">
+                            <img src={b.url} alt="Banner Computador" className="w-full h-full object-contain" />
+                          </div>
+                        </div>
+
+                        {/* MOBILE VERSION */}
+                        <div className="space-y-2 bg-muted/20 p-3 rounded-lg border border-border/40">
+                          <div className="flex items-center justify-between text-xs font-semibold text-foreground">
+                            <span className="flex items-center gap-1.5"><Smartphone className="h-3.5 w-3.5 text-emerald-500" /> Imagem Celular (800x800)</span>
+                            {b.mobileUrl && (
+                              <button onClick={() => removeMobileBanner(b.id)} className="text-[11px] text-destructive hover:underline">
+                                Usar mesma do PC
+                              </button>
+                            )}
+                          </div>
+                          <div className="relative h-24 rounded-lg overflow-hidden border bg-background flex items-center justify-center">
+                            {b.mobileUrl ? (
+                              <img src={b.mobileUrl} alt="Banner Celular" className="w-full h-full object-contain" />
+                            ) : (
+                              <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer hover:bg-muted/40 transition">
+                                <input 
+                                  type="file" 
+                                  accept="image/*" 
+                                  className="hidden" 
+                                  onChange={(e) => handleMobileBannerUpload(b.id, e)} 
+                                />
+                                <Upload className="h-4 w-4 text-emerald-500 mb-1" />
+                                <span className="text-xs text-muted-foreground font-medium text-center">Enviar para Celular</span>
+                              </label>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
