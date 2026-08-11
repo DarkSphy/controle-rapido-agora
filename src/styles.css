@@ -52,55 +52,146 @@
 }
 
 :root {
-  --radius: 1.5rem;
+  --radius: 1.25rem;
 
-  /* Backgrounds — very subtle off-white for airy feel */
-  --background: oklch(0.99 0.002 240);
-  --foreground: oklch(0.25 0.03 240);
+  /* Notion Light Palette */
+  --background: #fcfcfb;
+  --foreground: #2f2f2f;
 
-  --card: oklch(1 0 0);
-  --card-foreground: var(--foreground);
-  --popover: oklch(1 0 0);
-  --popover-foreground: var(--foreground);
+  --card: #ffffff;
+  --card-foreground: #2f2f2f;
+  --popover: #ffffff;
+  --popover-foreground: #2f2f2f;
 
-  /* Primary — deep charcoal/navy for contrast */
-  --primary: oklch(0.25 0.04 240);
-  --primary-foreground: oklch(0.98 0.005 240);
-  --primary-hover: oklch(0.2 0.04 240);
+  --primary: #191919;
+  --primary-foreground: #ffffff;
+  --primary-hover: #2d2d2d;
 
-  /* Brand mint green — vibrant but professional */
-  --brand: oklch(0.7 0.08 165);
-  --brand-foreground: oklch(0.2 0.04 240);
+  --brand: #0f7b6c;
+  --brand-foreground: #ffffff;
 
-  --secondary: oklch(0.94 0.01 240);
-  --secondary-foreground: var(--foreground);
-  --muted: oklch(0.95 0.01 240);
-  --muted-foreground: oklch(0.55 0.02 240);
-  --accent: oklch(0.92 0.04 165);
-  --accent-foreground: var(--primary);
+  --secondary: #f7f7f5;
+  --secondary-foreground: #2f2f2f;
+  --muted: #f1f1ef;
+  --muted-foreground: #787774;
+  --accent: #eef7f5;
+  --accent-foreground: #0f7b6c;
 
-  --destructive: oklch(0.55 0.2 25);
-  --destructive-foreground: oklch(0.98 0.005 240);
+  --destructive: #eb5757;
+  --destructive-foreground: #ffffff;
 
-  /* Success uses a slightly different green than brand for hierarchy */
-  --success: oklch(0.62 0.13 165);
-  --success-foreground: oklch(0.99 0.005 200);
+  --success: #2e7d32;
+  --success-foreground: #ffffff;
 
-  --warning: oklch(0.75 0.15 75);
-  --warning-foreground: oklch(0.3 0.06 75);
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
 
-  --border: oklch(0.92 0.01 240);
-  --input: oklch(0.94 0.01 240);
-  --ring: var(--brand);
+  --border: #e9e9e7;
+  --input: #e9e9e7;
+  --ring: #0f7b6c;
 
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: var(--foreground);
-  --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent: oklch(0.96 0.02 165);
-  --sidebar-accent-foreground: var(--primary);
-  --sidebar-border: var(--border);
-  --sidebar-ring: var(--ring);
+  --sidebar: #f7f7f5;
+  --sidebar-foreground: #2f2f2f;
+  --sidebar-primary: #191919;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eef7f5;
+  --sidebar-accent-foreground: #0f7b6c;
+  --sidebar-border: #e9e9e7;
+  --sidebar-ring: #0f7b6c;
+}
+
+.dark {
+  /* Notion Dark Palette */
+  --background: #191919;
+  --foreground: #d4d4d4;
+
+  --card: #202020;
+  --card-foreground: #e3e3e3;
+  --popover: #252525;
+  --popover-foreground: #e3e3e3;
+
+  --primary: #e3e3e3;
+  --primary-foreground: #191919;
+  --primary-hover: #ffffff;
+
+  --brand: #2eaadc;
+  --brand-foreground: #191919;
+
+  --secondary: #252525;
+  --secondary-foreground: #d4d4d4;
+  --muted: #272727;
+  --muted-foreground: #9b9b9b;
+  --accent: #1e3a47;
+  --accent-foreground: #2eaadc;
+
+  --destructive: #ff6b6b;
+  --destructive-foreground: #ffffff;
+
+  --success: #34d399;
+  --success-foreground: #191919;
+
+  --warning: #fbbf24;
+  --warning-foreground: #191919;
+
+  --border: #2e2e2e;
+  --input: #2e2e2e;
+  --ring: #2eaadc;
+
+  --sidebar: #191919;
+  --sidebar-foreground: #d4d4d4;
+  --sidebar-primary: #2eaadc;
+  --sidebar-primary-foreground: #191919;
+  --sidebar-accent: #252525;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #2e2e2e;
+  --sidebar-ring: #2eaadc;
+}
+
+.sepia {
+  /* Notion Warm Sepia / Reader Palette */
+  --background: #f4ecd8;
+  --foreground: #433422;
+
+  --card: #fbf7ee;
+  --card-foreground: #382c1d;
+  --popover: #fbf7ee;
+  --popover-foreground: #382c1d;
+
+  --primary: #433422;
+  --primary-foreground: #fcf8f0;
+  --primary-hover: #2d2215;
+
+  --brand: #b45309;
+  --brand-foreground: #ffffff;
+
+  --secondary: #eee3cc;
+  --secondary-foreground: #433422;
+  --muted: #eae0cb;
+  --muted-foreground: #7d6b55;
+  --accent: #f5e8d0;
+  --accent-foreground: #b45309;
+
+  --destructive: #c2410c;
+  --destructive-foreground: #ffffff;
+
+  --success: #15803d;
+  --success-foreground: #ffffff;
+
+  --warning: #b45309;
+  --warning-foreground: #ffffff;
+
+  --border: #e2d4bc;
+  --input: #e2d4bc;
+  --ring: #b45309;
+
+  --sidebar: #efe5ce;
+  --sidebar-foreground: #433422;
+  --sidebar-primary: #b45309;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e5d8bc;
+  --sidebar-accent-foreground: #433422;
+  --sidebar-border: #e2d4bc;
+  --sidebar-ring: #b45309;
 }
 
 @layer base {
@@ -112,5 +203,6 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
 }

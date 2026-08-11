@@ -110,39 +110,48 @@ function Dashboard() {
   ];
 
   return (
-    <div className="px-4 md:px-10 py-8 md:py-12 max-w-7xl mx-auto space-y-10">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-1">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">Resumo do dia</h1>
-          <p className="text-muted-foreground font-medium">
-            {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}
+    <div className="px-4 md:px-10 py-6 md:py-10 max-w-7xl mx-auto space-y-8">
+      {/* NOTION CALLOUT WELCOME BANNER */}
+      <div className="p-6 md:p-8 rounded-2xl border border-border bg-card shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="space-y-1.5 z-10">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">👋</span>
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
+              Resumo da Operação
+            </h1>
+          </div>
+          <p className="text-sm text-muted-foreground font-medium pl-8 capitalize">
+            {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
           </p>
         </div>
-        <div className="flex gap-3">
-          <Button asChild className="h-12 px-6 rounded-2xl shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all font-bold">
+        
+        <div className="flex flex-wrap items-center gap-3 z-10">
+          <Button asChild className="h-10 px-5 rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 font-semibold text-xs shadow-sm transition-all">
             <Link to="/vendas">
-              <ShoppingBasket className="mr-2 h-5 w-5" /> Nova Venda
+              <ShoppingBasket className="mr-2 h-4 w-4" /> Nova Venda
             </Link>
           </Button>
-          <Button asChild variant="outline" className="h-12 px-6 rounded-2xl border-2 hover:bg-muted font-bold">
+          <Button asChild variant="outline" className="h-10 px-5 rounded-xl border-border bg-card hover:bg-muted font-semibold text-xs transition-all">
             <Link to="/compras">
-              <Truck className="mr-2 h-5 w-5" /> Nova Compra
+              <Truck className="mr-2 h-4 w-4" /> Nova Compra
             </Link>
           </Button>
         </div>
-      </header>
+      </div>
 
-      {/* Stats Grid */}
+      {/* KPI METRICS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {stats.map((s, i) => (
-          <div key={i} className="bg-card rounded-[2rem] border border-border/50 p-6 shadow-sm hover:shadow-md transition-shadow group">
-            <div className="flex justify-between items-start mb-6">
-              <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110", s.color)}>
-                <s.icon className="h-6 w-6" />
+          <div key={i} className="bg-card rounded-2xl border border-border p-5 shadow-sm hover:shadow-md hover:border-brand/40 transition-all duration-300 group flex flex-col justify-between">
+            <div className="flex items-start justify-between mb-4">
+              <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105", s.color)}>
+                <s.icon className="h-5 w-5" />
               </div>
               {s.trend && (
-                <span className={cn("text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full", 
-                  s.trend.includes("+") ? "text-success bg-success/10" : "text-muted-foreground bg-muted"
+                <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border", 
+                  s.trend.includes("+") 
+                    ? "text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20" 
+                    : "text-muted-foreground bg-muted border-border"
                 )}>
                   {s.trend}
                 </span>
@@ -150,67 +159,71 @@ function Dashboard() {
               {s.action}
             </div>
             <div className="space-y-1">
-              <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{s.label}</div>
-              <div className="text-2xl font-black tabular-nums tracking-tight">{s.value}</div>
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{s.label}</div>
+              <div className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">{s.value}</div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Middle Grid */}
+      {/* MIDDLE SECTION: CRITICAL STOCK & RECENT SALES */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Estoque Crítico */}
-        <div className="lg:col-span-2 bg-card rounded-[2rem] border border-border/50 overflow-hidden flex flex-col shadow-sm">
-          <div className="p-6 flex items-center justify-between border-b border-border/50">
-            <h2 className="text-lg font-black flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-destructive" /> Estoque crítico
-            </h2>
-            <Link to="/reposicao" className="text-xs font-bold uppercase tracking-widest text-brand hover:underline flex items-center gap-1">
-              Ver reposição <TrendingUp className="h-3 w-3" />
+        {/* Estoque Crítico (Notion Database List style) */}
+        <div className="lg:col-span-2 bg-card rounded-2xl border border-border overflow-hidden flex flex-col shadow-sm">
+          <div className="p-5 flex items-center justify-between border-b border-border bg-muted/20">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-destructive" />
+              <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">Estoque Crítico</h2>
+            </div>
+            <Link to="/reposicao" className="text-xs font-bold text-brand hover:underline flex items-center gap-1">
+              Ver reposição completa <TrendingUp className="h-3 w-3" />
             </Link>
           </div>
-          <div className="p-6 flex-1">
-            <div className="space-y-1">
-              {products.filter(p => !p.isService && productEffectiveStock(p) <= p.minStock).slice(0, 4).map((p) => (
-                <div key={p.id} className="flex items-center justify-between py-4 border-b border-border/30 last:border-0 group">
-                  <span className="font-bold text-sm group-hover:text-brand transition-colors">{p.name}</span>
-                  <span className={cn("text-xs font-black px-3 py-1 rounded-full", 
-                    productEffectiveStock(p) <= 0 ? "text-destructive bg-destructive/10" : "text-amber-600 bg-amber-50"
-                  )}>
-                    {productEffectiveStock(p)} un.
-                  </span>
+          <div className="p-5 flex-1 divide-y divide-border/60">
+            {products.filter(p => !p.isService && productEffectiveStock(p) <= p.minStock).slice(0, 5).map((p) => (
+              <div key={p.id} className="flex items-center justify-between py-3 group hover:bg-muted/30 px-2 rounded-lg transition-colors">
+                <div className="flex items-center gap-3">
+                  <Package className="h-4 w-4 text-muted-foreground opacity-60" />
+                  <span className="font-semibold text-sm group-hover:text-brand transition-colors">{p.name}</span>
                 </div>
-              ))}
-              {products.filter(p => !p.isService && productEffectiveStock(p) <= p.minStock).length === 0 && (
-                <div className="h-40 flex flex-col items-center justify-center text-muted-foreground">
-                   <Package className="h-10 w-10 mb-2 opacity-20" />
-                   <p className="text-sm font-medium">Tudo em dia por aqui!</p>
-                </div>
-              )}
-            </div>
+                <span className={cn("text-xs font-bold px-2.5 py-1 rounded-full border", 
+                  productEffectiveStock(p) <= 0 
+                    ? "text-destructive bg-destructive/10 border-destructive/20" 
+                    : "text-amber-700 dark:text-amber-400 bg-amber-500/10 border-amber-500/20"
+                )}>
+                  {productEffectiveStock(p)} un. em estoque
+                </span>
+              </div>
+            ))}
+            {products.filter(p => !p.isService && productEffectiveStock(p) <= p.minStock).length === 0 && (
+              <div className="h-40 flex flex-col items-center justify-center text-muted-foreground text-center">
+                <Package className="h-8 w-8 mb-2 opacity-30" />
+                <p className="text-sm font-medium">Estoque 100% regularizado!</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Últimas Vendas */}
-        <div className="bg-card rounded-[2rem] border border-border/50 overflow-hidden flex flex-col shadow-sm">
-          <div className="p-6 flex items-center justify-between border-b border-border/50">
-            <h2 className="text-lg font-black">Últimas vendas</h2>
-            <Link to="/vendas" className="text-xs font-bold uppercase tracking-widest text-brand hover:underline">Ver todas</Link>
+        <div className="bg-card rounded-2xl border border-border overflow-hidden flex flex-col shadow-sm">
+          <div className="p-5 flex items-center justify-between border-b border-border bg-muted/20">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">Últimas Vendas</h2>
+            <Link to="/vendas" className="text-xs font-bold text-brand hover:underline">Ver todas</Link>
           </div>
-          <div className="p-6 flex-1 space-y-4">
+          <div className="p-5 flex-1 space-y-3.5">
             {sales.slice(0, 4).map((s) => (
-              <div key={s.id} className="flex items-center gap-4 group">
-                <div className="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center text-success shrink-0">
-                  <ShoppingBasket className="h-5 w-5" />
+              <div key={s.id} className="flex items-center gap-3 p-2.5 rounded-xl border border-border/50 bg-background/50 hover:bg-muted/40 transition-colors">
+                <div className="h-9 w-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <ShoppingBasket className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center mb-0.5">
-                    <span className="text-sm font-black tracking-tight">{formatBRL(s.totalAmount)}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-bold text-foreground">{formatBRL(s.totalAmount)}</span>
                     <span className="text-[10px] text-muted-foreground font-medium">{new Date(s.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-success">{s.paymentMethod || "Venda"}</span>
-                    <span className="text-[10px] text-muted-foreground truncate">Pedido #{s.id.slice(0,8).toUpperCase()}</span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">{s.paymentMethod || "Venda"}</span>
+                    <span className="text-[10px] text-muted-foreground truncate">#{s.id.slice(0,8).toUpperCase()}</span>
                   </div>
                 </div>
               </div>
@@ -219,53 +232,63 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Bottom Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <ActionTile title="Insights" icon={Lightbulb} color="text-brand" link="/insights" description="Sugestões inteligentes para o seu negócio." />
-        <ActionTile title="Financeiro" icon={BarChart3} color="text-primary" link="/financeiro" description="Fluxo de caixa e lucratividade detalhada." />
-        <div className="bg-card rounded-[2rem] border border-border/50 p-6 flex flex-col shadow-sm">
-           <h3 className="font-black text-sm uppercase tracking-widest text-muted-foreground mb-4">Orçamentos</h3>
-           <div className="space-y-4 flex-1">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-bold text-muted-foreground">Pendentes</span>
-                <span className="text-sm font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-lg">{today.pendingQuotes}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-bold text-muted-foreground">Aprovados</span>
-                <span className="text-sm font-black text-success bg-success/10 px-2 py-0.5 rounded-lg">{today.approvedQuotesCount}</span>
-              </div>
-              <div className="pt-2 border-t border-border/50 flex justify-between items-center">
-                 <span className="text-sm font-bold">Total (Mês)</span>
-                 <span className="text-sm font-black text-brand">{formatBRL(today.approvedQuotesValue)}</span>
-              </div>
-           </div>
+      {/* QUICK WORKSPACE PAGES & TOOLS */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <ActionTile title="Insights Inteligentes" icon={Lightbulb} color="text-amber-500" link="/insights" description="Análise de giro de estoque e lucratividade." />
+        <ActionTile title="Gestão Financeira" icon={BarChart3} color="text-brand" link="/financeiro" description="Controle detalhado de entradas e saídas." />
+        
+        {/* ORÇAMENTOS SUMMARY TILE */}
+        <div className="bg-card rounded-2xl border border-border p-5 flex flex-col shadow-sm justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Orçamentos do Mês</h3>
+            <FileText className="h-4 w-4 text-amber-500" />
+          </div>
+          <div className="space-y-2 my-2">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-muted-foreground font-medium">Pendentes</span>
+              <span className="font-bold text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded">{today.pendingQuotes}</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-muted-foreground font-medium">Aprovados</span>
+              <span className="font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded">{today.approvedQuotesCount}</span>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-border flex justify-between items-center text-xs font-bold">
+            <span>Total Aprovado</span>
+            <span className="text-brand">{formatBRL(today.approvedQuotesValue)}</span>
+          </div>
         </div>
-        <div className="bg-card rounded-[2rem] border border-border/50 p-6 shadow-sm space-y-3">
-          <h3 className="font-black text-sm uppercase tracking-widest text-muted-foreground mb-1">Ações rápidas</h3>
-          <Button variant="ghost" className="w-full justify-start font-bold h-10 px-3 rounded-xl hover:bg-muted" onClick={() => setBulkOpen(true)}>
-            <Settings2 className="mr-2 h-4 w-4" /> Preços em massa
-          </Button>
-          <Button variant="ghost" className="w-full justify-start font-bold h-10 px-3 rounded-xl hover:bg-muted" onClick={() => setTaxOpen(true)}>
-            <Settings2 className="mr-2 h-4 w-4" /> Tributos Globais
-          </Button>
+
+        {/* QUICK ACTIONS */}
+        <div className="bg-card rounded-2xl border border-border p-5 shadow-sm flex flex-col justify-between">
+          <h3 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">Ferramentas de Ajuste</h3>
+          <div className="space-y-2">
+            <Button variant="outline" className="w-full justify-start font-semibold text-xs h-9 px-3 rounded-xl border-border hover:bg-muted" onClick={() => setBulkOpen(true)}>
+              <Settings2 className="mr-2 h-3.5 w-3.5" /> Ajustar Preços em Massa
+            </Button>
+            <Button variant="outline" className="w-full justify-start font-semibold text-xs h-9 px-3 rounded-xl border-border hover:bg-muted" onClick={() => setTaxOpen(true)}>
+              <Settings2 className="mr-2 h-3.5 w-3.5" /> Configurar Tributos Globais
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Recent Activities */}
-      <section className="space-y-6">
-        <h2 className="text-xl font-black flex items-center gap-2">
-          <ArrowLeftRight className="h-5 w-5 text-muted-foreground" /> Atividades recentes
-        </h2>
-        <div className="bg-card rounded-[2.5rem] border border-border/50 p-2 shadow-sm overflow-x-auto scrollbar-none">
+      {/* RECENT ACTIVITIES */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">Atividades Recentes</h2>
+        </div>
+        <div className="bg-card rounded-2xl border border-border p-2 shadow-sm overflow-x-auto scrollbar-none">
           <div className="flex gap-2 min-w-max">
             {recentActivities.map((act, i) => (
-              <div key={i} className="flex items-center gap-4 px-6 py-4 rounded-[2rem] hover:bg-muted/30 transition-colors border border-transparent hover:border-border/50">
-                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center shrink-0", act.color)}>
-                  <act.icon className="h-5 w-5" />
+              <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-background/60 hover:bg-muted/40 transition-colors border border-border/40">
+                <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center shrink-0 text-xs", act.color)}>
+                  <act.icon className="h-4 w-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-black tracking-tight">{act.title}</div>
-                  <div className="text-[10px] text-muted-foreground font-medium">{act.subtitle} • {new Date(act.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                  <div className="text-xs font-bold text-foreground">{act.title}</div>
+                  <div className="text-[11px] text-muted-foreground">{act.subtitle} • {new Date(act.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                 </div>
               </div>
             ))}
@@ -281,13 +304,17 @@ function Dashboard() {
 
 function ActionTile({ title, icon: Icon, color, link, description }: any) {
   return (
-    <Link to={link} className="bg-card rounded-[2rem] border border-border/50 p-6 flex flex-col shadow-sm hover:shadow-md transition-all group">
-      <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform", color, "bg-current/10")}>
-        <Icon className="h-5 w-5" />
+    <Link to={link} className="bg-card rounded-2xl border border-border p-5 flex flex-col justify-between shadow-sm hover:shadow-md hover:border-brand/40 transition-all group">
+      <div>
+        <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform bg-muted", color)}>
+          <Icon className="h-4.5 w-4.5" />
+        </div>
+        <h3 className="font-bold text-sm text-foreground mb-1">{title}</h3>
+        <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
       </div>
-      <h3 className="font-black text-base mb-1">{title}</h3>
-      <p className="text-xs text-muted-foreground leading-relaxed font-medium">{description}</p>
-      <div className="mt-4 text-[10px] font-black uppercase tracking-widest text-brand group-hover:translate-x-1 transition-transform">Ver mais →</div>
+      <div className="mt-4 text-xs font-bold text-brand group-hover:translate-x-1 transition-transform flex items-center gap-1">
+        Acessar módulo &rarr;
+      </div>
     </Link>
   );
 }

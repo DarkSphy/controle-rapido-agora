@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { InstallPWA } from "@/components/InstallPWA";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin", "/esqueci-senha", "/reset-password"];
 
@@ -165,6 +166,7 @@ export function AppShell() {
           <Logo size="sm" />
         </Link>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <InstallPWA />
           <button onClick={logout} className="text-muted-foreground hover:text-foreground p-2">
             <LogOut className="h-4 w-4" />
@@ -172,9 +174,30 @@ export function AppShell() {
         </div>
       </header>
 
-      <main className="flex-1 min-w-0 pb-20 md:pb-8">
-        <Outlet />
-      </main>
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* DESKTOP TOP BAR */}
+        <header className="hidden md:flex items-center justify-between px-8 h-16 border-b border-border/70 bg-card/50 backdrop-blur-md sticky top-0 z-30">
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Painel de Controle</span>
+            <span className="text-muted-foreground/40 text-xs">/</span>
+            <span className="text-sm font-bold text-foreground capitalize">
+              {navGroups.flatMap(g => g.items).find(i => i.to === loc.pathname)?.label || "Dashboard"}
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <div className="h-4 w-px bg-border" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Sistema Online</span>
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 min-w-0 pb-20 md:pb-8">
+          <Outlet />
+        </main>
+      </div>
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card border-t border-border flex justify-around h-16">
         {navGroups.flatMap(g => g.items).filter(n => !n.adminOnly || role === "admin").slice(0, 4).map((n) => {
