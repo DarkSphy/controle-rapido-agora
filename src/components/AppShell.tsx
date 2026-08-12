@@ -155,7 +155,12 @@ export function AppShell() {
 
         {/* ASSISTANT CHAT TRIGGER */}
         <div className="px-4 mt-auto mb-4">
-          <AssistantChat />
+          <div className="rounded-xl bg-brand/5 border border-brand/10 p-4 space-y-3 shadow-sm text-center">
+            <div className="text-[10px] font-extrabold uppercase tracking-widest text-brand opacity-80">Precisa de ajuda?</div>
+            <button className="w-full flex items-center justify-center gap-1.5 text-xs font-bold text-brand hover:text-brand/80 transition-colors">
+              Falar com o Suporte <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
         </div>
 
         {/* NOTION PROFILE CARD */}
