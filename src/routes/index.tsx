@@ -160,7 +160,7 @@ function Landing() {
         <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-10 items-center bg-white rounded-[2rem] p-8 lg:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100 relative">
           
           {/* Mascot Computador */}
-          <div className="pointer-events-none absolute -top-[9rem] left-2 hidden lg:block z-0">
+          <div className="pointer-events-none absolute -top-[6.5rem] left-4 hidden lg:block z-0">
             <Mascot src={mascotLaptop.url} size={200} />
           </div>
 
@@ -293,8 +293,8 @@ function Landing() {
               </ul>
 
               {/* Mascot Dúvida (Interrogação) */}
-              <div className="absolute -right-16 -bottom-10 hidden lg:block scale-75 origin-bottom-right opacity-80">
-                <Mascot src={mascotPhone.url} size={240} />
+              <div className="pointer-events-none absolute right-2 -bottom-2 hidden lg:block">
+                <Mascot src={mascotPhone.url} size={150} className="opacity-95" />
               </div>
             </div>
           </div>
@@ -350,9 +350,9 @@ function Landing() {
 
             <div className="bg-[#eef5ff] rounded-2xl p-6 border border-brand/10 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="origin-left -my-14 -ml-4">
+                <div className="-my-6 -ml-1 shrink-0">
                   {/* Mascot Escudo de Garantia (Verde) */}
-                  <Mascot src={mascotCheck.url} size={150} />
+                  <Mascot src={mascotCheck.url} size={110} />
                 </div>
                 <div>
                   <div className="font-extrabold text-lg text-slate-900 uppercase">Garantia de 7 dias</div>
@@ -369,7 +369,7 @@ function Landing() {
       <footer className="px-5 md:px-10 py-16 bg-[#001f3f] text-white">
         <div className="max-w-[1200px] mx-auto grid md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
-            <Logo size="sm" className="mb-4 invert brightness-0" />
+            <Logo size="sm" className="mb-4 [&_.text-foreground]:text-white [&_.text-muted-foreground]:text-white/50" />
             <p className="text-white/60 text-sm max-w-sm font-medium">
               Gestão simples de estoque e vendas para sua loja. Feito para pequenos negócios crescerem.
             </p>
