@@ -252,7 +252,7 @@ function Landing() {
             </h2>
           </div>
 
-          <div className="relative grid md:grid-cols-2 gap-0 rounded-[2rem] overflow-hidden shadow-[0_15px_50px_rgba(0,0,0,0.05)] border border-slate-100">
+          <div className="relative grid md:grid-cols-2 gap-0 rounded-[2rem] shadow-[0_15px_50px_rgba(0,0,0,0.05)] border border-slate-100">
             
             {/* VS Badge */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-16 bg-white rounded-full shadow-lg border border-slate-100 flex items-center justify-center z-20 font-extrabold text-2xl text-slate-800">
@@ -292,10 +292,11 @@ function Landing() {
                 ))}
               </ul>
 
-              {/* Mascot Dúvida (Interrogação) */}
-              <div className="pointer-events-none absolute -right-6 -bottom-4 hidden xl:block">
-                <Mascot src={mascotPhone.url} size={140} className="opacity-95" />
-              </div>
+            </div>
+
+            {/* Mascot com celular */}
+            <div className="pointer-events-none absolute -right-24 -bottom-10 hidden xl:block z-10">
+              <Mascot src={mascotPhone.url} size={170} />
             </div>
           </div>
         </div>
