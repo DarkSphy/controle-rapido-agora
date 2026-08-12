@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from "@/lib/utils";
-import { ArrowRight, Package, TrendingUp, Users, ShoppingCart, Activity } from 'lucide-react';
+import { ArrowRight, Package, TrendingUp, Users, ShoppingCart, Activity, FileSpreadsheet, UsersRound, Layers3, Wallet } from 'lucide-react';
 
 /* 1. Logo Ticker */
 export function LogoTicker() {

@@ -8,7 +8,7 @@ import {
   Plus, ArrowLeftRight, BarChart3, Store, ShoppingCart, Shirt, Wrench,
   ShieldCheck, Headphones, XCircle, Sparkles, MessageCircle, Star,
   Users, TrendingUp, Receipt, Tag, ChevronDown, Minus, FileText, Boxes, Play, LayoutDashboard,
-  Truck
+  Truck, Layers3, Wallet, Compass
 } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
