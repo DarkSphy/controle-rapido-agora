@@ -132,7 +132,7 @@ function Landing() {
             <DashboardMockup />
             {/* Mascot Apresentando */}
             <div className="absolute -right-10 -bottom-10 z-10 hidden lg:block scale-[0.8] origin-bottom-right">
-              <Mascot col={2} row={1} size={300} />
+              <Mascot src={mascotThumbsUp.url} size={340} />
             </div>
           </div>
         </div>
@@ -161,7 +161,7 @@ function Landing() {
           
           {/* Mascot Computador */}
           <div className="absolute -top-[4.5rem] -left-12 hidden lg:block scale-90 origin-bottom">
-            <Mascot col={0} row={2} size={220} />
+            <Mascot src={mascotLaptop.url} size={220} />
           </div>
 
           <div className="lg:w-1/3 space-y-4 relative z-10">
@@ -238,7 +238,7 @@ function Landing() {
 
         {/* Mascot Ideia (Lâmpada) */}
         <div className="absolute right-10 bottom-4 hidden lg:block scale-[0.8] origin-bottom-right z-0">
-          <Mascot col={1} row={1} size={280} />
+          <Mascot src={mascotIdea.url} size={280} />
         </div>
       </section>
 
@@ -294,7 +294,7 @@ function Landing() {
 
               {/* Mascot Dúvida (Interrogação) */}
               <div className="absolute -right-16 -bottom-10 hidden lg:block scale-75 origin-bottom-right opacity-80">
-                <Mascot col={0} row={1} size={240} />
+                <Mascot src={mascotPhone.url} size={240} />
               </div>
             </div>
           </div>
@@ -352,7 +352,7 @@ function Landing() {
               <div className="flex items-center gap-4">
                 <div className="origin-left -my-14 -ml-4">
                   {/* Mascot Escudo de Garantia (Verde) */}
-                  <Mascot col={4} row={0} size={150} />
+                  <Mascot src={mascotCheck.url} size={150} />
                 </div>
                 <div>
                   <div className="font-extrabold text-lg text-slate-900 uppercase">Garantia de 7 dias</div>
