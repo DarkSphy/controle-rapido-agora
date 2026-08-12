@@ -174,11 +174,9 @@ function Landing() {
       </section>
 
       {/* 4. Funcionalidades */}
-      <section id="funcionalidades" className="px-5 md:px-10 py-24 bg-white relative">
-        <div className="max-w-[1200px] mx-auto relative z-10">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-      {/* 4. Funcionalidades */}
-      <BentoGrid />
+      <section id="funcionalidades" className="bg-white relative">
+        <BentoGrid />
+      </section>
 
       <BeforeAfterSlider />
 
