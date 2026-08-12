@@ -3,7 +3,11 @@ import { useAuth } from "@/lib/auth";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
-import mascots from "@/assets/mascots2.jpg";
+import mascotHero from "@/assets/mascots/mascot_1_2.png";
+import mascotDemo from "@/assets/mascots/mascot_2_0.png";
+import mascotFeatures from "@/assets/mascots/mascot_1_1.png";
+import mascotVs from "@/assets/mascots/mascot_1_0.png";
+import mascotPricing from "@/assets/mascots/mascot_0_4.png";
 import {
   Package, Zap, Smartphone, ShoppingBag, AlertTriangle, ArrowRight, Check,
   Plus, ArrowLeftRight, BarChart3, Store, ShoppingCart, Shirt, Wrench,
@@ -28,28 +32,7 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-/* Helper component for mascots from the 6x3 sprite sheet */
-function Mascot({ col = 0, row = 0, size = 250, className }: { col?: number, row?: number, size?: number, className?: string }) {
-  // 6 columns (0-5), 3 rows (0-2)
-  const x = col * (100 / 5);
-  const y = row * (100 / 2);
 
-  return (
-    <div 
-      className={cn("inline-block bg-no-repeat shrink-0", className)} 
-      style={{
-        width: size,
-        height: size,
-        backgroundImage: `url(${mascots})`,
-        backgroundSize: '600% 300%',
-        backgroundPosition: `${x}% ${y}%`,
-        // Máscara radial suave para remover qualquer "quadrado" do fundo da imagem original
-        WebkitMaskImage: 'radial-gradient(circle closest-side, black 75%, transparent 95%)',
-        maskImage: 'radial-gradient(circle closest-side, black 75%, transparent 95%)',
-      }}
-    />
-  );
-}
 
 function Landing() {
   const { user } = useAuth();
@@ -137,7 +120,7 @@ function Landing() {
             <DashboardMockup />
             {/* Mascot Apresentando */}
             <div className="absolute -right-10 -bottom-10 z-10 hidden lg:block scale-[0.8] origin-bottom-right">
-              <Mascot col={2} row={1} size={300} />
+              <img src={mascotHero} alt="Mascote" className="w-[300px] h-[300px] object-contain drop-shadow-2xl" />
             </div>
           </div>
         </div>
@@ -166,7 +149,7 @@ function Landing() {
           
           {/* Mascot Computador */}
           <div className="absolute -top-[4.5rem] -left-12 hidden lg:block scale-90 origin-bottom">
-            <Mascot col={0} row={2} size={220} />
+            <img src={mascotDemo} alt="Mascote" className="w-[220px] h-[220px] object-contain drop-shadow-xl" />
           </div>
 
           <div className="lg:w-1/3 space-y-4 relative z-10">
@@ -243,7 +226,7 @@ function Landing() {
 
         {/* Mascot Ideia (Lâmpada) */}
         <div className="absolute right-10 bottom-4 hidden lg:block scale-[0.8] origin-bottom-right z-0">
-          <Mascot col={1} row={1} size={280} />
+          <img src={mascotFeatures} alt="Mascote" className="w-[280px] h-[280px] object-contain drop-shadow-xl" />
         </div>
       </section>
 
@@ -299,7 +282,7 @@ function Landing() {
 
               {/* Mascot Dúvida (Interrogação) */}
               <div className="absolute -right-16 -bottom-10 hidden lg:block scale-75 origin-bottom-right opacity-80">
-                <Mascot col={0} row={1} size={240} />
+                <img src={mascotVs} alt="Mascote" className="w-[240px] h-[240px] object-contain drop-shadow-lg" />
               </div>
             </div>
           </div>
@@ -357,7 +340,7 @@ function Landing() {
               <div className="flex items-center gap-4">
                 <div className="origin-left -my-14 -ml-4">
                   {/* Mascot Escudo de Garantia (Verde) */}
-                  <Mascot col={4} row={0} size={150} />
+                  <img src={mascotPricing} alt="Mascote" className="w-[150px] h-[150px] object-contain drop-shadow-md hover:scale-105 transition-transform" />
                 </div>
                 <div>
                   <div className="font-extrabold text-lg text-slate-900 uppercase">Garantia de 7 dias</div>
