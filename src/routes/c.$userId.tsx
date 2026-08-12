@@ -12,68 +12,90 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/c/$userId")({
   loader: async ({ params }) => {
-    const [
-      { data: sets },
-      { data: prods },
-      { data: vars },
-      { data: biz },
-      { data: cats },
-    ] = await Promise.all([
-      supabase.from("catalog_settings").select("*").eq("id", params.userId).maybeSingle(),
-      (supabase.from as any)("catalog_products_public").select("*").eq("user_id", params.userId),
-      (supabase.from as any)("catalog_variations_public").select("*").eq("user_id", params.userId),
-      (supabase.from as any)("business_settings_public").select("logo_url, name, address").eq("user_id", params.userId).maybeSingle(),
-      (supabase.from as any)("catalog_categories_public").select("*").eq("user_id", params.userId),
-    ]);
+    try {
+      const [
+        setsRes,
+        prodsRes,
+        varsRes,
+        bizRes,
+        catsRes,
+      ] = await Promise.allSettled([
+        supabase.from("catalog_settings").select("*").eq("id", params.userId).maybeSingle(),
+        (supabase.from as any)("catalog_products_public").select("*").eq("user_id", params.userId),
+        (supabase.from as any)("catalog_variations_public").select("*").eq("user_id", params.userId),
+        (supabase.from as any)("business_settings_public").select("logo_url, name, address").eq("user_id", params.userId).maybeSingle(),
+        (supabase.from as any)("catalog_categories_public").select("*").eq("user_id", params.userId),
+      ]);
 
-    const settings: CatalogSettings = sets ? ({
-      id: sets.id,
-      whatsappNumber: sets.whatsapp_number || undefined,
-      companyName: sets.company_name || biz?.name || undefined,
-      address: (sets as any).address || biz?.address || undefined,
-      description: (sets as any).description || undefined,
-      banners: ((sets as any).banners as any) || [],
-      colors: (sets.colors as any) || { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
-      fontFamily: sets.font_family || "Inter",
-      bannerUrl: sets.banner_url ?? undefined,
-      bannerText: sets.banner_text ?? undefined,
-      bannerEnabled: sets.banner_enabled || false,
-      categories: cats || []
-    } as any) : ({
-      id: params.userId,
-      bannerEnabled: false,
-      whatsappNumber: undefined,
-      companyName: biz?.name || undefined,
-      address: biz?.address || undefined,
-      colors: { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
-      fontFamily: "Inter",
-      banners: [],
-      categories: cats || []
-    } as any);
+      const sets = setsRes.status === "fulfilled" ? setsRes.value.data : null;
+      const prods = prodsRes.status === "fulfilled" ? prodsRes.value.data : [];
+      const vars = varsRes.status === "fulfilled" ? varsRes.value.data : [];
+      const biz = bizRes.status === "fulfilled" ? bizRes.value.data : null;
+      const cats = catsRes.status === "fulfilled" ? catsRes.value.data : [];
 
-    const products: Product[] = (prods || []).map((p: any) => ({
-      id: p.id,
-      name: p.name,
-      description: p.description,
-      image: p.image,
-      cost: Number(p.price),
-      margin: 0,
-      stock: 0,
-      minStock: 0,
-      inCatalog: p.in_catalog,
-      usage: 0,
-      categoryId: p.category_id,
-      createdAt: 0,
-      variations: (vars || []).filter((v: any) => v.product_id === p.id).map((v: any) => ({
-        id: v.id,
-        name: v.name,
-        stock: 0,
-        cost: Number(v.price),
+      const settings: CatalogSettings = sets ? ({
+        id: sets.id,
+        whatsappNumber: sets.whatsapp_number || undefined,
+        companyName: sets.company_name || biz?.name || undefined,
+        address: (sets as any).address || biz?.address || undefined,
+        description: (sets as any).description || undefined,
+        banners: ((sets as any).banners as any) || [],
+        colors: (sets.colors as any) || { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
+        fontFamily: sets.font_family || "Inter",
+        bannerUrl: sets.banner_url ?? undefined,
+        bannerText: sets.banner_text ?? undefined,
+        bannerEnabled: sets.banner_enabled || false,
+        categories: cats || []
+      } as any) : ({
+        id: params.userId,
+        bannerEnabled: false,
+        whatsappNumber: undefined,
+        companyName: biz?.name || undefined,
+        address: biz?.address || undefined,
+        colors: { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
+        fontFamily: "Inter",
+        banners: [],
+        categories: cats || []
+      } as any);
+
+      const products: Product[] = (prods || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        image: p.image,
+        cost: Number(p.price),
         margin: 0,
-      }))
-    }));
+        stock: 0,
+        minStock: 0,
+        inCatalog: p.in_catalog,
+        usage: 0,
+        categoryId: p.category_id,
+        createdAt: 0,
+        variations: (vars || []).filter((v: any) => v.product_id === p.id).map((v: any) => ({
+          id: v.id,
+          name: v.name,
+          stock: 0,
+          cost: Number(v.price),
+          margin: 0,
+        }))
+      }));
 
-    return { settings, products, logoUrl: biz?.logo_url || null };
+      return { settings, products, logoUrl: biz?.logo_url || null };
+    } catch (e: any) {
+      console.error("Error loading public catalog:", e);
+      return {
+        settings: {
+          id: params.userId,
+          bannerEnabled: false,
+          colors: { primary: "#38bdf8", accent: "#0284c7", background: "#f8fafc", card: "#ffffff" },
+          fontFamily: "Inter",
+          banners: [],
+          categories: []
+        } as any,
+        products: [],
+        logoUrl: null
+      };
+    }
   },
   component: CatalogPage
 });

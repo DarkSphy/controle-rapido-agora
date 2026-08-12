@@ -56,24 +56,39 @@ function CatalogoPage() {
   async function saveSettings() {
     if (!user) return;
     setSaving(true);
-    const payload = {
-      id: user.id,
-      whatsapp_number: whatsapp,
-      company_name: companyName,
-      address,
-      description,
-      font_family: font,
-      colors: { primary, accent, background: "#F9FBF9", card: "#FFFFFF" },
-      banners: banners,
-    };
-    
-    // Check if session is valid by just doing upsert (supabase client handles auto-refresh usually)
-    const { error } = await supabase.from("catalog_settings").upsert(payload);
-    if (error) {
-      toast.error("Erro ao salvar: " + error.message);
-    } else {
-      toast.success("Configurações do catálogo salvas!");
-      actions.loadAll(); // Reload settings
+    try {
+      const cleanBanners = (banners || []).map(b => ({
+        id: b.id || Math.random().toString(36).slice(2, 10),
+        url: b.url || "",
+        mobileUrl: b.mobileUrl || null,
+        position: b.position || "top"
+      }));
+
+      const payload = {
+        id: user.id,
+        whatsapp_number: whatsapp || null,
+        company_name: companyName || null,
+        address: address || null,
+        description: description || null,
+        font_family: font || "Inter",
+        colors: { 
+          primary: primary || "#2C3E50", 
+          accent: accent || "#7FB69D", 
+          background: "#F9FBF9", 
+          card: "#FFFFFF" 
+        },
+        banners: cleanBanners,
+      };
+      
+      const { error } = await supabase.from("catalog_settings").upsert(payload);
+      if (error) {
+        toast.error("Erro ao salvar configurações: " + error.message);
+      } else {
+        toast.success("Configurações salvas com sucesso!");
+        actions.loadAll();
+      }
+    } catch (err: any) {
+      toast.error("Erro ao salvar: " + (err?.message || "HTTPError"));
     }
     setSaving(false);
   }
