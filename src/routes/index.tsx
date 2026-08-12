@@ -32,25 +32,16 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-/* Helper component for mascots from the 6x3 sprite sheet */
-function Mascot({ col = 0, row = 0, size = 250, className }: { col?: number, row?: number, size?: number, className?: string }) {
-  // 6 columns (0-5), 3 rows (0-2)
-  const x = col * (100 / 5);
-  const y = row * (100 / 2);
-
+/* Mascot poses as transparent PNGs */
+function Mascot({ src, size = 250, className }: { src: string; size?: number; className?: string }) {
   return (
-    <div 
-      className={cn("inline-block bg-no-repeat shrink-0", className)} 
-      style={{
-        width: size,
-        height: size,
-        backgroundImage: `url(${mascots})`,
-        backgroundSize: '600% 300%',
-        backgroundPosition: `${x}% ${y}%`,
-        // Máscara radial suave para remover qualquer "quadrado" do fundo da imagem original
-        WebkitMaskImage: 'radial-gradient(circle closest-side, black 75%, transparent 95%)',
-        maskImage: 'radial-gradient(circle closest-side, black 75%, transparent 95%)',
-      }}
+    <img
+      src={src}
+      alt=""
+      aria-hidden
+      draggable={false}
+      style={{ width: size, height: "auto" }}
+      className={cn("inline-block shrink-0 select-none drop-shadow-[0_20px_35px_rgba(15,23,42,0.18)]", className)}
     />
   );
 }
