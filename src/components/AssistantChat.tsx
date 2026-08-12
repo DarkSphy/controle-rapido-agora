@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useStore } from "@/lib/store";
 import mascotDoubt from "@/assets/mascot-doubt.png.asset.json";
 import { MessageSquare, TrendingUp, Package, AlertTriangle, Play, ChevronRight, X } from "lucide-react";
@@ -110,7 +110,8 @@ export function AssistantChat({ children }: { children: React.ReactNode }) {
       <SheetTrigger asChild>
         {children}
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md p-0 flex flex-col bg-[#f8f9fc] border-l-0 shadow-2xl">
+      <SheetContent aria-describedby={undefined} className="w-full sm:max-w-md p-0 flex flex-col bg-[#f8f9fc] border-l-0 shadow-2xl">
+        <SheetTitle className="sr-only">Assistente Virtual</SheetTitle>
         {/* Header */}
         <div className="h-16 px-4 flex items-center gap-3 bg-white border-b border-slate-100 shadow-sm shrink-0">
           <div className="h-10 w-10 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center overflow-hidden shrink-0">
