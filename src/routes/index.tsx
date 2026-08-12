@@ -259,7 +259,7 @@ function Landing() {
               VS
             </div>
 
-            <div className="bg-[#f1f5f9] p-10 md:p-14">
+            <div className="bg-[#f1f5f9] p-10 md:p-14 rounded-t-[2rem] md:rounded-t-none md:rounded-l-[2rem]">
               <h3 className="font-extrabold text-xl mb-8 text-center text-slate-700">Outros sistemas</h3>
               <ul className="space-y-5 text-sm font-medium text-slate-600">
                 {[
@@ -276,7 +276,7 @@ function Landing() {
               </ul>
             </div>
 
-            <div className="bg-[#eef5ff] p-10 md:p-14 relative">
+            <div className="bg-[#eef5ff] p-10 md:p-14 relative rounded-b-[2rem] md:rounded-b-none md:rounded-r-[2rem]">
               <h3 className="font-extrabold text-xl mb-8 text-center text-brand">ControleJá</h3>
               <ul className="space-y-5 text-sm font-bold text-slate-800">
                 {[
