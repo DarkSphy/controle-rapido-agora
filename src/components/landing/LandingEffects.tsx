@@ -107,7 +107,7 @@ export function BeforeAfterSlider() {
         {/* Depois (ControleJá) */}
         <div 
           className="absolute inset-0 bg-white overflow-hidden border-r-4 border-brand"
-          style={{ width: \`\${sliderPos}%\` }}
+          style={{ width: `${sliderPos}%` }}
         >
            <div className="absolute inset-0 w-full min-w-[800px] h-full flex flex-col">
              <div className="h-14 bg-slate-50 border-b border-slate-100 flex items-center px-6 gap-4">
@@ -147,7 +147,7 @@ export function BeforeAfterSlider() {
         {/* Custom thumb */}
         <div 
           className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_10px_rgba(0,0,0,0.5)] z-10 pointer-events-none flex items-center justify-center transition-all duration-75"
-          style={{ left: \`\${sliderPos}%\`, transform: 'translateX(-50%)' }}
+          style={{ left: `${sliderPos}%`, transform: 'translateX(-50%)' }}
         >
           <div className="h-10 w-10 bg-brand text-white rounded-full shadow-lg flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform">
             <ArrowRight className="h-5 w-5" />
