@@ -95,40 +95,113 @@ export function BeforeAfterSlider() {
 
       <div className="relative w-full aspect-[4/3] md:aspect-[16/9] bg-slate-200 rounded-3xl overflow-hidden shadow-2xl select-none group">
         {/* Antes (Caos) */}
-        <div className="absolute inset-0 bg-[#e2e8f0] flex flex-col items-center justify-center p-8">
-          <div className="text-center opacity-40 transform -rotate-12 scale-125">
-             <div className="text-8xl font-black mb-4">CAOS</div>
-             <div className="font-mono text-xl whitespace-pre">planilha_final_v3_VERDADEIRA.xlsx</div>
-             <div className="font-mono text-xl whitespace-pre mt-2">Caderno de Fiapo</div>
-             <div className="font-mono text-xl whitespace-pre mt-2">Post-its Perdidos</div>
+        <div className="absolute inset-0 bg-[#f3f2f1] flex flex-col font-mono text-[10px] overflow-hidden">
+          {/* Excel Header */}
+          <div className="h-10 bg-[#217346] flex items-center px-4 shrink-0 text-white gap-3">
+            <FileSpreadsheet className="h-5 w-5" />
+            <span className="font-sans font-semibold text-sm">controle_estoque_final_v14_FINAL_MESMO.xlsx</span>
+          </div>
+          <div className="h-8 bg-[#f3f2f1] border-b border-[#e1dfdd] flex items-center px-2 shrink-0 gap-1 text-[#605e5c]">
+            <div className="px-2 py-1 bg-white border border-[#e1dfdd] shadow-sm">A1</div>
+            <div className="px-2 py-1 bg-white border border-[#e1dfdd] shadow-sm flex-1 truncate font-sans text-xs">
+              =SE(ERRO(PROCV(D2;'[Planilha1.xlsx]Estoque'!$A$1:$F$5000;4;FALSO));"ERRO FATAL";"ALELUIA")
+            </div>
+          </div>
+          {/* Excel Grid */}
+          <div className="flex-1 flex overflow-hidden opacity-70">
+            {/* Row Numbers */}
+            <div className="w-8 bg-[#f3f2f1] border-r border-[#e1dfdd] shrink-0 flex flex-col text-center text-[#605e5c]">
+              {[...Array(15)].map((_, i) => (
+                <div key={i} className="h-8 border-b border-[#e1dfdd] flex items-center justify-center">{i}</div>
+              ))}
+            </div>
+            {/* Columns */}
+            <div className="flex-1 overflow-hidden flex flex-col bg-white">
+              <div className="h-8 flex bg-[#f3f2f1] border-b border-[#e1dfdd] font-semibold text-center text-[#605e5c]">
+                <div className="w-24 border-r border-[#e1dfdd] py-1">A</div>
+                <div className="w-48 border-r border-[#e1dfdd] py-1">B</div>
+                <div className="w-24 border-r border-[#e1dfdd] py-1">C</div>
+                <div className="w-32 border-r border-[#e1dfdd] py-1">D</div>
+                <div className="w-32 border-r border-[#e1dfdd] py-1">E</div>
+              </div>
+              {/* Rows Data */}
+              {[...Array(14)].map((_, i) => (
+                <div key={i} className="flex h-8 border-b border-[#e1dfdd] whitespace-nowrap">
+                  <div className="w-24 border-r border-[#e1dfdd] px-2 py-1 text-slate-400">{1000 + i}</div>
+                  <div className="w-48 border-r border-[#e1dfdd] px-2 py-1 truncate">Produto Desconhecido {i}</div>
+                  <div className={cn("w-24 border-r border-[#e1dfdd] px-2 py-1 text-right", i % 3 === 0 ? "text-red-500 font-bold bg-red-50" : "")}>
+                    {i % 4 === 0 ? "#REF!" : (i % 3 === 0 ? "FALTA" : "OK")}
+                  </div>
+                  <div className="w-32 border-r border-[#e1dfdd] px-2 py-1 text-right text-red-500 bg-red-50">
+                    #DIV/0!
+                  </div>
+                  <div className="w-32 border-r border-[#e1dfdd] px-2 py-1 bg-yellow-100 line-through">
+                    Atualizar p/ ontem
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         
         {/* Depois (ControleJá) */}
         <div 
-          className="absolute inset-0 bg-white overflow-hidden border-r-4 border-brand"
+          className="absolute inset-0 bg-[#f8f9fc] overflow-hidden border-r-4 border-brand shadow-[-10px_0_30px_rgba(0,0,0,0.1)]"
           style={{ width: `${sliderPos}%` }}
         >
-           <div className="absolute inset-0 w-full min-w-[800px] h-full flex flex-col">
-             <div className="h-14 bg-slate-50 border-b border-slate-100 flex items-center px-6 gap-4">
-                <div className="h-4 w-4 bg-red-400 rounded-full" />
-                <div className="h-4 w-4 bg-amber-400 rounded-full" />
-                <div className="h-4 w-4 bg-emerald-400 rounded-full" />
-                <div className="ml-4 h-6 w-48 bg-white rounded-md border border-slate-200" />
-             </div>
-             <div className="p-8 grid grid-cols-4 gap-6 h-full bg-[#f8f9fc]">
-               <div className="col-span-1 space-y-4">
-                 <div className="h-10 bg-brand rounded-lg w-full" />
-                 <div className="h-10 bg-slate-200 rounded-lg w-full" />
-                 <div className="h-10 bg-slate-200 rounded-lg w-full" />
-               </div>
-               <div className="col-span-3 space-y-6">
-                 <div className="grid grid-cols-3 gap-6">
-                   <div className="h-24 bg-white rounded-xl shadow-sm border border-slate-100" />
-                   <div className="h-24 bg-white rounded-xl shadow-sm border border-slate-100" />
-                   <div className="h-24 bg-white rounded-xl shadow-sm border border-slate-100" />
+           <div className="absolute inset-0 w-full min-w-[800px] h-full flex font-sans">
+             
+             {/* Fake Sidebar */}
+             <div className="w-48 bg-white border-r border-slate-100 flex flex-col p-4 shrink-0">
+               <div className="flex items-center gap-2 mb-8">
+                 <div className="h-6 w-6 rounded bg-brand flex items-center justify-center">
+                   <Package className="h-3 w-3 text-white" />
                  </div>
-                 <div className="h-48 bg-white rounded-xl shadow-sm border border-slate-100 w-full" />
+                 <div className="font-extrabold text-sm text-slate-800">ControleJá</div>
+               </div>
+               <div className="space-y-1">
+                 <div className="h-8 rounded-lg bg-brand text-white flex items-center px-3 gap-2 shadow-md shadow-brand/20">
+                   <Activity className="h-3.5 w-3.5" />
+                   <div className="font-semibold text-xs">Visão Geral</div>
+                 </div>
+                 {[ShoppingCart, UsersRound, Layers3, Wallet].map((Icon, i) => (
+                   <div key={i} className="h-8 rounded-lg text-slate-400 hover:bg-slate-50 flex items-center px-3 gap-2">
+                     <Icon className="h-3.5 w-3.5" />
+                     <div className="h-2 w-16 bg-slate-200 rounded-full" />
+                   </div>
+                 ))}
+               </div>
+             </div>
+
+             {/* Fake Content */}
+             <div className="flex-1 flex flex-col">
+               <div className="h-14 bg-white border-b border-slate-100 flex items-center justify-between px-6 shrink-0">
+                 <div className="font-bold text-slate-800 text-sm">Painel de Controle</div>
+                 <div className="flex items-center gap-3">
+                   <div className="h-7 w-24 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center text-xs font-bold">Online</div>
+                 </div>
+               </div>
+               <div className="p-6 grid grid-cols-3 gap-4">
+                 <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                   <div className="text-[10px] uppercase font-bold text-slate-400 mb-1">Vendas Hoje</div>
+                   <div className="text-xl font-extrabold text-brand">R$ 4.250,00</div>
+                 </div>
+                 <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                   <div className="text-[10px] uppercase font-bold text-slate-400 mb-1">Lucro Bruto</div>
+                   <div className="text-xl font-extrabold text-green-500">R$ 1.820,00</div>
+                 </div>
+                 <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                   <div className="text-[10px] uppercase font-bold text-slate-400 mb-1">Estoque Seguro</div>
+                   <div className="text-xl font-extrabold text-slate-800">100% OK</div>
+                 </div>
+                 <div className="col-span-3 bg-white p-4 rounded-xl shadow-sm border border-slate-100 h-32 flex flex-col">
+                   <div className="text-xs font-bold text-slate-800 mb-4">Fluxo Perfeito</div>
+                   <div className="flex-1 flex items-end justify-between gap-1 px-2">
+                     {[30, 45, 25, 60, 50, 80, 40, 90, 70, 100].map((h, i) => (
+                       <div key={i} className="w-full bg-brand rounded-t-sm" style={{ height: `${h}%` }} />
+                     ))}
+                   </div>
+                 </div>
                </div>
              </div>
            </div>
