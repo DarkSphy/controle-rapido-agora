@@ -1,7 +1,7 @@
 import { 
   Compass, Receipt, ShoppingBag, FileSpreadsheet, Sliders, MonitorSmartphone, Globe,
   PackageSearch, Layers3, FolderTree, UsersRound, Building2, Boxes,
-  Wallet, Sparkles, History, RefreshCw, BarChart4, SlidersHorizontal, LogOut, Menu, Activity, FolderKanban, AreaChart, Bot, ChevronRight
+  Wallet, Sparkles, History, RefreshCw, BarChart4, SlidersHorizontal, LogOut, Menu, Activity, FolderKanban, AreaChart, Bot, ChevronRight, Download, Bell
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
