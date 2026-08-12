@@ -3,11 +3,11 @@ import { useAuth } from "@/lib/auth";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
-import mascotThumbsUp from "@/assets/mascot-thumbsup.png.asset.json";
-import mascotLaptop from "@/assets/mascot-laptop.png.asset.json";
-import mascotIdea from "@/assets/mascot-idea.png.asset.json";
-import mascotPhone from "@/assets/mascot-phone.png.asset.json";
-import mascotCheck from "@/assets/mascot-check.png.asset.json";
+import mascotThumbsUp from "@/assets/mascots/mascot_0_0.png";
+import mascotLaptop from "@/assets/mascots/mascot_2_0.png";
+import mascotIdea from "@/assets/mascots/mascot_1_1.png";
+import mascotPhone from "@/assets/mascots/mascot_1_0.png"; // Usando a coruja com ponto de interrogação para combinar com o VS
+import mascotCheck from "@/assets/mascots/mascot_0_4.png";
 import {
   Package, Zap, Smartphone, ShoppingBag, AlertTriangle, ArrowRight, Check,
   Plus, ArrowLeftRight, BarChart3, Store, ShoppingCart, Shirt, Wrench,
@@ -132,7 +132,7 @@ function Landing() {
             <DashboardMockup />
             {/* Mascot Apresentando */}
             <div className="pointer-events-none absolute -right-6 -bottom-16 z-10 hidden lg:block">
-              <Mascot src={mascotThumbsUp.url} size={250} />
+              <Mascot src={mascotThumbsUp} size={300} />
             </div>
           </div>
         </div>
@@ -161,7 +161,7 @@ function Landing() {
           
           {/* Mascot Computador */}
           <div className="pointer-events-none absolute -top-[6.5rem] left-4 hidden lg:block z-0">
-            <Mascot src={mascotLaptop.url} size={200} />
+            <Mascot src={mascotLaptop} size={250} />
           </div>
 
           <div className="lg:w-1/3 space-y-4 relative z-10">
@@ -238,7 +238,7 @@ function Landing() {
 
         {/* Mascot Ideia (Lâmpada) */}
         <div className="absolute right-10 bottom-4 hidden lg:block scale-[0.8] origin-bottom-right z-0">
-          <Mascot src={mascotIdea.url} size={280} />
+          <Mascot src={mascotIdea} size={300} />
         </div>
       </section>
 
@@ -296,7 +296,7 @@ function Landing() {
 
             {/* Mascot com celular */}
             <div className="pointer-events-none absolute -right-24 -bottom-10 hidden xl:block z-10">
-              <Mascot src={mascotPhone.url} size={170} />
+              <Mascot src={mascotPhone} size={220} />
             </div>
           </div>
         </div>
@@ -353,7 +353,7 @@ function Landing() {
               <div className="flex items-center gap-4">
                 <div className="-my-6 -ml-1 shrink-0">
                   {/* Mascot Escudo de Garantia (Verde) */}
-                  <Mascot src={mascotCheck.url} size={110} />
+                  <Mascot src={mascotCheck} size={150} />
                 </div>
                 <div>
                   <div className="font-extrabold text-lg text-slate-900 uppercase">Garantia de 7 dias</div>
