@@ -349,42 +349,120 @@ function MockChrome({ children, label }: { children: React.ReactNode; label: str
 function DashboardMockup() {
   return (
     <MockChrome label="controleja.app — Dashboard">
-      <div className="p-5 space-y-5 bg-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="font-extrabold text-slate-800 text-lg">Olá, Mariana 👋</div>
-            <div className="text-xs text-slate-500 font-medium mt-0.5">Resumo de hoje</div>
+      <div className="flex h-[500px] w-full max-w-[800px] bg-slate-50 text-left relative overflow-hidden">
+        {/* Fake Sidebar */}
+        <div className="w-48 bg-white border-r border-slate-100 flex flex-col p-4 shrink-0 hidden md:flex">
+          <div className="flex items-center gap-2 mb-8">
+            <div className="h-6 w-6 rounded bg-brand flex items-center justify-center">
+              <Package className="h-3 w-3 text-white" />
+            </div>
+            <div className="font-extrabold text-sm text-slate-800 tracking-tight">ControleJá</div>
+          </div>
+          <div className="space-y-1">
+            <div className="h-8 rounded-lg bg-brand/10 border border-brand/20 flex items-center px-3 gap-2">
+              <Compass className="h-3.5 w-3.5 text-brand" />
+              <div className="h-2 w-16 bg-brand/40 rounded-full" />
+            </div>
+            {[Receipt, ShoppingCart, Users, Layers3, Wallet].map((Icon, i) => (
+              <div key={i} className="h-8 rounded-lg hover:bg-slate-50 flex items-center px-3 gap-2">
+                <Icon className="h-3.5 w-3.5 text-slate-400" />
+                <div className="h-2 w-16 bg-slate-200 rounded-full" />
+              </div>
+            ))}
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-3">
-          <div className="col-span-2 bg-green-50 rounded-xl p-3 border border-green-100">
-            <div className="text-[10px] text-green-600 font-bold uppercase tracking-wider mb-1">Vendas hoje</div>
-            <div className="text-xl font-extrabold text-green-700">R$ 1.248</div>
-          </div>
-          <div className="bg-blue-50 rounded-xl p-3 border border-blue-100">
-            <div className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-1">Pedidos</div>
-            <div className="text-lg font-extrabold text-blue-700">12</div>
-          </div>
-          <div className="bg-orange-50 rounded-xl p-3 border border-orange-100">
-            <div className="text-[10px] text-orange-600 font-bold uppercase tracking-wider mb-1">Falta</div>
-            <div className="text-lg font-extrabold text-orange-700">3</div>
-          </div>
-        </div>
-        <div className="rounded-xl bg-slate-50 border border-slate-100 p-4 space-y-3">
-          <div className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Últimas movimentações</div>
-          <div className="flex items-center justify-between text-sm border-b border-slate-100 pb-2">
-            <div>
-              <div className="font-bold text-slate-700">Camiseta básica — M</div>
-              <div className="text-[11px] text-slate-400 font-medium">Venda • há 2 min</div>
+
+        {/* Fake Main Content */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Fake Header */}
+          <div className="h-14 bg-white border-b border-slate-100 flex items-center justify-between px-6 shrink-0">
+            <div className="h-3 w-32 bg-slate-100 rounded-full" />
+            <div className="flex items-center gap-3">
+              <div className="h-7 w-24 bg-brand rounded-full" />
+              <div className="h-7 w-7 rounded-full bg-slate-100" />
             </div>
-            <div className="font-bold text-red-500">-1</div>
           </div>
-          <div className="flex items-center justify-between text-sm">
-            <div>
-              <div className="font-bold text-slate-700">Caneca personalizada</div>
-              <div className="text-[11px] text-slate-400 font-medium">Compra • há 1h</div>
+          
+          {/* Dashboard Body */}
+          <div className="p-6 space-y-6 flex-1 overflow-hidden">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-extrabold text-slate-800 text-xl">Olá, Mariana 👋</div>
+                <div className="text-xs text-slate-500 font-medium mt-1">Resumo das suas operações hoje</div>
+              </div>
             </div>
-            <div className="font-bold text-green-500">+14</div>
+
+            {/* Metric Cards */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
+                  <TrendingUp className="h-16 w-16 text-green-500" />
+                </div>
+                <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2">Vendas hoje</div>
+                <div className="text-2xl font-extrabold text-slate-800">R$ 3.248,50</div>
+                <div className="text-xs text-green-500 font-bold mt-2 flex items-center gap-1"><ArrowRight className="h-3 w-3 -rotate-45" /> +15% que ontem</div>
+              </div>
+              <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
+                  <Package className="h-16 w-16 text-blue-500" />
+                </div>
+                <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2">Pedidos na fila</div>
+                <div className="text-2xl font-extrabold text-slate-800">24</div>
+                <div className="text-xs text-slate-400 font-bold mt-2 flex items-center gap-1">8 aguardando envio</div>
+              </div>
+              <div className="bg-red-50 rounded-xl p-4 border border-red-100 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
+                  <AlertTriangle className="h-16 w-16 text-red-500" />
+                </div>
+                <div className="text-[10px] text-red-600 font-bold uppercase tracking-wider mb-2">Estoque Crítico</div>
+                <div className="text-2xl font-extrabold text-red-700">5 itens</div>
+                <div className="text-xs text-red-500 font-bold mt-2 flex items-center gap-1">Precisam de reposição</div>
+              </div>
+            </div>
+
+            {/* Charts & Tables Area */}
+            <div className="grid grid-cols-3 gap-4 h-48">
+              {/* Fake Chart */}
+              <div className="col-span-2 bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-col">
+                <div className="text-xs font-bold text-slate-800 mb-4">Receita da Semana</div>
+                <div className="flex-1 flex items-end justify-between gap-2 px-2">
+                  {[40, 70, 45, 90, 65, 80, 100].map((height, i) => (
+                    <div key={i} className="w-full bg-brand/10 hover:bg-brand/30 rounded-t-sm transition-colors relative group" style={{ height: `${height}%` }}>
+                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        R$ {(height * 120).toFixed(0)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Fake Recent Activity */}
+              <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-col">
+                <div className="text-xs font-bold text-slate-800 mb-4">Últimas Ações</div>
+                <div className="space-y-4 flex-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <div>
+                      <div className="font-bold text-slate-700 text-xs">Camiseta básica — M</div>
+                      <div className="text-[10px] text-slate-400 font-medium">Venda • há 2 min</div>
+                    </div>
+                    <div className="font-bold text-red-500 text-xs">-1</div>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <div>
+                      <div className="font-bold text-slate-700 text-xs">Caneca personalizada</div>
+                      <div className="text-[10px] text-slate-400 font-medium">Compra • há 1h</div>
+                    </div>
+                    <div className="font-bold text-green-500 text-xs">+14</div>
+                  </div>
+                  <div className="flex items-center justify-between text-sm opacity-50">
+                    <div>
+                      <div className="font-bold text-slate-700 text-xs">Moleton Canguru</div>
+                      <div className="text-[10px] text-slate-400 font-medium">Venda • há 3h</div>
+                    </div>
+                    <div className="font-bold text-red-500 text-xs">-2</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
