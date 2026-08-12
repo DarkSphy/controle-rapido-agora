@@ -20,17 +20,17 @@ const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin", 
 
 const navGroups = [
   {
-    title: "Operação",
+    title: "OperaÃ§Ã£o",
     icon: Activity,
     badgeColor: "text-amber-500 bg-amber-500/10 border-amber-500/20",
     items: [
       { to: "/dashboard", label: "Resumo", icon: Compass },
       { to: "/vendas", label: "Vendas", icon: Receipt },
       { to: "/compras", label: "Compras", icon: ShoppingBag },
-      { to: "/orcamentos", label: "Orçamentos", icon: FileSpreadsheet },
-      { to: "/os", label: "Ordem de Serviço", icon: Sliders },
-      { to: "/balcao", label: "Balcão", icon: MonitorSmartphone },
-      { to: "/catalogo", label: "Catálogo", icon: Globe },
+      { to: "/orcamentos", label: "OrÃ§amentos", icon: FileSpreadsheet },
+      { to: "/os", label: "Ordem de ServiÃ§o", icon: Sliders },
+      { to: "/balcao", label: "BalcÃ£o", icon: MonitorSmartphone },
+      { to: "/catalogo", label: "CatÃ¡logo", icon: Globe },
     ]
   },
   {
@@ -39,7 +39,7 @@ const navGroups = [
     badgeColor: "text-blue-500 bg-blue-500/10 border-blue-500/20",
     items: [
       { to: "/produtos", label: "Produtos", icon: PackageSearch },
-      { to: "/servicos", label: "Serviços", icon: Layers3 },
+      { to: "/servicos", label: "ServiÃ§os", icon: Layers3 },
       { to: "/categories", label: "Categorias", icon: FolderTree },
       { to: "/clientes", label: "Clientes", icon: UsersRound },
       { to: "/suppliers", label: "Fornecedores", icon: Building2 },
@@ -47,16 +47,16 @@ const navGroups = [
     ]
   },
   {
-    title: "Gestão & Métricas",
+    title: "GestÃ£o & MÃ©tricas",
     icon: AreaChart,
     badgeColor: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
     items: [
       { to: "/financeiro", label: "Financeiro", icon: Wallet },
       { to: "/insights", label: "Insights", icon: Sparkles },
-      { to: "/historico", label: "Histórico", icon: History },
-      { to: "/reposicao", label: "Reposição", icon: RefreshCw },
-      { to: "/reports", label: "Relatórios", icon: BarChart4, adminOnly: true },
-      { to: "/configuracoes", label: "Configurações", icon: SlidersHorizontal },
+      { to: "/historico", label: "HistÃ³rico", icon: History },
+      { to: "/reposicao", label: "ReposiÃ§Ã£o", icon: RefreshCw },
+      { to: "/reports", label: "RelatÃ³rios", icon: BarChart4, adminOnly: true },
+      { to: "/configuracoes", label: "ConfiguraÃ§Ãµes", icon: SlidersHorizontal },
     ]
   }
 ];
@@ -68,6 +68,18 @@ export function AppShell() {
   const { isActive, loading: subLoading } = useSubscription();
   const isPublic = PUBLIC_ROUTES.includes(loc.pathname) || loc.pathname.startsWith("/c/");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedGroupIndex, setSelectedGroupIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const currentGroupIndex = navGroups.findIndex(g => 
+      g.items.some(i => loc.pathname.startsWith(i.to))
+    );
+    if (currentGroupIndex !== -1) {
+      setSelectedGroupIndex(currentGroupIndex);
+    }
+  }, [loc.pathname]);
+
+  const activeGroup = navGroups[selectedGroupIndex ?? 0];
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -100,7 +112,7 @@ export function AppShell() {
 
   async function logout() {
     await supabase.auth.signOut();
-    toast.success("Sessão encerrada");
+    toast.success("SessÃ£o encerrada");
     navigate({ to: "/" });
   }
 
@@ -115,41 +127,37 @@ export function AppShell() {
         </div>
         
         <div className="px-3.5 py-6 flex-1 space-y-6">
-          {navGroups.map((group) => {
-            const GroupIcon = group.icon;
-            return (
-              <div key={group.title} className="space-y-2">
-                {/* SECTION HEADER BADGE & LINE DIVIDER */}
-                <div className="flex items-center gap-3 px-3 pb-3 mb-1 border-b border-border/40">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
-                    {group.title}
-                  </span>
-                </div>
-                
-                <nav className="space-y-0.5">
-                  {group.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
-                    const active = loc.pathname === n.to;
-                    const Icon = n.icon;
-                    return (
-                      <Link
-                        key={n.to}
-                        to={n.to}
-                        className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 group relative",
-                          active
-                            ? "bg-brand text-white font-semibold shadow-md shadow-brand/20 dark:shadow-none"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                        )}
-                      >
-                        <Icon strokeWidth={active ? 2 : 1.5} className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-105", active ? "text-white" : "text-muted-foreground")} />
-                        <span className="flex-1 truncate">{n.label}</span>
-                      </Link>
-                    );
-                  })}
-                </nav>
-              </div>
-            );
-          })}
+          <div className="space-y-2">
+            {/* SECTION HEADER BADGE & LINE DIVIDER */}
+            <div className="flex items-center gap-3 px-3 pb-3 mb-1 border-b border-border/40">
+              <activeGroup.icon className={cn("h-4 w-4", activeGroup.badgeColor.split(' ')[0])} />
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
+                {activeGroup.title}
+              </span>
+            </div>
+            
+            <nav className="space-y-0.5">
+              {activeGroup.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
+                const active = loc.pathname === n.to;
+                const Icon = n.icon;
+                return (
+                  <Link
+                    key={n.to}
+                    to={n.to}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 group relative",
+                      active
+                        ? "bg-brand text-white font-semibold shadow-md shadow-brand/20 dark:shadow-none"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                    )}
+                  >
+                    <Icon strokeWidth={active ? 2 : 1.5} className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-105", active ? "text-white" : "text-muted-foreground")} />
+                    <span className="flex-1 truncate">{n.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
         </div>
 
         {/* ASSISTANT CHAT TRIGGER */}
@@ -180,7 +188,7 @@ export function AppShell() {
                 onClick={logout}
                 className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-[11px] font-bold rounded-lg text-destructive hover:bg-destructive/10 transition-colors border border-destructive/20"
               >
-                <LogOut className="h-3.5 w-3.5" /> Encerra Sessão
+                <LogOut className="h-3.5 w-3.5" /> Encerra SessÃ£o
               </button>
             </div>
           </div>
@@ -195,7 +203,7 @@ export function AppShell() {
               </button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 flex flex-col w-72 border-r-0 bg-sidebar">
-              <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
+              <SheetTitle className="sr-only">Menu de NavegaÃ§Ã£o</SheetTitle>
               {/* Copiar estrutura do sidebar desktop aqui caso precise depois, mas vou usar navGroups em baixo */}
             </SheetContent>
           </Sheet>
@@ -205,7 +213,7 @@ export function AppShell() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <InstallPWA />
-          <button onClick={logout} className="text-muted-foreground hover:text-foreground p-2">
+          <button onClick={handleSignOut} className="text-muted-foreground hover:text-foreground p-2">
             <LogOut className="h-4 w-4" />
           </button>
         </div>
@@ -215,12 +223,26 @@ export function AppShell() {
         {/* DESKTOP TOP BAR */}
         <header className="hidden md:flex items-center justify-between px-8 h-[72px] border-b border-border/40 bg-white/50 dark:bg-card/50 backdrop-blur-md sticky top-0 z-30">
           <div className="flex items-center gap-3">
-            <Menu className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" />
-            <span className="text-sm font-medium text-muted-foreground">Painel de Controle</span>
-            <span className="text-muted-foreground/40 text-sm">|</span>
-            <span className="text-sm font-bold text-brand capitalize">
-              {navGroups.flatMap(g => g.items).find(i => i.to === loc.pathname)?.label || "Dashboard"}
-            </span>
+             <div className="flex items-center bg-muted/40 p-1 rounded-lg border border-border/50 shadow-inner">
+               {navGroups.map((group, idx) => {
+                 const isGrpActive = selectedGroupIndex === idx || (selectedGroupIndex === null && idx === 0);
+                 return (
+                   <button
+                     key={idx}
+                     onClick={() => setSelectedGroupIndex(idx)}
+                     className={cn(
+                       "flex items-center gap-2 px-4 py-1.5 text-sm font-bold rounded-md transition-all duration-200",
+                       isGrpActive 
+                         ? "bg-background shadow-sm text-foreground ring-1 ring-border/50" 
+                         : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                     )}
+                   >
+                     <group.icon className={cn("h-4 w-4", isGrpActive ? group.badgeColor.split(' ')[0] : "opacity-70")} />
+                     {group.title}
+                   </button>
+                 );
+               })}
+             </div>
           </div>
           <div className="flex items-center gap-5">
             <button className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-brand transition-colors bg-white dark:bg-card border border-border px-4 py-1.5 rounded-full shadow-sm">
@@ -229,7 +251,7 @@ export function AppShell() {
             <div className="relative">
               <Bell className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" />
               <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white dark:border-background flex items-center justify-center">
-                <span className="sr-only">Notificações</span>
+                <span className="sr-only">NotificaÃ§Ãµes</span>
               </div>
             </div>
             <ThemeToggle />
@@ -272,48 +294,70 @@ export function AppShell() {
             </button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 flex flex-col w-64 border-r-0 bg-sidebar">
-            <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
+            <SheetTitle className="sr-only">Menu de NavegaÃ§Ã£o</SheetTitle>
             <div className="px-6 py-6 border-b border-border/60">
               <Link to="/dashboard">
                 <Logo size="sm" />
               </Link>
             </div>
             
-            <div className="px-3.5 py-4 flex-1 space-y-6 overflow-y-auto scrollbar-none">
-              {navGroups.map((group) => {
-                const GroupIcon = group.icon;
-                return (
-                  <div key={group.title} className="space-y-2">
-                    <div className="flex items-center gap-3 px-3 pb-3 mb-1 border-b border-border/40">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
-                        {group.title}
-                      </span>
-                    </div>
-                    
-                    <nav className="space-y-0.5">
-                      {group.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
-                        const active = loc.pathname === n.to;
-                        const Icon = n.icon;
-                        return (
-                          <Link
-                            key={n.to}
-                            to={n.to}
-                            className={cn(
-                              "flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-200 group relative",
-                              active
-                                ? "bg-muted/80 text-foreground font-semibold dark:bg-white/5"
-                                : "text-muted-foreground/80 hover:text-foreground hover:bg-muted/40",
-                            )}
-                          >
-                            <Icon strokeWidth={1.5} className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-105", active ? "text-foreground" : "text-muted-foreground/60")} />
-                            <span className="flex-1 truncate">{n.label}</span>
-                          </Link>
-                        );
-                      })}
-                    </nav>
-                  </div>
-                );
-              })}
+            {/* MOBILE TOP NAV HYBRID */}
+            <div className="px-3.5 py-4 border-b border-border/40">
+              <div className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 mb-3 px-1">
+                Módulo
+              </div>
+              <div className="flex flex-col gap-1">
+                {navGroups.map((group, idx) => {
+                  const isGrpActive = selectedGroupIndex === idx || (selectedGroupIndex === null && idx === 0);
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedGroupIndex(idx)}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-left",
+                        isGrpActive 
+                          ? "bg-brand/10 text-brand shadow-sm" 
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                      )}
+                    >
+                      <group.icon className={cn("h-4 w-4", isGrpActive ? "text-brand" : "opacity-70")} />
+                      {group.title}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="px-3.5 py-4 flex-1 space-y-2 overflow-y-auto scrollbar-none">
+              <div className="flex items-center gap-3 px-3 pb-2 mb-1 border-b border-border/40">
+                <activeGroup.icon className={cn("h-4 w-4", activeGroup.badgeColor.split(' ')[0])} />
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
+                  {activeGroup.title}
+                </span>
+              </div>
+              
+              <nav className="space-y-0.5">
+                {activeGroup.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
+                  const active = loc.pathname === n.to;
+                  const Icon = n.icon;
+                  return (
+                    <Link
+                      key={n.to}
+                      to={n.to}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 group relative",
+                        active
+                          ? "bg-brand text-white font-semibold shadow-md shadow-brand/20 dark:shadow-none"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                      )}
+                    >
+                      <Icon strokeWidth={active ? 2 : 1.5} className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-105", active ? "text-white" : "text-muted-foreground")} />
+                      <span className="flex-1 truncate">{n.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
             </div>
 
             <div className="p-3.5 mt-auto border-t border-border/60 bg-muted/10">
@@ -327,7 +371,7 @@ export function AppShell() {
                 </div>
               </div>
               <button
-                onClick={logout}
+                onClick={handleSignOut}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[11px] font-bold rounded-lg text-destructive hover:bg-destructive/10 transition-colors border border-destructive/20"
               >
                 <LogOut className="h-3.5 w-3.5" /> Encerra Sessão
