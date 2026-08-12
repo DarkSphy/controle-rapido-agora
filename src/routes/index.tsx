@@ -131,8 +131,8 @@ function Landing() {
           <div className="relative flex justify-end items-center">
             <DashboardMockup />
             {/* Mascot Apresentando */}
-            <div className="absolute -right-10 -bottom-10 z-10 hidden lg:block scale-[0.8] origin-bottom-right">
-              <Mascot src={mascotThumbsUp.url} size={340} />
+            <div className="pointer-events-none absolute -right-6 -bottom-16 z-10 hidden lg:block">
+              <Mascot src={mascotThumbsUp.url} size={250} />
             </div>
           </div>
         </div>
