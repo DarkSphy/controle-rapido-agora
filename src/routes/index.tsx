@@ -3,7 +3,11 @@ import { useAuth } from "@/lib/auth";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
-import mascots from "@/assets/mascots2.jpg";
+import mascotThumbsUp from "@/assets/mascot-thumbsup.png.asset.json";
+import mascotLaptop from "@/assets/mascot-laptop.png.asset.json";
+import mascotIdea from "@/assets/mascot-idea.png.asset.json";
+import mascotPhone from "@/assets/mascot-phone.png.asset.json";
+import mascotCheck from "@/assets/mascot-check.png.asset.json";
 import {
   Package, Zap, Smartphone, ShoppingBag, AlertTriangle, ArrowRight, Check,
   Plus, ArrowLeftRight, BarChart3, Store, ShoppingCart, Shirt, Wrench,
@@ -28,25 +32,16 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-/* Helper component for mascots from the 6x3 sprite sheet */
-function Mascot({ col = 0, row = 0, size = 250, className }: { col?: number, row?: number, size?: number, className?: string }) {
-  // 6 columns (0-5), 3 rows (0-2)
-  const x = col * (100 / 5);
-  const y = row * (100 / 2);
-
+/* Mascot poses as transparent PNGs */
+function Mascot({ src, size = 250, className }: { src: string; size?: number; className?: string }) {
   return (
-    <div 
-      className={cn("inline-block bg-no-repeat shrink-0", className)} 
-      style={{
-        width: size,
-        height: size,
-        backgroundImage: `url(${mascots})`,
-        backgroundSize: '600% 300%',
-        backgroundPosition: `${x}% ${y}%`,
-        // Máscara radial suave para remover qualquer "quadrado" do fundo da imagem original
-        WebkitMaskImage: 'radial-gradient(circle closest-side, black 75%, transparent 95%)',
-        maskImage: 'radial-gradient(circle closest-side, black 75%, transparent 95%)',
-      }}
+    <img
+      src={src}
+      alt=""
+      aria-hidden
+      draggable={false}
+      style={{ width: size, height: "auto" }}
+      className={cn("inline-block shrink-0 select-none drop-shadow-[0_20px_35px_rgba(15,23,42,0.18)]", className)}
     />
   );
 }
@@ -136,8 +131,8 @@ function Landing() {
           <div className="relative flex justify-end items-center">
             <DashboardMockup />
             {/* Mascot Apresentando */}
-            <div className="absolute -right-10 -bottom-10 z-10 hidden lg:block scale-[0.8] origin-bottom-right">
-              <Mascot col={2} row={1} size={300} />
+            <div className="pointer-events-none absolute -right-6 -bottom-16 z-10 hidden lg:block">
+              <Mascot src={mascotThumbsUp.url} size={250} />
             </div>
           </div>
         </div>
@@ -165,8 +160,8 @@ function Landing() {
         <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-10 items-center bg-white rounded-[2rem] p-8 lg:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100 relative">
           
           {/* Mascot Computador */}
-          <div className="absolute -top-[4.5rem] -left-12 hidden lg:block scale-90 origin-bottom">
-            <Mascot col={0} row={2} size={220} />
+          <div className="pointer-events-none absolute -top-[6.5rem] left-4 hidden lg:block z-0">
+            <Mascot src={mascotLaptop.url} size={200} />
           </div>
 
           <div className="lg:w-1/3 space-y-4 relative z-10">
@@ -243,7 +238,7 @@ function Landing() {
 
         {/* Mascot Ideia (Lâmpada) */}
         <div className="absolute right-10 bottom-4 hidden lg:block scale-[0.8] origin-bottom-right z-0">
-          <Mascot col={1} row={1} size={280} />
+          <Mascot src={mascotIdea.url} size={280} />
         </div>
       </section>
 
@@ -257,14 +252,14 @@ function Landing() {
             </h2>
           </div>
 
-          <div className="relative grid md:grid-cols-2 gap-0 rounded-[2rem] overflow-hidden shadow-[0_15px_50px_rgba(0,0,0,0.05)] border border-slate-100">
+          <div className="relative grid md:grid-cols-2 gap-0 rounded-[2rem] shadow-[0_15px_50px_rgba(0,0,0,0.05)] border border-slate-100">
             
             {/* VS Badge */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-16 bg-white rounded-full shadow-lg border border-slate-100 flex items-center justify-center z-20 font-extrabold text-2xl text-slate-800">
               VS
             </div>
 
-            <div className="bg-[#f1f5f9] p-10 md:p-14">
+            <div className="bg-[#f1f5f9] p-10 md:p-14 rounded-t-[2rem] md:rounded-t-none md:rounded-l-[2rem]">
               <h3 className="font-extrabold text-xl mb-8 text-center text-slate-700">Outros sistemas</h3>
               <ul className="space-y-5 text-sm font-medium text-slate-600">
                 {[
@@ -281,7 +276,7 @@ function Landing() {
               </ul>
             </div>
 
-            <div className="bg-[#eef5ff] p-10 md:p-14 relative">
+            <div className="bg-[#eef5ff] p-10 md:p-14 relative rounded-b-[2rem] md:rounded-b-none md:rounded-r-[2rem]">
               <h3 className="font-extrabold text-xl mb-8 text-center text-brand">ControleJá</h3>
               <ul className="space-y-5 text-sm font-bold text-slate-800">
                 {[
@@ -297,10 +292,11 @@ function Landing() {
                 ))}
               </ul>
 
-              {/* Mascot Dúvida (Interrogação) */}
-              <div className="absolute -right-16 -bottom-10 hidden lg:block scale-75 origin-bottom-right opacity-80">
-                <Mascot col={0} row={1} size={240} />
-              </div>
+            </div>
+
+            {/* Mascot com celular */}
+            <div className="pointer-events-none absolute -right-24 -bottom-10 hidden xl:block z-10">
+              <Mascot src={mascotPhone.url} size={170} />
             </div>
           </div>
         </div>
@@ -355,9 +351,9 @@ function Landing() {
 
             <div className="bg-[#eef5ff] rounded-2xl p-6 border border-brand/10 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="origin-left -my-14 -ml-4">
+                <div className="-my-6 -ml-1 shrink-0">
                   {/* Mascot Escudo de Garantia (Verde) */}
-                  <Mascot col={4} row={0} size={150} />
+                  <Mascot src={mascotCheck.url} size={110} />
                 </div>
                 <div>
                   <div className="font-extrabold text-lg text-slate-900 uppercase">Garantia de 7 dias</div>
@@ -374,7 +370,7 @@ function Landing() {
       <footer className="px-5 md:px-10 py-16 bg-[#001f3f] text-white">
         <div className="max-w-[1200px] mx-auto grid md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
-            <Logo size="sm" className="mb-4 invert brightness-0" />
+            <Logo size="sm" className="mb-4 [&_.text-foreground]:text-white [&_.text-muted-foreground]:text-white/50" />
             <p className="text-white/60 text-sm max-w-sm font-medium">
               Gestão simples de estoque e vendas para sua loja. Feito para pequenos negócios crescerem.
             </p>
