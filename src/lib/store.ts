@@ -768,7 +768,7 @@ export const actions = {
         
         // Fetch current DB variations for this product
         const { data: existingVars } = await supabase.from("variations").select("id").eq("product_id", id);
-        const existingIds = new Set((existingVars || []).map((v: any) => v.id));
+        const existingIds = new Set<string>((existingVars || []).map((v: any) => String(v.id)));
 
         const payloadVars = patch.variations;
         const keepIds = new Set(payloadVars.map((v) => v.id).filter(isUuid));
