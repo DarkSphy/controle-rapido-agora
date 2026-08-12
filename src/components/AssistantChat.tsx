@@ -11,7 +11,7 @@ type Message = {
   content: React.ReactNode;
 };
 
-export function AssistantChat({ children }: { children: React.ReactNode }) {
+export function AssistantChat() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -108,7 +108,20 @@ export function AssistantChat({ children }: { children: React.ReactNode }) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        {children}
+        <button className="w-full relative overflow-hidden group rounded-xl bg-gradient-to-br from-brand to-blue-600 p-3 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 border border-white/10">
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="h-10 w-10 rounded-full bg-white/20 border border-white/30 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
+              <Bot className="h-5 w-5 text-white" />
+            </div>
+            <div className="text-left flex-1">
+              <div className="text-[9px] font-extrabold uppercase tracking-widest text-white/70 leading-tight">Dúvidas rápidas?</div>
+              <div className="text-sm font-bold text-white leading-tight mt-0.5">Assistente Virtual</div>
+            </div>
+            <div className="h-6 w-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 group-hover:bg-white/20 transition-colors">
+              <ChevronRight className="h-4 w-4 text-white" />
+            </div>
+          </div>
+        </button>
       </SheetTrigger>
       <SheetContent aria-describedby={undefined} className="w-full sm:max-w-md p-0 flex flex-col bg-[#f8f9fc] border-l-0 shadow-2xl">
         <SheetTitle className="sr-only">Assistente Virtual</SheetTitle>
