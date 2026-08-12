@@ -293,8 +293,8 @@ function Landing() {
               </ul>
 
               {/* Mascot Dúvida (Interrogação) */}
-              <div className="pointer-events-none absolute right-2 -bottom-2 hidden lg:block">
-                <Mascot src={mascotPhone.url} size={150} className="opacity-95" />
+              <div className="pointer-events-none absolute -right-6 -bottom-4 hidden xl:block">
+                <Mascot src={mascotPhone.url} size={140} className="opacity-95" />
               </div>
             </div>
           </div>
