@@ -3,7 +3,11 @@ import { useAuth } from "@/lib/auth";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
-import mascots from "@/assets/mascots2.jpg";
+import mascotThumbsUp from "@/assets/mascot-thumbsup.png.asset.json";
+import mascotLaptop from "@/assets/mascot-laptop.png.asset.json";
+import mascotIdea from "@/assets/mascot-idea.png.asset.json";
+import mascotPhone from "@/assets/mascot-phone.png.asset.json";
+import mascotCheck from "@/assets/mascot-check.png.asset.json";
 import {
   Package, Zap, Smartphone, ShoppingBag, AlertTriangle, ArrowRight, Check,
   Plus, ArrowLeftRight, BarChart3, Store, ShoppingCart, Shirt, Wrench,
