@@ -120,16 +120,13 @@ export function AppShell() {
             return (
               <div key={group.title} className="space-y-2">
                 {/* SECTION HEADER BADGE & LINE DIVIDER */}
-                <div className="flex items-center gap-2 px-2.5 pb-2 border-b border-border/60">
-                  <div className={cn("p-1 rounded-md border text-xs flex items-center justify-center shrink-0", group.badgeColor)}>
-                    <GroupIcon className="h-3.5 w-3.5" />
-                  </div>
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
+                <div className="flex items-center gap-3 px-3 pb-3 mb-1 border-b border-border/40">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
                     {group.title}
                   </span>
                 </div>
                 
-                <nav className="space-y-1">
+                <nav className="space-y-0.5">
                   {group.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
                     const active = loc.pathname === n.to;
                     const Icon = n.icon;
@@ -138,16 +135,13 @@ export function AppShell() {
                         key={n.to}
                         to={n.to}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 group relative",
+                          "flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-200 group relative",
                           active
-                            ? "bg-card text-foreground font-bold border border-border/90 shadow-sm text-brand"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
+                            ? "bg-muted/80 text-foreground font-semibold dark:bg-white/5"
+                            : "text-muted-foreground/80 hover:text-foreground hover:bg-muted/40",
                         )}
                       >
-                        {active && (
-                          <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-brand" />
-                        )}
-                        <Icon className={cn("h-4 w-4 transition-transform group-hover:scale-110 shrink-0", active ? "text-brand" : "text-muted-foreground/70")} />
+                        <Icon strokeWidth={1.5} className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-105", active ? "text-foreground" : "text-muted-foreground/60")} />
                         <span className="flex-1 truncate">{n.label}</span>
                       </Link>
                     );
@@ -259,16 +253,13 @@ export function AppShell() {
                 const GroupIcon = group.icon;
                 return (
                   <div key={group.title} className="space-y-2">
-                    <div className="flex items-center gap-2 px-2.5 pb-2 border-b border-border/60">
-                      <div className={cn("p-1 rounded-md border text-xs flex items-center justify-center shrink-0", group.badgeColor)}>
-                        <GroupIcon className="h-3.5 w-3.5" />
-                      </div>
-                      <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
+                    <div className="flex items-center gap-3 px-3 pb-3 mb-1 border-b border-border/40">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
                         {group.title}
                       </span>
                     </div>
                     
-                    <nav className="space-y-1">
+                    <nav className="space-y-0.5">
                       {group.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
                         const active = loc.pathname === n.to;
                         const Icon = n.icon;
@@ -277,16 +268,13 @@ export function AppShell() {
                             key={n.to}
                             to={n.to}
                             className={cn(
-                              "flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 group relative",
+                              "flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-200 group relative",
                               active
-                                ? "bg-card text-foreground font-bold border border-border/90 shadow-sm text-brand"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
+                                ? "bg-muted/80 text-foreground font-semibold dark:bg-white/5"
+                                : "text-muted-foreground/80 hover:text-foreground hover:bg-muted/40",
                             )}
                           >
-                            {active && (
-                              <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-brand" />
-                            )}
-                            <Icon className={cn("h-4 w-4 shrink-0", active ? "text-brand" : "text-muted-foreground/70")} />
+                            <Icon strokeWidth={1.5} className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-105", active ? "text-foreground" : "text-muted-foreground/60")} />
                             <span className="flex-1 truncate">{n.label}</span>
                           </Link>
                         );
