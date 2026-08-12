@@ -213,7 +213,7 @@ export function AppShell() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <InstallPWA />
-          <button onClick={handleSignOut} className="text-muted-foreground hover:text-foreground p-2">
+          <button onClick={logout} className="text-muted-foreground hover:text-foreground p-2">
             <LogOut className="h-4 w-4" />
           </button>
         </div>
@@ -371,7 +371,7 @@ export function AppShell() {
                 </div>
               </div>
               <button
-                onClick={handleSignOut}
+                onClick={logout}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[11px] font-bold rounded-lg text-destructive hover:bg-destructive/10 transition-colors border border-destructive/20"
               >
                 <LogOut className="h-3.5 w-3.5" /> Encerra Sessão
