@@ -3,11 +3,6 @@ import { useAuth } from "@/lib/auth";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
-import mascotThumbsUp from "@/assets/mascots/mascot_0_0.png";
-import mascotLaptop from "@/assets/mascots/mascot_2_0.png";
-import mascotIdea from "@/assets/mascots/mascot_1_1.png";
-import mascotPhone from "@/assets/mascots/mascot_1_0.png"; // Usando a coruja com ponto de interrogação para combinar com o VS
-import mascotCheck from "@/assets/mascots/mascot_0_4.png";
 import {
   Package, Zap, Smartphone, ShoppingBag, AlertTriangle, ArrowRight, Check,
   Plus, ArrowLeftRight, BarChart3, Store, ShoppingCart, Shirt, Wrench,
@@ -31,20 +26,6 @@ const WA_HELP_URL = `https://wa.me/${PHONE}?text=${encodeURIComponent(MSG_HELP)}
 export const Route = createFileRoute("/")({
   component: Landing,
 });
-
-/* Mascot poses as transparent PNGs */
-function Mascot({ src, size = 250, className }: { src: string; size?: number; className?: string }) {
-  return (
-    <img
-      src={src}
-      alt="Mascote"
-      aria-hidden
-      draggable={false}
-      style={{ width: size, height: "auto" }}
-      className={cn("inline-block shrink-0 select-none drop-shadow-[0_20px_35px_rgba(15,23,42,0.18)] hover:scale-105 transition-transform duration-300", className)}
-    />
-  );
-}
 
 function Landing() {
   const { user } = useAuth();
@@ -130,10 +111,6 @@ function Landing() {
 
           <div className="relative flex justify-end items-center">
             <DashboardMockup />
-            {/* Mascot Apresentando */}
-            <div className="pointer-events-none absolute -right-6 -bottom-16 z-10 hidden lg:block">
-              <Mascot src={mascotThumbsUp} size={300} />
-            </div>
           </div>
         </div>
       </section>
@@ -159,11 +136,6 @@ function Landing() {
       <section id="demo" className="px-5 md:px-10 py-20 bg-[#f8f9fc]">
         <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-10 items-center bg-white rounded-[2rem] p-8 lg:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100 relative">
           
-          {/* Mascot Computador */}
-          <div className="pointer-events-none absolute -top-[6.5rem] left-4 hidden lg:block z-0">
-            <Mascot src={mascotLaptop} size={250} />
-          </div>
-
           <div className="lg:w-1/3 space-y-4 relative z-10">
             <span className="text-brand font-extrabold tracking-widest text-sm uppercase">Experimente na prática.</span>
             <h2 className="text-4xl font-extrabold text-slate-900 leading-[1.1]">Sem precisar criar conta.</h2>
@@ -235,11 +207,6 @@ function Landing() {
             <Feature icon={Smartphone} title="Funciona no celular" desc="Seu estoque no bolso. Use no balcão, no estoque ou em casa." />
           </div>
         </div>
-
-        {/* Mascot Ideia (Lâmpada) */}
-        <div className="absolute right-10 bottom-4 hidden lg:block scale-[0.8] origin-bottom-right z-0">
-          <Mascot src={mascotIdea} size={300} />
-        </div>
       </section>
 
       {/* 5. VS Comparison */}
@@ -293,11 +260,6 @@ function Landing() {
               </ul>
 
             </div>
-
-            {/* Mascot com celular */}
-            <div className="pointer-events-none absolute -right-24 -bottom-10 hidden xl:block z-10">
-              <Mascot src={mascotPhone} size={220} />
-            </div>
           </div>
         </div>
       </section>
@@ -349,16 +311,11 @@ function Landing() {
               </Button>
             </div>
 
-            <div className="bg-[#eef5ff] rounded-2xl p-6 border border-brand/10 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="-my-6 -ml-1 shrink-0">
-                  {/* Mascot Escudo de Garantia (Verde) */}
-                  <Mascot src={mascotCheck} size={150} />
-                </div>
-                <div>
-                  <div className="font-extrabold text-lg text-slate-900 uppercase">Garantia de 7 dias</div>
-                  <div className="text-sm font-semibold text-slate-600">ou seu dinheiro de volta</div>
-                </div>
+            <div className="bg-[#eef5ff] rounded-2xl p-6 border border-brand/10 flex items-center justify-center gap-5">
+              <ShieldCheck className="w-12 h-12 text-brand" />
+              <div>
+                <div className="font-extrabold text-lg text-slate-900 uppercase">Garantia de 7 dias</div>
+                <div className="text-sm font-semibold text-slate-600">ou seu dinheiro de volta</div>
               </div>
             </div>
           </div>
