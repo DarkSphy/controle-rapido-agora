@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useStore } from "@/lib/store";
 import mascotDoubt from "@/assets/mascot-doubt.png.asset.json";
-import { MessageSquare, TrendingUp, Package, AlertTriangle, Play, ChevronRight, X } from "lucide-react";
+import { MessageSquare, TrendingUp, Package, AlertTriangle, Play, ChevronRight, X, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Message = {
