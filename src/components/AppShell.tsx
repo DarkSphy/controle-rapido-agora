@@ -1,7 +1,7 @@
 import { 
-  LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut, 
-  Truck, Tag, Box, BarChart3, DollarSign, Users, Lightbulb, ShoppingBasket, Briefcase, Wrench, FileText, Settings, Store, Menu,
-  Zap, Layers, LineChart
+  Compass, Receipt, ShoppingBag, FileSpreadsheet, Sliders, MonitorSmartphone, Globe,
+  PackageSearch, Layers3, FolderTree, UsersRound, Building2, Boxes,
+  Wallet, Sparkles, History, RefreshCw, BarChart4, SlidersHorizontal, LogOut, Menu, Activity, FolderKanban, AreaChart
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -20,42 +20,42 @@ const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin", 
 const navGroups = [
   {
     title: "Operação",
-    icon: Zap,
+    icon: Activity,
     badgeColor: "text-amber-500 bg-amber-500/10 border-amber-500/20",
     items: [
-      { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
-      { to: "/vendas", label: "Vendas", icon: ShoppingBasket },
-      { to: "/compras", label: "Compras", icon: Truck },
-      { to: "/orcamentos", label: "Orçamentos", icon: FileText },
-      { to: "/os", label: "Ordem de Serviço", icon: Wrench },
-      { to: "/balcao", label: "Balcão", icon: ShoppingBag },
-      { to: "/catalogo", label: "Catálogo", icon: Store },
+      { to: "/dashboard", label: "Resumo", icon: Compass },
+      { to: "/vendas", label: "Vendas", icon: Receipt },
+      { to: "/compras", label: "Compras", icon: ShoppingBag },
+      { to: "/orcamentos", label: "Orçamentos", icon: FileSpreadsheet },
+      { to: "/os", label: "Ordem de Serviço", icon: Sliders },
+      { to: "/balcao", label: "Balcão", icon: MonitorSmartphone },
+      { to: "/catalogo", label: "Catálogo", icon: Globe },
     ]
   },
   {
     title: "Cadastros",
-    icon: Layers,
+    icon: FolderKanban,
     badgeColor: "text-blue-500 bg-blue-500/10 border-blue-500/20",
     items: [
-      { to: "/produtos", label: "Produtos", icon: Package },
-      { to: "/servicos", label: "Serviços", icon: Briefcase },
-      { to: "/categories", label: "Categorias", icon: Tag },
-      { to: "/clientes", label: "Clientes", icon: Users },
-      { to: "/suppliers", label: "Fornecedores", icon: Truck },
-      { to: "/kits", label: "Kits", icon: Box },
+      { to: "/produtos", label: "Produtos", icon: PackageSearch },
+      { to: "/servicos", label: "Serviços", icon: Layers3 },
+      { to: "/categories", label: "Categorias", icon: FolderTree },
+      { to: "/clientes", label: "Clientes", icon: UsersRound },
+      { to: "/suppliers", label: "Fornecedores", icon: Building2 },
+      { to: "/kits", label: "Kits", icon: Boxes },
     ]
   },
   {
     title: "Gestão & Métricas",
-    icon: LineChart,
+    icon: AreaChart,
     badgeColor: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
     items: [
-      { to: "/financeiro", label: "Financeiro", icon: DollarSign },
-      { to: "/insights", label: "Insights", icon: Lightbulb },
-      { to: "/historico", label: "Histórico", icon: ArrowLeftRight },
-      { to: "/reposicao", label: "Reposição", icon: AlertTriangle },
-      { to: "/reports", label: "Relatórios", icon: BarChart3, adminOnly: true },
-      { to: "/configuracoes", label: "Configurações", icon: Settings },
+      { to: "/financeiro", label: "Financeiro", icon: Wallet },
+      { to: "/insights", label: "Insights", icon: Sparkles },
+      { to: "/historico", label: "Histórico", icon: History },
+      { to: "/reposicao", label: "Reposição", icon: RefreshCw },
+      { to: "/reports", label: "Relatórios", icon: BarChart4, adminOnly: true },
+      { to: "/configuracoes", label: "Configurações", icon: SlidersHorizontal },
     ]
   }
 ];

@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useStore, productEffectiveStock, formatBRL, productInventoryValue } from "@/lib/store";
 import { 
-  TrendingUp, TrendingDown, AlertCircle, Package, BarChart3, Settings2, 
-  ShoppingBasket, Truck, Lightbulb, ArrowLeftRight, FileText, Wrench
+  ArrowUpRight, ArrowDownLeft, PackageX, BarChart4, Settings2, 
+  Receipt, ShoppingBag, Sparkles, Activity, FileSpreadsheet, Sliders, Wallet, AlertCircle, TrendingUp, Package
 } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BulkAdjustDialog } from "@/components/BulkAdjustDialog";
 import { BulkTaxDialog } from "@/components/BulkTaxDialog";
@@ -86,8 +85,8 @@ function Dashboard() {
 
   const recentActivities = useMemo(() => {
     const list: any[] = [];
-    sales.slice(0, 3).forEach(s => list.push({ type: "venda", date: s.createdAt, title: "Venda realizada", subtitle: `${formatBRL(s.totalAmount)}`, icon: ShoppingBasket, color: "text-success bg-success/10" }));
-    quotes.slice(0, 2).forEach(q => list.push({ type: "orcamento", date: q.createdAt, title: "Orçamento criado", subtitle: `${formatBRL(q.total)}`, icon: FileText, color: "text-amber-500 bg-amber-500/10" }));
+    sales.slice(0, 3).forEach(s => list.push({ type: "venda", date: s.createdAt, title: "Venda realizada", subtitle: `${formatBRL(s.totalAmount)}`, icon: Receipt, color: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10" }));
+    quotes.slice(0, 2).forEach(q => list.push({ type: "orcamento", date: q.createdAt, title: "Orçamento criado", subtitle: `${formatBRL(q.total)}`, icon: FileSpreadsheet, color: "text-amber-500 bg-amber-500/10" }));
     return list.sort((a, b) => b.date - a.date).slice(0, 5);
   }, [sales, quotes]);
 
@@ -98,11 +97,11 @@ function Dashboard() {
   }, 0);
 
   const stats = [
-    { label: "Vendas hoje", value: formatBRL(today.productSales), icon: TrendingUp, color: "text-success bg-success/10", trend: "+12% vs ontem" },
-    { label: "Mão de obra hoje", value: formatBRL(today.laborSales), icon: Wrench, color: "text-brand bg-brand/10", trend: "estável" },
-    { label: "Gasto hoje", value: formatBRL(today.purchases), icon: TrendingDown, color: "text-primary bg-primary/10", trend: "-5% vs ontem" },
-    { label: "Estoque zerado", value: empty.length.toString(), icon: AlertCircle, color: "text-destructive bg-destructive/10", trend: "crítico" },
-    { label: "Valor em estoque", value: formatBRL(totalValue), icon: Package, color: "text-slate-500 bg-slate-100", action: (
+    { label: "Vendas hoje", value: formatBRL(today.productSales), icon: ArrowUpRight, color: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20", trend: "+12% vs ontem" },
+    { label: "Mão de obra hoje", value: formatBRL(today.laborSales), icon: Sliders, color: "text-brand bg-brand/10 border-brand/20", trend: "estável" },
+    { label: "Gasto hoje", value: formatBRL(today.purchases), icon: ArrowDownLeft, color: "text-primary bg-primary/10 border-primary/20", trend: "-5% vs ontem" },
+    { label: "Estoque zerado", value: empty.length.toString(), icon: PackageX, color: "text-destructive bg-destructive/10 border-destructive/20", trend: "crítico" },
+    { label: "Valor em estoque", value: formatBRL(totalValue), icon: Wallet, color: "text-muted-foreground bg-muted border-border", action: (
       <button onClick={() => setShowCostValue(!showCostValue)} className="text-[10px] font-bold uppercase tracking-widest text-brand hover:underline">
         {showCostValue ? "Ver Final" : "Ver Custo"}
       </button>
