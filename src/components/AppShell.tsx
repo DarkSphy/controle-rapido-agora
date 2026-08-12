@@ -1,7 +1,7 @@
-import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { 
   LayoutDashboard, Package, ArrowLeftRight, ShoppingBag, AlertTriangle, LogOut, 
-  Truck, Tag, Box, BarChart3, DollarSign, Users, Lightbulb, ShoppingBasket, Briefcase, Wrench, FileText, Settings, Store, Menu
+  Truck, Tag, Box, BarChart3, DollarSign, Users, Lightbulb, ShoppingBasket, Briefcase, Wrench, FileText, Settings, Store, Menu,
+  Zap, Layers, LineChart
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,8 @@ const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin", 
 const navGroups = [
   {
     title: "Operação",
+    icon: Zap,
+    badgeColor: "text-amber-500 bg-amber-500/10 border-amber-500/20",
     items: [
       { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
       { to: "/vendas", label: "Vendas", icon: ShoppingBasket },
@@ -32,6 +34,8 @@ const navGroups = [
   },
   {
     title: "Cadastros",
+    icon: Layers,
+    badgeColor: "text-blue-500 bg-blue-500/10 border-blue-500/20",
     items: [
       { to: "/produtos", label: "Produtos", icon: Package },
       { to: "/servicos", label: "Serviços", icon: Briefcase },
@@ -42,7 +46,9 @@ const navGroups = [
     ]
   },
   {
-    title: "Gestão",
+    title: "Gestão & Métricas",
+    icon: LineChart,
+    badgeColor: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
     items: [
       { to: "/financeiro", label: "Financeiro", icon: DollarSign },
       { to: "/insights", label: "Insights", icon: Lightbulb },
@@ -99,64 +105,79 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
-      <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-border bg-sidebar overflow-y-auto scrollbar-none">
-        <div className="px-6 py-8">
-          <Link to="/dashboard">
+      {/* REVOLUTIONARY SIDEBAR */}
+      <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-border bg-sidebar overflow-y-auto scrollbar-none transition-colors duration-300">
+        <div className="px-6 py-6 border-b border-border/60">
+          <Link to="/dashboard" className="flex items-center gap-2">
             <Logo size="sm" />
           </Link>
         </div>
         
-        <div className="px-3 flex-1 space-y-6">
-          {navGroups.map((group) => (
-            <div key={group.title} className="space-y-1">
-              <h3 className="px-4 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">
-                {group.title}
-              </h3>
-              <nav className="space-y-1">
-                {group.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
-                  const active = loc.pathname === n.to;
-                  const Icon = n.icon;
-                  return (
-                    <Link
-                      key={n.to}
-                      to={n.to}
-                      className={cn(
-                        "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all duration-200 group",
-                        active
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-bold shadow-sm"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                      )}
-                    >
-                      <Icon className={cn("h-4 w-4 transition-transform group-hover:scale-110", active ? "text-brand" : "text-muted-foreground/60")} />
-                      {n.label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-          ))}
+        <div className="px-3.5 py-6 flex-1 space-y-6">
+          {navGroups.map((group) => {
+            const GroupIcon = group.icon;
+            return (
+              <div key={group.title} className="space-y-2">
+                {/* SECTION HEADER BADGE & LINE DIVIDER */}
+                <div className="flex items-center gap-2 px-2.5 pb-2 border-b border-border/60">
+                  <div className={cn("p-1 rounded-md border text-xs flex items-center justify-center shrink-0", group.badgeColor)}>
+                    <GroupIcon className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
+                    {group.title}
+                  </span>
+                </div>
+                
+                <nav className="space-y-1">
+                  {group.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
+                    const active = loc.pathname === n.to;
+                    const Icon = n.icon;
+                    return (
+                      <Link
+                        key={n.to}
+                        to={n.to}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 group relative",
+                          active
+                            ? "bg-card text-foreground font-bold border border-border/90 shadow-sm text-brand"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
+                        )}
+                      >
+                        {active && (
+                          <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-brand" />
+                        )}
+                        <Icon className={cn("h-4 w-4 transition-transform group-hover:scale-110 shrink-0", active ? "text-brand" : "text-muted-foreground/70")} />
+                        <span className="flex-1 truncate">{n.label}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="p-4 mt-auto">
-          <div className="rounded-2xl bg-muted/30 p-4 border border-border/50">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="h-9 w-9 rounded-full bg-brand/20 flex items-center justify-center text-brand font-bold text-xs">
+        {/* NOTION PROFILE CARD */}
+        <div className="p-3.5 mt-auto border-t border-border/60">
+          <div className="rounded-xl bg-card border border-border p-3 space-y-3 shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-lg bg-brand/15 text-brand flex items-center justify-center font-extrabold text-xs shrink-0 border border-brand/20">
                 {user.email?.[0].toUpperCase()}
               </div>
-              <div className="min-w-0">
-                <div className="text-xs font-bold truncate">{user.email?.split('@')[0]}</div>
-                <div className="text-[10px] text-muted-foreground truncate uppercase tracking-wider">{role}</div>
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-bold text-foreground truncate">{user.email?.split('@')[0]}</div>
+                <div className="text-[10px] text-muted-foreground truncate uppercase tracking-wider font-semibold">{role}</div>
               </div>
             </div>
-            <div className="mb-2">
+            <div className="pt-2 border-t border-border/50 space-y-1.5">
               <InstallPWA />
+              <button
+                onClick={logout}
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-[11px] font-bold rounded-lg text-destructive hover:bg-destructive/10 transition-colors border border-destructive/20"
+              >
+                <LogOut className="h-3.5 w-3.5" /> Encerra Sessão
+              </button>
             </div>
-            <button
-              onClick={logout}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[11px] font-bold uppercase tracking-widest rounded-lg text-destructive hover:bg-destructive/10 transition-colors border border-destructive/10"
-            >
-              <LogOut className="h-3 w-3" /> Sair
-            </button>
           </div>
         </div>
       </aside>
@@ -224,60 +245,72 @@ export function AppShell() {
               Menu
             </button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 flex flex-col w-64 border-r-0">
+          <SheetContent side="left" className="p-0 flex flex-col w-64 border-r-0 bg-sidebar">
             <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
-            <div className="px-6 py-6 border-b border-border/50">
+            <div className="px-6 py-6 border-b border-border/60">
               <Link to="/dashboard">
                 <Logo size="sm" />
               </Link>
             </div>
             
-            <div className="px-3 py-4 flex-1 space-y-6 overflow-y-auto scrollbar-none">
-              {navGroups.map((group) => (
-                <div key={group.title} className="space-y-1">
-                  <h3 className="px-4 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">
-                    {group.title}
-                  </h3>
-                  <nav className="space-y-1">
-                    {group.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
-                      const active = loc.pathname === n.to;
-                      const Icon = n.icon;
-                      return (
-                        <Link
-                          key={n.to}
-                          to={n.to}
-                          className={cn(
-                            "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all duration-200 group",
-                            active
-                              ? "bg-sidebar-accent text-sidebar-accent-foreground font-bold shadow-sm"
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                          )}
-                        >
-                          <Icon className={cn("h-4 w-4 transition-transform group-hover:scale-110", active ? "text-brand" : "text-muted-foreground/60")} />
-                          {n.label}
-                        </Link>
-                      );
-                    })}
-                  </nav>
-                </div>
-              ))}
+            <div className="px-3.5 py-4 flex-1 space-y-6 overflow-y-auto scrollbar-none">
+              {navGroups.map((group) => {
+                const GroupIcon = group.icon;
+                return (
+                  <div key={group.title} className="space-y-2">
+                    <div className="flex items-center gap-2 px-2.5 pb-2 border-b border-border/60">
+                      <div className={cn("p-1 rounded-md border text-xs flex items-center justify-center shrink-0", group.badgeColor)}>
+                        <GroupIcon className="h-3.5 w-3.5" />
+                      </div>
+                      <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
+                        {group.title}
+                      </span>
+                    </div>
+                    
+                    <nav className="space-y-1">
+                      {group.items.filter(n => !n.adminOnly || role === "admin").map((n) => {
+                        const active = loc.pathname === n.to;
+                        const Icon = n.icon;
+                        return (
+                          <Link
+                            key={n.to}
+                            to={n.to}
+                            className={cn(
+                              "flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 group relative",
+                              active
+                                ? "bg-card text-foreground font-bold border border-border/90 shadow-sm text-brand"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
+                            )}
+                          >
+                            {active && (
+                              <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-brand" />
+                            )}
+                            <Icon className={cn("h-4 w-4 shrink-0", active ? "text-brand" : "text-muted-foreground/70")} />
+                            <span className="flex-1 truncate">{n.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </nav>
+                  </div>
+                );
+              })}
             </div>
 
-            <div className="p-4 mt-auto border-t border-border/50 bg-muted/10">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-full bg-brand/20 flex items-center justify-center text-brand font-bold">
+            <div className="p-3.5 mt-auto border-t border-border/60 bg-muted/10">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-9 w-9 rounded-lg bg-brand/15 text-brand flex items-center justify-center font-extrabold text-xs border border-brand/20">
                   {user?.email?.[0].toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <div className="text-sm font-bold truncate">{user?.email?.split('@')[0]}</div>
-                  <div className="text-[10px] text-muted-foreground truncate uppercase tracking-wider">{role}</div>
+                  <div className="text-xs font-bold text-foreground truncate">{user?.email?.split('@')[0]}</div>
+                  <div className="text-[10px] text-muted-foreground truncate uppercase tracking-wider font-semibold">{role}</div>
                 </div>
               </div>
               <button
                 onClick={logout}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold uppercase tracking-widest rounded-lg text-destructive bg-destructive/5 hover:bg-destructive/10 transition-colors border border-destructive/10"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[11px] font-bold rounded-lg text-destructive hover:bg-destructive/10 transition-colors border border-destructive/20"
               >
-                <LogOut className="h-4 w-4" /> Sair
+                <LogOut className="h-3.5 w-3.5" /> Encerra Sessão
               </button>
             </div>
           </SheetContent>
