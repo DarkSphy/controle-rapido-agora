@@ -68,8 +68,11 @@ function Landing() {
       <section className="relative px-5 md:px-10 pt-16 pb-16 overflow-hidden bg-white">
         <div className="max-w-[1200px] mx-auto grid md:grid-cols-2 gap-10 items-center">
           
-          <div className="pr-10">
-            <h1 className="text-4xl md:text-[3.5rem] font-extrabold tracking-tight leading-[1.1] text-slate-900">
+          <div className="pr-10 relative">
+            {/* Efeito Glow atrás do Título */}
+            <div className="absolute -top-10 -left-10 w-64 h-64 bg-gradient-to-r from-brand via-purple-400 to-emerald-400 rounded-full blur-3xl opacity-20 animate-spin-slow pointer-events-none" />
+            
+            <h1 className="relative text-4xl md:text-[3.5rem] font-extrabold tracking-tight leading-[1.1] text-slate-900">
               Gestão simples para <span className="text-brand">vender mais</span> e cuidar menos do estoque.
             </h1>
             <p className="mt-6 text-lg text-slate-600 max-w-lg leading-relaxed">
