@@ -54,130 +54,130 @@
 :root {
   --radius: 1.25rem;
 
-  /* Notion Light Palette */
-  --background: #fcfcfb;
-  --foreground: #2f2f2f;
+  /* Mascot Brand Palette — Light Theme */
+  --background: #f8fafc;
+  --foreground: #091024;
 
   --card: #ffffff;
-  --card-foreground: #2f2f2f;
+  --card-foreground: #091024;
   --popover: #ffffff;
-  --popover-foreground: #2f2f2f;
+  --popover-foreground: #091024;
 
-  --primary: #191919;
+  --primary: #091024;
   --primary-foreground: #ffffff;
-  --primary-hover: #2d2d2d;
+  --primary-hover: #121c38;
 
-  --brand: #0f7b6c;
+  --brand: #0066ff;
   --brand-foreground: #ffffff;
 
-  --secondary: #f7f7f5;
-  --secondary-foreground: #2f2f2f;
-  --muted: #f1f1ef;
-  --muted-foreground: #787774;
-  --accent: #eef7f5;
-  --accent-foreground: #0f7b6c;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #091024;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #eff6ff;
+  --accent-foreground: #0066ff;
 
-  --destructive: #eb5757;
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --success: #2e7d32;
+  --success: #10b981;
   --success-foreground: #ffffff;
 
-  --warning: #d97706;
-  --warning-foreground: #ffffff;
+  --warning: #ff9900;
+  --warning-foreground: #091024;
 
-  --border: #e9e9e7;
-  --input: #e9e9e7;
-  --ring: #0f7b6c;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #0066ff;
 
-  --sidebar: #f7f7f5;
-  --sidebar-foreground: #2f2f2f;
-  --sidebar-primary: #191919;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #091024;
+  --sidebar-primary: #0066ff;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef7f5;
-  --sidebar-accent-foreground: #0f7b6c;
-  --sidebar-border: #e9e9e7;
-  --sidebar-ring: #0f7b6c;
+  --sidebar-accent: #eff6ff;
+  --sidebar-accent-foreground: #0066ff;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #0066ff;
 }
 
 .dark {
-  /* Notion Dark Palette */
-  --background: #191919;
-  --foreground: #d4d4d4;
+  /* Mascot Brand Palette — Midnight Dark Theme */
+  --background: #080d1a;
+  --foreground: #f1f5f9;
 
-  --card: #202020;
-  --card-foreground: #e3e3e3;
-  --popover: #252525;
-  --popover-foreground: #e3e3e3;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --popover: #111c35;
+  --popover-foreground: #f8fafc;
 
-  --primary: #e3e3e3;
-  --primary-foreground: #191919;
-  --primary-hover: #ffffff;
+  --primary: #3887ff;
+  --primary-foreground: #080d1a;
+  --primary-hover: #60a5fa;
 
-  --brand: #2eaadc;
-  --brand-foreground: #191919;
+  --brand: #2563eb;
+  --brand-foreground: #ffffff;
 
-  --secondary: #252525;
-  --secondary-foreground: #d4d4d4;
-  --muted: #272727;
-  --muted-foreground: #9b9b9b;
-  --accent: #1e3a47;
-  --accent-foreground: #2eaadc;
+  --secondary: #1e293b;
+  --secondary-foreground: #f1f5f9;
+  --muted: #172033;
+  --muted-foreground: #94a3b8;
+  --accent: #1e293b;
+  --accent-foreground: #60a5fa;
 
-  --destructive: #ff6b6b;
+  --destructive: #f87171;
   --destructive-foreground: #ffffff;
 
   --success: #34d399;
-  --success-foreground: #191919;
+  --success-foreground: #080d1a;
 
   --warning: #fbbf24;
-  --warning-foreground: #191919;
+  --warning-foreground: #080d1a;
 
-  --border: #2e2e2e;
-  --input: #2e2e2e;
-  --ring: #2eaadc;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #3887ff;
 
-  --sidebar: #191919;
-  --sidebar-foreground: #d4d4d4;
-  --sidebar-primary: #2eaadc;
-  --sidebar-primary-foreground: #191919;
-  --sidebar-accent: #252525;
+  --sidebar: #0b1329;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #3887ff;
+  --sidebar-primary-foreground: #080d1a;
+  --sidebar-accent: #172442;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #2e2e2e;
-  --sidebar-ring: #2eaadc;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #3887ff;
 }
 
 .sepia {
-  /* Notion Warm Sepia / Reader Palette */
-  --background: #f4ecd8;
-  --foreground: #433422;
+  /* Mascot Brand Palette — Warm Sepia / Reader Theme */
+  --background: #f5eedc;
+  --foreground: #36291a;
 
-  --card: #fbf7ee;
-  --card-foreground: #382c1d;
-  --popover: #fbf7ee;
-  --popover-foreground: #382c1d;
+  --card: #fcf8f0;
+  --card-foreground: #36291a;
+  --popover: #fcf8f0;
+  --popover-foreground: #36291a;
 
-  --primary: #433422;
+  --primary: #36291a;
   --primary-foreground: #fcf8f0;
-  --primary-hover: #2d2215;
+  --primary-hover: #241b10;
 
-  --brand: #b45309;
+  --brand: #0055d4;
   --brand-foreground: #ffffff;
 
-  --secondary: #eee3cc;
-  --secondary-foreground: #433422;
+  --secondary: #eae0cb;
+  --secondary-foreground: #36291a;
   --muted: #eae0cb;
-  --muted-foreground: #7d6b55;
-  --accent: #f5e8d0;
-  --accent-foreground: #b45309;
+  --muted-foreground: #7c6c59;
+  --accent: #e8f0fe;
+  --accent-foreground: #0055d4;
 
-  --destructive: #c2410c;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
-  --success: #15803d;
+  --success: #16a34a;
   --success-foreground: #ffffff;
 
-  --warning: #b45309;
+  --warning: #d97706;
   --warning-foreground: #ffffff;
 
   --border: #e2d4bc;
