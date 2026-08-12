@@ -3,7 +3,8 @@ import { useMemo, useState } from "react";
 import { useStore, productEffectiveStock, formatBRL, productInventoryValue } from "@/lib/store";
 import { 
   ArrowUpRight, ArrowDownLeft, PackageX, BarChart4, Settings2, 
-  Receipt, ShoppingBag, Sparkles, Activity, FileSpreadsheet, Sliders, Wallet, AlertCircle, TrendingUp, Package
+  Receipt, ShoppingBag, Sparkles, Activity, FileSpreadsheet, Sliders, Wallet, AlertCircle, TrendingUp, Package,
+  ShoppingBasket, Truck, Lightbulb, BarChart3, FileText, ArrowLeftRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BulkAdjustDialog } from "@/components/BulkAdjustDialog";
