@@ -42,7 +42,7 @@ export function AnimatedCounters() {
   const isVisible = useIntersectionObserver(ref, { threshold: 0.1 });
 
   return (
-    <div ref={ref} className="grid grid-cols-1 md:grid-cols-3 gap-8 py-16 max-w-[1000px] mx-auto px-6">
+    <div ref={ref} className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 max-w-[1000px] mx-auto px-6">
       <Counter end={2000000} duration={2000} suffix="+" label="Vendas registradas" isVisible={isVisible} formatter={(n) => (n / 1000000).toFixed(1) + "M"} />
       <Counter end={100} duration={2000} suffix="%" label="Controle de estoque" isVisible={isVisible} />
       <Counter end={0} duration={1000} suffix="" label="Planilhas complexas" isVisible={isVisible} />
@@ -86,7 +86,7 @@ export function BeforeAfterSlider() {
   const [sliderPos, setSliderPos] = useState(50);
 
   return (
-    <div className="w-full max-w-[1000px] mx-auto py-24 px-5">
+    <div className="w-full max-w-[1000px] mx-auto py-12 px-5">
       <div className="text-center mb-12">
         <span className="text-brand font-extrabold tracking-widest text-sm uppercase">Chega de Caos</span>
         <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mt-3 leading-tight">Organização em um arrastar de dedos.</h2>
@@ -161,7 +161,7 @@ export function BeforeAfterSlider() {
 /* 4. Bento Grid */
 export function BentoGrid() {
   return (
-    <div className="max-w-[1200px] mx-auto py-24 px-5">
+    <div className="max-w-[1200px] mx-auto py-12 px-5">
       <div className="text-center max-w-2xl mx-auto mb-16">
         <span className="text-brand font-extrabold tracking-widest text-xs uppercase">Bento Box</span>
         <h2 className="text-3xl md:text-[2.5rem] font-extrabold tracking-tight mt-3 text-slate-900 leading-tight">

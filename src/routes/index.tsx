@@ -122,56 +122,6 @@ function Landing() {
       <LogoTicker />
       <AnimatedCounters />
 
-      {/* 3. Experimente na Prática */}
-      <section id="demo" className="px-5 md:px-10 py-20 bg-[#f8f9fc]">
-        <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-10 items-center bg-white rounded-[2rem] p-8 lg:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100 relative">
-          
-          <div className="lg:w-1/3 space-y-4 relative z-10">
-            <span className="text-brand font-extrabold tracking-widest text-sm uppercase">Experimente na prática.</span>
-            <h2 className="text-4xl font-extrabold text-slate-900 leading-[1.1]">Sem precisar criar conta.</h2>
-            <p className="text-slate-500 font-medium leading-relaxed">
-              Clique nos botões ao lado e sinta como é usar o ControleJá. Separamos dois ambientes de simulação para você testar tudo agora mesmo.
-            </p>
-          </div>
-
-          <div className="lg:w-1/3 flex justify-center">
-            <div className="scale-90 origin-center">
-              <SalesMockup />
-            </div>
-          </div>
-
-          <div className="lg:w-1/3 flex flex-col gap-6">
-            <div className="bg-[#f8f9fc] rounded-2xl p-6 border border-slate-100">
-              <h3 className="font-bold text-brand uppercase tracking-wider text-sm mb-2">Painel do Lojista</h3>
-              <p className="text-sm text-slate-500 mb-4 font-medium">Acesse o balcão de vendas, veja o dashboard financeiro, simule a gestão de produtos, clientes e compras. Tudo interativo.</p>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="w-full bg-brand hover:bg-brand/90 text-white font-bold shadow-md">Testar o Sistema <Play className="h-4 w-4 ml-2" /></Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] p-0 overflow-hidden bg-background border-border">
-                  <DialogTitle className="sr-only">Simulação do Sistema</DialogTitle>
-                  <DemoDashboard />
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <div className="bg-[#f8f9fc] rounded-2xl p-6 border border-slate-100">
-              <h3 className="font-bold text-slate-700 uppercase tracking-wider text-sm mb-2">Catálogo Público</h3>
-              <p className="text-sm text-slate-500 mb-4 font-medium">Veja como os seus clientes enxergarão os seus produtos. Um link exclusivo, com design premium e integração direta com o seu WhatsApp.</p>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full border-2 border-slate-200 text-slate-700 font-bold hover:bg-slate-50">Ver exemplo <Store className="h-4 w-4 ml-2" /></Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] p-0 overflow-hidden bg-background border-border">
-                  <DialogTitle className="sr-only">Simulação de Catálogo</DialogTitle>
-                  <DemoCatalog />
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div>
-
-        </div>
-      </section>
 
       {/* 4. Funcionalidades */}
       <section id="funcionalidades" className="bg-white relative">
@@ -181,7 +131,7 @@ function Landing() {
       <BeforeAfterSlider />
 
       {/* 5. VS Comparison */}
-      <section className="px-5 md:px-10 py-24 bg-[#f8f9fc]">
+      <section className="px-5 md:px-10 py-12 bg-[#f8f9fc]">
         <div className="max-w-[1000px] mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-brand font-extrabold tracking-widest text-xs uppercase">Por que ControleJá</span>
@@ -236,7 +186,7 @@ function Landing() {
       </section>
 
       {/* 6. Testimonials & Pricing Merged */}
-      <section id="precos" className="px-5 md:px-10 py-24 bg-white">
+      <section id="precos" className="px-5 md:px-10 py-12 bg-white">
         <div className="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-16 items-start">
           
           {/* Left: Testimonials */}
