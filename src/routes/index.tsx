@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/
 import { DemoDashboard } from "@/components/DemoDashboard";
 import { DemoCatalog } from "@/components/DemoCatalog";
 import { cn } from "@/lib/utils";
+import { LogoTicker, AnimatedCounters, BeforeAfterSlider, BentoGrid, GlowingCard } from "@/components/landing/LandingEffects";
 
 const PHONE = "5531973175882";
 const MSG_HIRE = "Gostaria de contratar o controle já.";
@@ -109,28 +110,17 @@ function Landing() {
             </div>
           </div>
 
-          <div className="relative flex justify-end items-center">
-            <DashboardMockup />
+          <div className="relative flex justify-end items-center group [perspective:1000px]">
+            <div className="transition-transform duration-700 ease-out group-hover:[transform:rotateX(5deg)_rotateY(-15deg)]">
+              <DashboardMockup />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof Strip */}
-      <section className="px-5 md:px-10 py-6 border-y border-slate-200 bg-white">
-        <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-center gap-4">
-          <div className="flex -space-x-2">
-            {["bg-blue-300","bg-purple-300","bg-pink-300","bg-emerald-300"].map((c, i) => (
-              <div key={i} className={`h-10 w-10 rounded-full border-2 border-white ${c} grid place-items-center text-sm font-bold shadow-sm`}>
-                {String.fromCharCode(65 + i)}
-              </div>
-            ))}
-            <div className="h-10 w-10 rounded-full border-2 border-white bg-brand grid place-items-center text-sm font-bold text-white shadow-sm">+</div>
-          </div>
-          <p className="text-sm md:text-base font-bold text-slate-700">
-            Centenas de pequenos negócios já organizaram o estoque com o ControleJá
-          </p>
-        </div>
-      </section>
+      {/* Social Proof Strip & Counters */}
+      <LogoTicker />
+      <AnimatedCounters />
 
       {/* 3. Experimente na Prática */}
       <section id="demo" className="px-5 md:px-10 py-20 bg-[#f8f9fc]">
@@ -187,27 +177,10 @@ function Landing() {
       <section id="funcionalidades" className="px-5 md:px-10 py-24 bg-white relative">
         <div className="max-w-[1200px] mx-auto relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-brand font-extrabold tracking-widest text-xs uppercase">Funcionalidades</span>
-            <h2 className="text-3xl md:text-[2.5rem] font-extrabold tracking-tight mt-3 text-slate-900 leading-tight">
-              Tudo o que sua loja precisa.<br/>Nada que ela não precisa.
-            </h2>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Feature icon={Package} title="Estoque sempre certo" desc="Cadastro com foto, custo, margem e estoque atual. Variações quando precisar." />
-            <Feature icon={ShoppingCart} title="Vendas no balcão" desc="Busque, adicione e finalize a venda em segundos — no celular ou no computador." />
-            <Feature icon={Truck} title="Compras e fornecedores" desc="Registre entradas, controle pedidos e tenha histórico de cada fornecedor." />
-            <Feature icon={Users} title="Clientes organizados" desc="Cadastro com WhatsApp, histórico de compras e contato direto." />
-            
-            <Feature icon={AlertTriangle} tone="warn" title="Alerta de reposição" desc="Veja na hora o que está acabando e mande o pedido pelo WhatsApp." />
-            <Feature icon={BarChart3} tone="success" title="Dashboard claro" desc="Saiba quanto vendeu, o que mais sai e o valor parado em estoque." />
-            <Feature icon={Tag} tone="orange" title="Categorias e kits" desc="Organize produtos por categoria e monte kits/combo para vender mais." />
-            <Feature icon={FileText} tone="red" title="Comprovante em PDF" desc="Gere notinha do pedido com tudo que o cliente comprou — pronto pra enviar." />
-            
-            <Feature icon={Smartphone} title="Funciona no celular" desc="Seu estoque no bolso. Use no balcão, no estoque ou em casa." />
-          </div>
-        </div>
-      </section>
+      {/* 4. Funcionalidades */}
+      <BentoGrid />
+
+      <BeforeAfterSlider />
 
       {/* 5. VS Comparison */}
       <section className="px-5 md:px-10 py-24 bg-[#f8f9fc]">
@@ -291,25 +264,27 @@ function Landing() {
 
           {/* Right: Pricing & Guarantee */}
           <div className="space-y-6">
-            <div className="bg-[#f8f9fc] rounded-[2rem] p-10 border border-slate-100 shadow-sm relative overflow-hidden">
-              <span className="text-slate-500 font-extrabold tracking-widest text-xs uppercase">Preço justo, sem surpresas</span>
-              
-              <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-brand font-bold text-xl">R$</span>
-                <span className="text-[4rem] font-extrabold text-slate-900 leading-none">39,90</span>
-                <span className="text-slate-500 font-bold">/mês</span>
+            <GlowingCard>
+              <div className="bg-[#f8f9fc] rounded-[2rem] p-10 border border-slate-100 shadow-sm relative overflow-hidden">
+                <span className="text-slate-500 font-extrabold tracking-widest text-xs uppercase">Preço justo, sem surpresas</span>
+                
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="text-brand font-bold text-xl">R$</span>
+                  <span className="text-[4rem] font-extrabold text-slate-900 leading-none">39,90</span>
+                  <span className="text-slate-500 font-bold">/mês</span>
+                </div>
+                
+                <ul className="mt-8 space-y-4 text-sm font-semibold text-slate-700">
+                  <li className="flex gap-3 items-center"><Check className="h-5 w-5 text-brand shrink-0" /> Acesso completo a todas as funcionalidades</li>
+                  <li className="flex gap-3 items-center"><Check className="h-5 w-5 text-brand shrink-0" /> Sem fidelidade - cancele quando quiser</li>
+                  <li className="flex gap-3 items-center"><Check className="h-5 w-5 text-brand shrink-0" /> Garantia de 7 dias ou seu dinheiro de volta</li>
+                </ul>
+                
+                <Button asChild size="lg" className="w-full mt-10 h-14 rounded-xl text-lg font-bold bg-brand text-white shadow-lg hover:-translate-y-1 transition-transform">
+                  <a href={WA_HIRE_URL}>Quero contratar agora <ArrowRight className="h-5 w-5 ml-2" /></a>
+                </Button>
               </div>
-              
-              <ul className="mt-8 space-y-4 text-sm font-semibold text-slate-700">
-                <li className="flex gap-3 items-center"><Check className="h-5 w-5 text-brand shrink-0" /> Acesso completo a todas as funcionalidades</li>
-                <li className="flex gap-3 items-center"><Check className="h-5 w-5 text-brand shrink-0" /> Sem fidelidade - cancele quando quiser</li>
-                <li className="flex gap-3 items-center"><Check className="h-5 w-5 text-brand shrink-0" /> Garantia de 7 dias ou seu dinheiro de volta</li>
-              </ul>
-              
-              <Button asChild size="lg" className="w-full mt-10 h-14 rounded-xl text-lg font-bold bg-brand text-white shadow-lg hover:-translate-y-1 transition-transform">
-                <a href={WA_HIRE_URL}>Quero contratar agora <ArrowRight className="h-5 w-5 ml-2" /></a>
-              </Button>
-            </div>
+            </GlowingCard>
 
             <div className="bg-[#eef5ff] rounded-2xl p-6 border border-brand/10 flex items-center justify-center gap-5">
               <ShieldCheck className="w-12 h-12 text-brand" />
