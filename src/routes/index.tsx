@@ -160,8 +160,8 @@ function Landing() {
         <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-10 items-center bg-white rounded-[2rem] p-8 lg:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100 relative">
           
           {/* Mascot Computador */}
-          <div className="absolute -top-[4.5rem] -left-12 hidden lg:block scale-90 origin-bottom">
-            <Mascot src={mascotLaptop.url} size={220} />
+          <div className="pointer-events-none absolute -top-[9rem] left-2 hidden lg:block z-0">
+            <Mascot src={mascotLaptop.url} size={200} />
           </div>
 
           <div className="lg:w-1/3 space-y-4 relative z-10">
