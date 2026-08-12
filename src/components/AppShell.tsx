@@ -13,8 +13,6 @@ import { actions } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { InstallPWA } from "@/components/InstallPWA";
-import { AssistantChat } from "@/components/AssistantChat";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin", "/esqueci-senha", "/reset-password"];
