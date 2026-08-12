@@ -1,7 +1,7 @@
 import { 
   Compass, Receipt, ShoppingBag, FileSpreadsheet, Sliders, MonitorSmartphone, Globe,
   PackageSearch, Layers3, FolderTree, UsersRound, Building2, Boxes,
-  Wallet, Sparkles, History, RefreshCw, BarChart4, SlidersHorizontal, LogOut, Menu, Activity, FolderKanban, AreaChart, Download, Bell, ChevronRight
+  Wallet, Sparkles, History, RefreshCw, BarChart4, SlidersHorizontal, LogOut, Menu, Activity, FolderKanban, AreaChart, Bot, ChevronRight
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import { actions } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { InstallPWA } from "@/components/InstallPWA";
+import { AssistantChat } from "@/components/AssistantChat";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -152,14 +153,24 @@ export function AppShell() {
           })}
         </div>
 
-        {/* HELP DESK BOX */}
+        {/* ASSISTANT CHAT TRIGGER */}
         <div className="px-4 mt-auto mb-4">
-          <div className="rounded-xl bg-brand/5 border border-brand/10 p-4 space-y-3 shadow-sm text-center">
-            <div className="text-[10px] font-extrabold uppercase tracking-widest text-brand opacity-80">Precisa de ajuda?</div>
-            <button className="w-full flex items-center justify-center gap-1.5 text-xs font-bold text-brand hover:text-brand/80 transition-colors">
-              Falar com o Suporte <ChevronRight className="h-3 w-3" />
+          <AssistantChat>
+            <button className="w-full relative overflow-hidden group rounded-xl bg-gradient-to-br from-brand to-blue-600 p-3 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 border border-white/10">
+              <div className="flex items-center gap-3 relative z-10">
+                <div className="h-10 w-10 rounded-full bg-white/20 border border-white/30 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <Bot className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="text-[9px] font-extrabold uppercase tracking-widest text-white/70 leading-tight">Dúvidas rápidas?</div>
+                  <div className="text-sm font-bold text-white leading-tight mt-0.5">Assistente Virtual</div>
+                </div>
+                <div className="h-6 w-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 group-hover:bg-white/20 transition-colors">
+                  <ChevronRight className="h-4 w-4 text-white" />
+                </div>
+              </div>
             </button>
-          </div>
+          </AssistantChat>
         </div>
 
         {/* NOTION PROFILE CARD */}
