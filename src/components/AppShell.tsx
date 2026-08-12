@@ -1,7 +1,7 @@
 import { 
   Compass, Receipt, ShoppingBag, FileSpreadsheet, Sliders, MonitorSmartphone, Globe,
   PackageSearch, Layers3, FolderTree, UsersRound, Building2, Boxes,
-  Wallet, Sparkles, History, RefreshCw, BarChart4, SlidersHorizontal, LogOut, Menu, Activity, FolderKanban, AreaChart
+  Wallet, Sparkles, History, RefreshCw, BarChart4, SlidersHorizontal, LogOut, Menu, Activity, FolderKanban, AreaChart, Download, Bell, ChevronRight
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -135,13 +135,13 @@ export function AppShell() {
                         key={n.to}
                         to={n.to}
                         className={cn(
-                          "flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-200 group relative",
+                          "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 group relative",
                           active
-                            ? "bg-muted/80 text-foreground font-semibold dark:bg-white/5"
-                            : "text-muted-foreground/80 hover:text-foreground hover:bg-muted/40",
+                            ? "bg-brand text-white font-semibold shadow-md shadow-brand/20 dark:shadow-none"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                         )}
                       >
-                        <Icon strokeWidth={1.5} className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-105", active ? "text-foreground" : "text-muted-foreground/60")} />
+                        <Icon strokeWidth={active ? 2 : 1.5} className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-105", active ? "text-white" : "text-muted-foreground")} />
                         <span className="flex-1 truncate">{n.label}</span>
                       </Link>
                     );
@@ -152,8 +152,18 @@ export function AppShell() {
           })}
         </div>
 
+        {/* HELP DESK BOX */}
+        <div className="px-4 mt-auto mb-4">
+          <div className="rounded-xl bg-brand/5 border border-brand/10 p-4 space-y-3 shadow-sm text-center">
+            <div className="text-[10px] font-extrabold uppercase tracking-widest text-brand opacity-80">Precisa de ajuda?</div>
+            <button className="w-full flex items-center justify-center gap-1.5 text-xs font-bold text-brand hover:text-brand/80 transition-colors">
+              Falar com o Suporte <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+        </div>
+
         {/* NOTION PROFILE CARD */}
-        <div className="p-3.5 mt-auto border-t border-border/60">
+        <div className="p-4 border-t border-border/60">
           <div className="rounded-xl bg-card border border-border p-3 space-y-3 shadow-sm">
             <div className="flex items-center gap-2.5">
               <div className="h-8 w-8 rounded-lg bg-brand/15 text-brand flex items-center justify-center font-extrabold text-xs shrink-0 border border-brand/20">
@@ -177,8 +187,19 @@ export function AppShell() {
         </div>
       </aside>
 
-      <header className="md:hidden flex items-center justify-between px-4 h-14 border-b border-border bg-card">
-        <Link to="/dashboard">
+        <header className="md:hidden flex items-center justify-between px-4 h-16 border-b border-border bg-card">
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <button className="text-muted-foreground hover:text-foreground p-2">
+                <Menu className="h-5 w-5" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 flex flex-col w-72 border-r-0 bg-sidebar">
+              <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
+              {/* Copiar estrutura do sidebar desktop aqui caso precise depois, mas vou usar navGroups em baixo */}
+            </SheetContent>
+          </Sheet>
+          <Link to="/dashboard" className="absolute left-1/2 -translate-x-1/2">
           <Logo size="sm" />
         </Link>
         <div className="flex items-center gap-2">
@@ -190,20 +211,30 @@ export function AppShell() {
         </div>
       </header>
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#f8f9fc] dark:bg-background">
         {/* DESKTOP TOP BAR */}
-        <header className="hidden md:flex items-center justify-between px-8 h-16 border-b border-border/70 bg-card/50 backdrop-blur-md sticky top-0 z-30">
+        <header className="hidden md:flex items-center justify-between px-8 h-[72px] border-b border-border/40 bg-white/50 dark:bg-card/50 backdrop-blur-md sticky top-0 z-30">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Painel de Controle</span>
-            <span className="text-muted-foreground/40 text-xs">/</span>
-            <span className="text-sm font-bold text-foreground capitalize">
+            <Menu className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" />
+            <span className="text-sm font-medium text-muted-foreground">Painel de Controle</span>
+            <span className="text-muted-foreground/40 text-sm">|</span>
+            <span className="text-sm font-bold text-brand capitalize">
               {navGroups.flatMap(g => g.items).find(i => i.to === loc.pathname)?.label || "Dashboard"}
             </span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
+            <button className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-brand transition-colors bg-white dark:bg-card border border-border px-4 py-1.5 rounded-full shadow-sm">
+              <Download className="h-4 w-4" /> Exportar
+            </button>
+            <div className="relative">
+              <Bell className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" />
+              <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white dark:border-background flex items-center justify-center">
+                <span className="sr-only">Notificações</span>
+              </div>
+            </div>
             <ThemeToggle />
-            <div className="h-4 w-px bg-border" />
-            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+            <div className="h-6 w-px bg-border mx-2" />
+            <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
               <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Sistema Online</span>
             </div>
