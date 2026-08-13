@@ -1,4 +1,4 @@
-﻿import { 
+import { 
   Compass, Receipt, ShoppingBag, FileSpreadsheet, Sliders, MonitorSmartphone, Globe,
   PackageSearch, Layers3, FolderTree, UsersRound, Building2, Boxes,
   Wallet, Sparkles, History, RefreshCw, BarChart4, SlidersHorizontal, LogOut, Menu, Activity, FolderKanban, AreaChart, Bot, ChevronRight, Download, Bell
@@ -20,17 +20,17 @@ const PUBLIC_ROUTES = ["/", "/auth", "/checkout", "/checkout/return", "/admin", 
 
 const navGroups = [
   {
-    title: "OperaÃ§Ã£o",
+    title: "Operação",
     icon: Activity,
     badgeColor: "text-amber-500 bg-amber-500/10 border-amber-500/20",
     items: [
       { to: "/dashboard", label: "Resumo", icon: Compass },
       { to: "/vendas", label: "Vendas", icon: Receipt },
       { to: "/compras", label: "Compras", icon: ShoppingBag },
-      { to: "/orcamentos", label: "OrÃ§amentos", icon: FileSpreadsheet },
-      { to: "/os", label: "Ordem de ServiÃ§o", icon: Sliders },
-      { to: "/balcao", label: "BalcÃ£o", icon: MonitorSmartphone },
-      { to: "/catalogo", label: "CatÃ¡logo", icon: Globe },
+      { to: "/orcamentos", label: "Orçamentos", icon: FileSpreadsheet },
+      { to: "/os", label: "Ordem de Serviço", icon: Sliders },
+      { to: "/balcao", label: "Balcão", icon: MonitorSmartphone },
+      { to: "/catalogo", label: "Catálogo", icon: Globe },
     ]
   },
   {
@@ -39,7 +39,7 @@ const navGroups = [
     badgeColor: "text-blue-500 bg-blue-500/10 border-blue-500/20",
     items: [
       { to: "/produtos", label: "Produtos", icon: PackageSearch },
-      { to: "/servicos", label: "ServiÃ§os", icon: Layers3 },
+      { to: "/servicos", label: "Serviços", icon: Layers3 },
       { to: "/categories", label: "Categorias", icon: FolderTree },
       { to: "/clientes", label: "Clientes", icon: UsersRound },
       { to: "/suppliers", label: "Fornecedores", icon: Building2 },
@@ -47,16 +47,16 @@ const navGroups = [
     ]
   },
   {
-    title: "GestÃ£o & MÃ©tricas",
+    title: "Gestão & Métricas",
     icon: AreaChart,
     badgeColor: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
     items: [
       { to: "/financeiro", label: "Financeiro", icon: Wallet },
       { to: "/insights", label: "Insights", icon: Sparkles },
-      { to: "/historico", label: "HistÃ³rico", icon: History },
-      { to: "/reposicao", label: "ReposiÃ§Ã£o", icon: RefreshCw },
-      { to: "/reports", label: "RelatÃ³rios", icon: BarChart4, adminOnly: true },
-      { to: "/configuracoes", label: "ConfiguraÃ§Ãµes", icon: SlidersHorizontal },
+      { to: "/historico", label: "Histórico", icon: History },
+      { to: "/reposicao", label: "Reposição", icon: RefreshCw },
+      { to: "/reports", label: "Relatórios", icon: BarChart4, adminOnly: true },
+      { to: "/configuracoes", label: "Configurações", icon: SlidersHorizontal },
     ]
   }
 ];
