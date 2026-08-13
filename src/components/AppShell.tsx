@@ -1,4 +1,4 @@
-import { 
+﻿import { 
   Compass, Receipt, ShoppingBag, FileSpreadsheet, Sliders, MonitorSmartphone, Globe,
   PackageSearch, Layers3, FolderTree, UsersRound, Building2, Boxes,
   Wallet, Sparkles, History, RefreshCw, BarChart4, SlidersHorizontal, LogOut, Menu, Activity, FolderKanban, AreaChart, Bot, ChevronRight, Download, Bell
@@ -112,7 +112,7 @@ export function AppShell() {
 
   async function logout() {
     await supabase.auth.signOut();
-    toast.success("SessÃ£o encerrada");
+    toast.success("Sessão encerrada");
     navigate({ to: "/" });
   }
 
@@ -188,7 +188,7 @@ export function AppShell() {
                 onClick={logout}
                 className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-[11px] font-bold rounded-lg text-destructive hover:bg-destructive/10 transition-colors border border-destructive/20"
               >
-                <LogOut className="h-3.5 w-3.5" /> Encerra SessÃ£o
+                <LogOut className="h-3.5 w-3.5" /> Encerra Sessão
               </button>
             </div>
           </div>
@@ -203,7 +203,7 @@ export function AppShell() {
               </button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 flex flex-col w-72 border-r-0 bg-sidebar">
-              <SheetTitle className="sr-only">Menu de NavegaÃ§Ã£o</SheetTitle>
+              <SheetTitle className="sr-only">Menu de NavegaÃƒÂ§ÃƒÂ£o</SheetTitle>
               {/* Copiar estrutura do sidebar desktop aqui caso precise depois, mas vou usar navGroups em baixo */}
             </SheetContent>
           </Sheet>
@@ -251,7 +251,7 @@ export function AppShell() {
             <div className="relative">
               <Bell className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" />
               <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white dark:border-background flex items-center justify-center">
-                <span className="sr-only">NotificaÃ§Ãµes</span>
+                <span className="sr-only">NotificaÃƒÂ§ÃƒÂµes</span>
               </div>
             </div>
             <ThemeToggle />
@@ -294,7 +294,7 @@ export function AppShell() {
             </button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 flex flex-col w-64 border-r-0 bg-sidebar">
-            <SheetTitle className="sr-only">Menu de NavegaÃ§Ã£o</SheetTitle>
+            <SheetTitle className="sr-only">Menu de NavegaÃƒÂ§ÃƒÂ£o</SheetTitle>
             <div className="px-6 py-6 border-b border-border/60">
               <Link to="/dashboard">
                 <Logo size="sm" />
@@ -304,7 +304,7 @@ export function AppShell() {
             {/* MOBILE TOP NAV HYBRID */}
             <div className="px-3.5 py-4 border-b border-border/40">
               <div className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 mb-3 px-1">
-                Módulo
+                MÃ³dulo
               </div>
               <div className="flex flex-col gap-1">
                 {navGroups.map((group, idx) => {

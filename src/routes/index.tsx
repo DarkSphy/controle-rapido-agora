@@ -349,7 +349,7 @@ function MockChrome({ children, label }: { children: React.ReactNode; label: str
 function DashboardMockup() {
   return (
     <MockChrome label="controleja.app — Dashboard">
-      <div className="flex h-[500px] w-full max-w-[800px] bg-slate-50 text-left relative overflow-hidden">
+      <div className="flex h-[550px] w-full max-w-[950px] bg-slate-50 text-left relative overflow-hidden">
         {/* Fake Sidebar */}
         <div className="w-48 bg-white border-r border-slate-100 flex flex-col p-4 shrink-0 hidden md:flex">
           <div className="flex items-center gap-2 mb-8">
@@ -399,7 +399,7 @@ function DashboardMockup() {
                   <TrendingUp className="h-16 w-16 text-green-500" />
                 </div>
                 <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2">Vendas hoje</div>
-                <div className="text-2xl font-extrabold text-slate-800">R$ 3.248,50</div>
+                <div className="text-xl md:text-2xl font-extrabold text-slate-800 tracking-tight">R$ 3.248,50</div>
                 <div className="text-xs text-green-500 font-bold mt-2 flex items-center gap-1"><ArrowRight className="h-3 w-3 -rotate-45" /> +15% que ontem</div>
               </div>
               <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm relative overflow-hidden group">
@@ -407,21 +407,21 @@ function DashboardMockup() {
                   <Package className="h-16 w-16 text-blue-500" />
                 </div>
                 <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2">Pedidos na fila</div>
-                <div className="text-2xl font-extrabold text-slate-800">24</div>
-                <div className="text-xs text-slate-400 font-bold mt-2 flex items-center gap-1">8 aguardando envio</div>
+                <div className="text-xl md:text-2xl font-extrabold text-slate-800">24</div>
+                <div className="text-[10px] md:text-xs text-slate-400 font-bold mt-2 flex items-center gap-1">8 aguardando envio</div>
               </div>
               <div className="bg-red-50 rounded-xl p-4 border border-red-100 shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
                   <AlertTriangle className="h-16 w-16 text-red-500" />
                 </div>
                 <div className="text-[10px] text-red-600 font-bold uppercase tracking-wider mb-2">Estoque Crítico</div>
-                <div className="text-2xl font-extrabold text-red-700">5 itens</div>
-                <div className="text-xs text-red-500 font-bold mt-2 flex items-center gap-1">Precisam de reposição</div>
+                <div className="text-xl md:text-2xl font-extrabold text-red-700">5 itens</div>
+                <div className="text-[10px] md:text-xs text-red-500 font-bold mt-2 flex items-center gap-1">Precisam de reposição</div>
               </div>
             </div>
 
             {/* Charts & Tables Area */}
-            <div className="grid grid-cols-3 gap-4 h-48">
+            <div className="grid grid-cols-3 gap-4 flex-1">
               {/* Fake Chart */}
               <div className="col-span-2 bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-col">
                 <div className="text-xs font-bold text-slate-800 mb-4">Receita da Semana</div>

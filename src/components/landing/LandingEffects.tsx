@@ -87,8 +87,10 @@ export function BeforeAfterSlider() {
 
   return (
     <div className="w-full max-w-[1000px] mx-auto py-12 px-5">
-      <div className="text-center mb-12">
-        <span className="text-brand font-extrabold tracking-widest text-sm uppercase">Chega de Caos</span>
+      <div className="text-center mb-16 px-4">
+        <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-brand/10 border border-brand/20 text-brand text-sm font-extrabold tracking-widest uppercase mb-4 shadow-[0_0_15px_rgba(37,99,235,0.2)]">
+          Chega de Caos
+        </div>
         <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mt-3 leading-tight">Organização em um arrastar de dedos.</h2>
         <p className="text-slate-600 font-medium mt-4 max-w-2xl mx-auto">Compare como é gerenciar sua loja hoje vs com o ControleJá.</p>
       </div>
@@ -149,7 +151,7 @@ export function BeforeAfterSlider() {
           className="absolute inset-0 bg-[#f8f9fc] overflow-hidden border-r-4 border-brand shadow-[-10px_0_30px_rgba(0,0,0,0.1)]"
           style={{ width: `${sliderPos}%` }}
         >
-           <div className="absolute inset-0 w-full min-w-[800px] h-full flex font-sans">
+           <div className="absolute inset-0 w-[700px] md:w-[800px] h-full flex font-sans">
              
              {/* Fake Sidebar */}
              <div className="w-48 bg-white border-r border-slate-100 flex flex-col p-4 shrink-0">
@@ -194,7 +196,7 @@ export function BeforeAfterSlider() {
                    <div className="text-[10px] uppercase font-bold text-slate-400 mb-1">Estoque Seguro</div>
                    <div className="text-xl font-extrabold text-slate-800">100% OK</div>
                  </div>
-                 <div className="col-span-3 bg-white p-4 rounded-xl shadow-sm border border-slate-100 h-32 flex flex-col">
+                 <div className="col-span-3 bg-white p-4 rounded-xl shadow-sm border border-slate-100 h-40 flex flex-col">
                    <div className="text-xs font-bold text-slate-800 mb-4">Fluxo Perfeito</div>
                    <div className="flex-1 flex items-end justify-between gap-1 px-2">
                      {[30, 45, 25, 60, 50, 80, 40, 90, 70, 100].map((h, i) => (
