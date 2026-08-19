@@ -113,6 +113,7 @@ function CatalogPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [descExpanded, setDescExpanded] = useState(false);
 
   // Checkout Form State
   const [name, setName] = useState("");
@@ -240,19 +241,29 @@ function CatalogPage() {
                 </div>
               )}
               {settings.description && (
-                <p className="text-xs text-muted-foreground mt-1 max-w-sm line-clamp-2">
-                  {settings.description}
-                </p>
+                <div className="mt-1 max-w-sm">
+                  <p className={cn("text-xs text-muted-foreground", !descExpanded && "line-clamp-2")}>
+                    {settings.description}
+                  </p>
+                  {settings.description.length > 80 && (
+                    <button 
+                      onClick={() => setDescExpanded(!descExpanded)}
+                      className="text-[10px] text-brand font-bold mt-1 hover:underline"
+                    >
+                      {descExpanded ? "Ler menos" : "Ler mais"}
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           </div>
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <Button className="relative h-11 px-5 rounded-full bg-primary text-white hover:bg-primary/90 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 border-none hidden sm:flex">
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                <span className="font-semibold">Ver Carrinho</span>
+              <Button className="relative h-10 w-10 sm:h-11 sm:w-auto sm:px-5 rounded-full bg-primary text-white hover:bg-primary/90 transition-all shadow-md hover:shadow-lg sm:hover:-translate-y-0.5 border-none flex items-center justify-center p-0 shrink-0">
+                <ShoppingCart className="h-5 w-5 sm:mr-2" />
+                <span className="font-semibold hidden sm:inline">Ver Carrinho</span>
                 {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-brand text-white text-xs grid place-items-center font-bold border-2 border-card shadow-sm animate-in zoom-in">
+                  <span className="absolute -top-2 -right-2 h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-brand text-white text-[10px] sm:text-xs grid place-items-center font-bold border-2 border-card shadow-sm animate-in zoom-in">
                     {cart.reduce((s, i) => s + i.quantity, 0)}
                   </span>
                 )}
@@ -575,33 +586,11 @@ function CatalogPage() {
       {/* FLOATING SUPPORT BUTTON */}
       <button 
         onClick={openSupport}
-        className="fixed bottom-[92px] sm:bottom-6 right-6 z-50 flex items-center gap-3 pr-6 pl-4 py-3 rounded-full bg-foreground text-background shadow-[0_10px_40px_rgba(0,0,0,0.15)] hover:shadow-[0_10px_50px_rgba(0,0,0,0.25)] hover:-translate-y-1 transition-all duration-300 group"
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center h-14 w-14 rounded-full bg-[#25D366] text-white shadow-[0_10px_40px_rgba(37,211,102,0.3)] hover:shadow-[0_10px_50px_rgba(37,211,102,0.4)] hover:-translate-y-1 transition-all duration-300 group"
+        aria-label="Falar com o suporte"
       >
-        <div className="bg-[#25D366] h-10 w-10 rounded-full flex items-center justify-center text-white shadow-inner group-hover:scale-110 transition-transform">
-          <MessageCircle className="h-5 w-5" />
-        </div>
-        <div className="flex flex-col items-start">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">Precisa de Ajuda?</span>
-          <span className="text-sm font-extrabold leading-none mt-0.5">Falar com o Suporte</span>
-        </div>
+        <MessageCircle className="h-7 w-7 group-hover:scale-110 transition-transform" />
       </button>
-
-      {/* FLOATING ACTION BUTTON (MOBILE) */}
-      <div className="sm:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-sm">
-        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-          <SheetTrigger asChild>
-            <Button className="w-full h-14 rounded-2xl bg-primary text-white shadow-xl shadow-primary/30 border-none flex items-center justify-center gap-3 animate-in slide-in-from-bottom-8">
-              <ShoppingCart className="h-6 w-6" />
-              <span className="font-bold text-lg">Ver Carrinho</span>
-              {cart.length > 0 && (
-                <span className="ml-2 px-2.5 py-0.5 rounded-full bg-white text-primary text-sm font-black">
-                  {cart.reduce((s, i) => s + i.quantity, 0)}
-                </span>
-              )}
-            </Button>
-          </SheetTrigger>
-        </Sheet>
-      </div>
 
     </div>
   );
