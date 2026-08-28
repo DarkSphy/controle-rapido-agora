@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
+import { BulkTaxDialog } from "@/components/BulkTaxDialog";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -35,6 +36,7 @@ function Dashboard() {
   const products = useStore((s) => s.products);
   const sales = useStore((s) => s.sales);
   const purchases = useStore((s) => s.purchases);
+  const [taxOpen, setTaxOpen] = useState(false);
 
   const today = useMemo(() => {
     const start = new Date();
@@ -85,6 +87,10 @@ function Dashboard() {
         </div>
         
         <div className="flex items-center gap-3">
+          <Button onClick={() => setTaxOpen(true)} variant="outline" className="h-11 px-4 sm:px-6 rounded-xl bg-card border-border hover:bg-muted font-semibold transition-all">
+            <Settings2 className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Taxas</span>
+          </Button>
           <Button asChild className="h-11 px-6 rounded-xl bg-brand text-white hover:bg-brand/90 font-semibold shadow-md shadow-brand/20 transition-all">
             <Link to="/vendas">
               <ShoppingCart className="mr-2 h-4 w-4" /> Nova Venda
@@ -296,6 +302,7 @@ function Dashboard() {
         </Button>
       </div>
 
+      <BulkTaxDialog open={taxOpen} onOpenChange={setTaxOpen} />
     </div>
   );
 }
