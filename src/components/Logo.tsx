@@ -1,10 +1,9 @@
-import mascot from "@/assets/controleja-mascot.png.asset.json";
 import { cn } from "@/lib/utils";
 
 const sizes = {
-  sm: { box: "h-11 w-11", text: "text-xl", sub: "text-[9px]" },
-  md: { box: "h-14 w-14", text: "text-2xl", sub: "text-[10px]" },
-  lg: { box: "h-20 w-20", text: "text-4xl", sub: "text-[11px]" },
+  sm: { box: "h-10 w-10", text: "text-xl", sub: "text-[9px]" },
+  md: { box: "h-12 w-12", text: "text-2xl", sub: "text-[10px]" },
+  lg: { box: "h-16 w-16", text: "text-4xl", sub: "text-[11px]" },
 };
 
 export function Logo({
@@ -23,13 +22,13 @@ export function Logo({
       <div
         className={cn(
           s.box,
-          "relative shrink-0 rounded-[26%] overflow-hidden ring-1 ring-border/60 shadow-md transition-transform duration-300 hover:scale-105",
+          "relative shrink-0 overflow-hidden transition-transform duration-300 hover:scale-105",
         )}
       >
         <img
-          src={mascot.url}
-          alt="ControleJá"
-          className="h-full w-full object-cover"
+          src="/simbi-mark.svg"
+          alt="Simbi"
+          className="h-full w-full object-contain"
           draggable={false}
         />
       </div>
@@ -37,7 +36,7 @@ export function Logo({
       {showText && (
         <div className="min-w-0 leading-none">
           <div className={cn(s.text, "font-extrabold tracking-tight text-foreground")}>
-            Controle<span className="text-brand">Já</span>
+            Simbi
           </div>
           <div
             className={cn(
@@ -45,7 +44,7 @@ export function Logo({
               "mt-1 font-semibold uppercase tracking-[0.18em] text-muted-foreground",
             )}
           >
-            Estoque simples
+            Gestão simples
           </div>
         </div>
       )}

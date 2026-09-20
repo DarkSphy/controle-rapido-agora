@@ -67,28 +67,28 @@
 :root {
   --radius: 1.25rem;
 
-  /* Mascot Brand Palette — Light Theme */
-  --background: #f8fafc;
-  --foreground: #091024;
+  /* Simbi — Light Theme */
+  --background: #f7fafc;
+  --foreground: #102a43;
 
   --card: #ffffff;
-  --card-foreground: #091024;
+  --card-foreground: #102a43;
   --popover: #ffffff;
-  --popover-foreground: #091024;
+  --popover-foreground: #102a43;
 
-  --primary: #091024;
+  --primary: #102a43;
   --primary-foreground: #ffffff;
-  --primary-hover: #121c38;
+  --primary-hover: #183b56;
 
-  --brand: #0066ff;
+  --brand: #087e8b;
   --brand-foreground: #ffffff;
 
   --secondary: #f1f5f9;
-  --secondary-foreground: #091024;
+  --secondary-foreground: #102a43;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --accent: #eff6ff;
-  --accent-foreground: #0066ff;
+  --accent: #ddf4f3;
+  --accent-foreground: #087e8b;
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
@@ -97,71 +97,71 @@
   --success-foreground: #ffffff;
 
   --warning: #ff9900;
-  --warning-foreground: #091024;
+  --warning-foreground: #102a43;
 
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #0066ff;
+  --ring: #087e8b;
 
   --sidebar: #ffffff;
-  --sidebar-foreground: #091024;
-  --sidebar-primary: #0066ff;
+  --sidebar-foreground: #102a43;
+  --sidebar-primary: #087e8b;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eff6ff;
-  --sidebar-accent-foreground: #0066ff;
+  --sidebar-accent: #ddf4f3;
+  --sidebar-accent-foreground: #087e8b;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #0066ff;
+  --sidebar-ring: #087e8b;
 }
 
 .dark {
-  /* Mascot Brand Palette — Notion-like Elegant Dark Theme */
-  --background: #191919;
+  /* Simbi — Dark Theme */
+  --background: #071b2b;
   --foreground: #fcfcfc;
 
-  --card: #202020;
+  --card: #102a43;
   --card-foreground: #fcfcfc;
-  --popover: #252525;
+  --popover: #163650;
   --popover-foreground: #fcfcfc;
 
   --primary: #ffffff;
-  --primary-foreground: #191919;
+  --primary-foreground: #102a43;
   --primary-hover: #e5e5e5;
 
-  --brand: #3887ff;
+  --brand: #20a6a4;
   --brand-foreground: #ffffff;
 
-  --secondary: #2a2a2a;
+  --secondary: #183b56;
   --secondary-foreground: #fcfcfc;
-  --muted: #2a2a2a;
-  --muted-foreground: #a3a3a3;
-  --accent: #2a2a2a;
-  --accent-foreground: #3887ff;
+  --muted: #183b56;
+  --muted-foreground: #a9c3d3;
+  --accent: #164e5a;
+  --accent-foreground: #79d5d1;
 
   --destructive: #f87171;
   --destructive-foreground: #ffffff;
 
   --success: #34d399;
-  --success-foreground: #191919;
+  --success-foreground: #102a43;
 
   --warning: #fbbf24;
-  --warning-foreground: #191919;
+  --warning-foreground: #102a43;
 
-  --border: #333333;
-  --input: #333333;
-  --ring: #3887ff;
+  --border: #294b63;
+  --input: #294b63;
+  --ring: #20a6a4;
 
-  --sidebar: #202020;
+  --sidebar: #102a43;
   --sidebar-foreground: #fcfcfc;
-  --sidebar-primary: #3887ff;
-  --sidebar-primary-foreground: #191919;
-  --sidebar-accent: #2a2a2a;
+  --sidebar-primary: #20a6a4;
+  --sidebar-primary-foreground: #102a43;
+  --sidebar-accent: #183b56;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #333333;
-  --sidebar-ring: #3887ff;
+  --sidebar-border: #294b63;
+  --sidebar-ring: #20a6a4;
 }
 
 .sepia {
-  /* Mascot Brand Palette — Warm Sepia / Reader Theme */
+  /* Simbi — Warm reader theme */
   --background: #f5eedc;
   --foreground: #36291a;
 
@@ -174,7 +174,7 @@
   --primary-foreground: #fcf8f0;
   --primary-hover: #241b10;
 
-  --brand: #0055d4;
+  --brand: #087e8b;
   --brand-foreground: #ffffff;
 
   --secondary: #eae0cb;
@@ -182,7 +182,7 @@
   --muted: #eae0cb;
   --muted-foreground: #7c6c59;
   --accent: #e8f0fe;
-  --accent-foreground: #0055d4;
+  --accent-foreground: #087e8b;
 
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;

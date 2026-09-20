@@ -26,7 +26,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ControleJá — Seu estoque. Seu negócio. No controle." },
+      { title: "Simbi — Gestão simples para pequenos negócios" },
       { name: "description", content: "Controle de estoque rápido e intuitivo para pequenos empreendedores." },
     ],
     links: [
@@ -35,10 +35,10 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" },
       { rel: "manifest", href: "/manifest.json" },
-      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
+      { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
       { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
-      { rel: "theme-color", content: "#0066ff" },
+      { rel: "theme-color", content: "#102A43" },
     ],
     scripts: [
       {

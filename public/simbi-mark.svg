@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Simbi</title>
+  <rect width="512" height="512" rx="112" fill="#102A43"/>
+  <path d="M140 170c0-50 41-90 91-90h141v74H231c-10 0-17 7-17 16 0 8 5 14 14 17l85 26c41 13 69 51 69 94 0 69-52 125-118 125H126v-74h138c25 0 44-21 44-48 0-11-7-21-18-24l-85-27c-39-12-65-48-65-89Z" fill="#087E8B"/>
+  <circle cx="363" cy="112" r="28" fill="#DDF4F3"/>
+</svg>
