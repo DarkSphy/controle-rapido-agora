@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useStore } from "@/lib/store";
-import mascotDoubt from "@/assets/mascot-doubt.png.asset.json";
 import { MessageSquare, TrendingUp, Package, AlertTriangle, Play, ChevronRight, X, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -127,8 +126,8 @@ export function AssistantChat() {
         <SheetTitle className="sr-only">Assistente Virtual</SheetTitle>
         {/* Header */}
         <div className="h-16 px-4 flex items-center gap-3 bg-white border-b border-slate-100 shadow-sm shrink-0">
-          <div className="h-10 w-10 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center overflow-hidden shrink-0">
-            <img src={mascotDoubt.url} alt="Assistente" className="h-9 w-9 object-contain translate-y-0.5" />
+          <div className="h-10 w-10 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center shrink-0">
+            <Bot className="h-5 w-5 text-brand" aria-hidden="true" />
           </div>
           <div>
             <div className="font-extrabold text-sm text-slate-800">Assistente Inteligente</div>
