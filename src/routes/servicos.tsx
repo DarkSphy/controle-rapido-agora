@@ -9,7 +9,7 @@ import { SearchBar, searchProducts } from "@/components/SearchBar";
 export const Route = createFileRoute("/servicos")({
   head: () => ({
     meta: [
-      { title: "Serviços — ControleJá" },
+      { title: "Serviços — Simbi" },
       { name: "description", content: "Cadastre e edite os serviços prestados." },
     ],
   }),

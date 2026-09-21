@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/vendas")({
   head: () => ({
     meta: [
-      { title: "Vendas — ControleJá" },
+      { title: "Vendas — Simbi" },
       { name: "description", content: "Gerencie suas vendas e acompanhe faturamento." },
     ],
   }),

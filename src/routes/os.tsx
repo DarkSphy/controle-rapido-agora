@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 export const Route = createFileRoute("/os")({
   head: () => ({
     meta: [
-      { title: "Ordens de Serviço — ControleJá" },
+      { title: "Ordens de Serviço — Simbi" },
       { name: "description", content: "Gerencie suas ordens de serviço." },
     ],
   }),

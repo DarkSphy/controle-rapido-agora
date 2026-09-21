@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/orcamentos")({
   head: () => ({
     meta: [
-      { title: "Orçamentos — ControleJá" },
+      { title: "Orçamentos — Simbi" },
       { name: "description", content: "Crie e gerencie orçamentos para seus clientes." },
     ],
   }),

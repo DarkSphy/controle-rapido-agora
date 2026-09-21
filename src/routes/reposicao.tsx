@@ -8,7 +8,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/reposicao")({
   head: () => ({
     meta: [
-      { title: "Lista de reposição — ControleJá" },
+      { title: "Lista de reposição — Simbi" },
       { name: "description", content: "Produtos com estoque baixo ou zerado prontos para reposição." },
     ],
   }),

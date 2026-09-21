@@ -11,7 +11,7 @@ import { SearchBar, searchProducts } from "@/components/SearchBar";
 export const Route = createFileRoute("/produtos")({
   head: () => ({
     meta: [
-      { title: "Produtos — ControleJá" },
+      { title: "Produtos — Simbi" },
       { name: "description", content: "Cadastre, edite e movimente produtos do seu estoque." },
     ],
   }),

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/movimentacoes")({
   head: () => ({
     meta: [
-      { title: "Movimentações — ControleJá" },
+      { title: "Movimentações — Simbi" },
       { name: "description", content: "Histórico de entradas e saídas de estoque." },
     ],
   }),

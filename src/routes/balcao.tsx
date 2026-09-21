@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/balcao")({
   head: () => ({
     meta: [
-      { title: "Balcão — ControleJá" },
+      { title: "Balcão — Simbi" },
       { name: "description", content: "Modo balcão: busca rápida, preço e estoque na mão." },
     ],
   }),
