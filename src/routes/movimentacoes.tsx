@@ -7,8 +7,12 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/movimentacoes")({
   head: () => ({
     meta: [
-      { title: "Movimentações — ControleJá" },
+      { title: "Movimentações — Simbi" },
       { name: "description", content: "Histórico de entradas e saídas de estoque." },
+      { property: "og:title", content: "Movimentações — Simbi" },
+      { property: "og:description", content: "Histórico de entradas e saídas de estoque." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: MovementsPage,

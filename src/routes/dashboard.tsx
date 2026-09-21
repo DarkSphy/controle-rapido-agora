@@ -14,8 +14,12 @@ import { BulkTaxDialog } from "@/components/BulkTaxDialog";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Resumo do dia — ControleJá" },
+      { title: "Resumo do dia — Simbi" },
       { name: "description", content: "Visão rápida do dia: entradas, saídas, estoque crítico." },
+      { property: "og:title", content: "Resumo do dia — Simbi" },
+      { property: "og:description", content: "Visão rápida do dia: entradas, saídas, estoque crítico." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Dashboard,
@@ -294,7 +298,7 @@ function Dashboard() {
       {/* TIP BANNER */}
       <div className="bg-brand/5 dark:bg-brand/10 rounded-2xl p-6 border border-brand/10 flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
-          <div className="font-bold text-brand dark:text-brand-foreground text-lg mb-1">Dica do ControleJá</div>
+          <div className="font-bold text-brand dark:text-brand-foreground text-lg mb-1">Dica da Simbi</div>
           <div className="text-sm text-muted-foreground font-medium">Mantenha seus produtos sempre atualizados e evite perder vendas. Acompanhe os relatórios diários.</div>
         </div>
         <Button variant="outline" className="shrink-0 rounded-xl font-bold bg-card border-brand/20 text-brand hover:bg-brand/5 dark:bg-transparent">

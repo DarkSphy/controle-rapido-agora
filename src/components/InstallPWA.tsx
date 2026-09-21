@@ -57,7 +57,7 @@ export function InstallPWA() {
             </Button>
           </div>
           <p className="text-sm text-muted-foreground">
-            Para instalar o ControleJá no seu iPhone ou iPad:
+            Para instalar a Simbi no seu iPhone ou iPad:
           </p>
           <ol className="text-sm space-y-2 list-decimal list-inside">
             <li>Toque no botão <Share className="w-4 h-4 inline" /> <strong>Compartilhar</strong> na barra inferior do Safari.</li>

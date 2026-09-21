@@ -12,10 +12,10 @@ import { ArrowLeft, MailCheck } from "lucide-react";
 export const Route = createFileRoute("/esqueci-senha")({
   head: () => ({
     meta: [
-      { title: "Recuperar senha — ControleJá" },
-      { name: "description", content: "Receba um link por e-mail para redefinir a senha da sua conta ControleJá." },
-      { property: "og:title", content: "Recuperar senha — ControleJá" },
-      { property: "og:description", content: "Receba um link por e-mail para redefinir a senha da sua conta ControleJá." },
+      { title: "Recuperar senha — Simbi" },
+      { name: "description", content: "Receba um link por e-mail para redefinir a senha da sua conta Simbi." },
+      { property: "og:title", content: "Recuperar senha — Simbi" },
+      { property: "og:description", content: "Receba um link por e-mail para redefinir a senha da sua conta Simbi." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

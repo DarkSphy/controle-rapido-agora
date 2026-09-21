@@ -12,8 +12,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 export const Route = createFileRoute("/os")({
   head: () => ({
     meta: [
-      { title: "Ordens de Serviço — ControleJá" },
+      { title: "Ordens de Serviço — Simbi" },
       { name: "description", content: "Gerencie suas ordens de serviço." },
+      { property: "og:title", content: "Ordens de Serviço — Simbi" },
+      { property: "og:description", content: "Gerencie suas ordens de serviço." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: OSPage,

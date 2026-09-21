@@ -419,7 +419,7 @@ export function DemoDashboard() {
                   <div className="bg-white p-4 rounded-3xl shadow-sm mb-6 flex items-center justify-center w-24 h-24">
                     <Logo />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-extrabold mb-2 text-foreground">Tenha o ControleJá no seu celular</h2>
+                  <h2 className="text-2xl md:text-3xl font-extrabold mb-2 text-foreground">Tenha a Simbi no seu celular</h2>
                   <p className="text-muted-foreground max-w-md">
                     Instale o nosso aplicativo para acessar todas as funcionalidades de forma rápida, como um app nativo, sem precisar abrir o navegador toda vez.
                   </p>

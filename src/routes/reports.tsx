@@ -5,6 +5,14 @@ import { Package, TrendingUp, TrendingDown, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/reports")({
+  head: () => ({ meta: [
+    { title: "Relatórios — Simbi" },
+    { name: "description", content: "Acompanhe desempenho e movimentações do seu estoque." },
+    { property: "og:title", content: "Relatórios — Simbi" },
+    { property: "og:description", content: "Acompanhe desempenho e movimentações do seu estoque." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ReportsPage,
 });
 

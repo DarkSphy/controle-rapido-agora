@@ -10,8 +10,12 @@ import { Settings, Upload, Save, Building2 } from "lucide-react";
 export const Route = createFileRoute("/configuracoes")({
   head: () => ({
     meta: [
-      { title: "Configurações — ControleJá" },
+      { title: "Configurações — Simbi" },
       { name: "description", content: "Configurações do seu negócio e sistema." },
+      { property: "og:title", content: "Configurações — Simbi" },
+      { property: "og:description", content: "Configurações do seu negócio e sistema." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SettingsPage,

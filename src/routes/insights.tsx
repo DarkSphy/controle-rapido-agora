@@ -8,8 +8,12 @@ import { Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/insights")({
   head: () => ({
     meta: [
-      { title: "Insights Estratégicos — ControleJá" },
+      { title: "Insights Estratégicos — Simbi" },
       { name: "description", content: "Sugestões automáticas para melhorar seu negócio." },
+      { property: "og:title", content: "Insights Estratégicos — Simbi" },
+      { property: "og:description", content: "Sugestões automáticas para melhorar seu negócio." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: InsightsPage,

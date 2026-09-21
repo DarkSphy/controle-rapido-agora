@@ -16,8 +16,12 @@ import { CatalogBanner } from "@/lib/store";
 export const Route = createFileRoute("/catalogo")({
   head: () => ({
     meta: [
-      { title: "Catálogo Online — ControleJá" },
+      { title: "Catálogo Online — Simbi" },
       { name: "description", content: "Gerencie sua vitrine online, kits e receba pedidos no WhatsApp." },
+      { property: "og:title", content: "Catálogo Online — Simbi" },
+      { property: "og:description", content: "Gerencie sua vitrine online, kits e receba pedidos no WhatsApp." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: CatalogoPage,

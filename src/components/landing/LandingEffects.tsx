@@ -22,7 +22,7 @@ export function LogoTicker() {
 }
 
 /* 2. Animated Counters */
-function useIntersectionObserver(ref: React.RefObject<Element>, options: IntersectionObserverInit = {}) {
+function useIntersectionObserver(ref: React.RefObject<Element | null>, options: IntersectionObserverInit = {}) {
   const [isIntersecting, setIsIntersecting] = useState(false);
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -43,7 +43,7 @@ export function AnimatedCounters() {
 
   return (
     <div ref={ref} className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 max-w-[1000px] mx-auto px-6">
-      <Counter end={2000000} duration={2000} suffix="+" label="Vendas registradas" isVisible={isVisible} formatter={(n) => (n / 1000000).toFixed(1) + "M"} />
+      <Counter end={2000000} duration={2000} suffix="+" label="Vendas registradas" isVisible={isVisible} formatter={(n: number) => (n / 1000000).toFixed(1) + "M"} />
       <Counter end={100} duration={2000} suffix="%" label="Controle de estoque" isVisible={isVisible} />
       <Counter end={0} duration={1000} suffix="" label="Planilhas complexas" isVisible={isVisible} />
     </div>
@@ -92,7 +92,7 @@ export function BeforeAfterSlider() {
           Chega de Caos
         </div>
         <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mt-3 leading-tight">Organização em um arrastar de dedos.</h2>
-        <p className="text-slate-600 font-medium mt-4 max-w-2xl mx-auto">Compare como é gerenciar sua loja hoje vs com o ControleJá.</p>
+        <p className="text-slate-600 font-medium mt-4 max-w-2xl mx-auto">Compare como é gerenciar sua loja hoje e com a Simbi.</p>
       </div>
 
       <div className="relative w-full aspect-[4/3] md:aspect-[16/9] bg-slate-200 rounded-3xl overflow-hidden shadow-2xl select-none group">
@@ -146,7 +146,7 @@ export function BeforeAfterSlider() {
           </div>
         </div>
         
-        {/* Depois (ControleJá) */}
+        {/* Depois (Simbi) */}
         <div 
           className="absolute inset-0 bg-[#f8f9fc] overflow-hidden border-r-4 border-brand shadow-[-10px_0_30px_rgba(0,0,0,0.1)]"
           style={{ width: `${sliderPos}%` }}
@@ -159,7 +159,7 @@ export function BeforeAfterSlider() {
                  <div className="h-6 w-6 rounded bg-brand flex items-center justify-center">
                    <Package className="h-3 w-3 text-white" />
                  </div>
-                 <div className="font-extrabold text-sm text-slate-800">ControleJá</div>
+                  <div className="font-extrabold text-sm text-slate-800">Simbi</div>
                </div>
                <div className="space-y-1">
                  <div className="h-8 rounded-lg bg-brand text-white flex items-center px-3 gap-2 shadow-md shadow-brand/20">

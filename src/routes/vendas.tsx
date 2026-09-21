@@ -11,8 +11,12 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/vendas")({
   head: () => ({
     meta: [
-      { title: "Vendas — ControleJá" },
+      { title: "Vendas — Simbi" },
       { name: "description", content: "Gerencie suas vendas e acompanhe faturamento." },
+      { property: "og:title", content: "Vendas — Simbi" },
+      { property: "og:description", content: "Gerencie suas vendas e acompanhe faturamento." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: VendasPage,

@@ -8,8 +8,12 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/reposicao")({
   head: () => ({
     meta: [
-      { title: "Lista de reposição — ControleJá" },
+      { title: "Lista de reposição — Simbi" },
       { name: "description", content: "Produtos com estoque baixo ou zerado prontos para reposição." },
+      { property: "og:title", content: "Lista de reposição — Simbi" },
+      { property: "og:description", content: "Produtos com estoque baixo ou zerado prontos para reposição." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: RestockPage,

@@ -9,8 +9,12 @@ import { PurchaseDialog } from "@/components/PurchaseDialog";
 export const Route = createFileRoute("/compras")({
   head: () => ({
     meta: [
-      { title: "Compras — ControleJá" },
+      { title: "Compras — Simbi" },
       { name: "description", content: "Controle suas entradas de mercadoria e custos." },
+      { property: "og:title", content: "Compras — Simbi" },
+      { property: "og:description", content: "Controle suas entradas de mercadoria e custos." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ComprasPage,
