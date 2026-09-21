@@ -9,6 +9,14 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/suppliers")({
+  head: () => ({ meta: [
+    { title: "Fornecedores — Simbi" },
+    { name: "description", content: "Cadastre e gerencie seus fornecedores." },
+    { property: "og:title", content: "Fornecedores — Simbi" },
+    { property: "og:description", content: "Cadastre e gerencie seus fornecedores." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: SuppliersPage,
 });
 

@@ -11,6 +11,14 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/c/$userId")({
+  head: () => ({ meta: [
+    { title: "Catálogo online — Simbi" },
+    { name: "description", content: "Consulte produtos e faça seu pedido pelo catálogo online." },
+    { property: "og:title", content: "Catálogo online — Simbi" },
+    { property: "og:description", content: "Consulte produtos e faça seu pedido pelo catálogo online." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   loader: async ({ params }) => {
     try {
       const [

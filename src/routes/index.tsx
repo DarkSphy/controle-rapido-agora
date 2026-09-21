@@ -25,6 +25,16 @@ const WA_HIRE_URL = `https://wa.me/${PHONE}?text=${encodeURIComponent(MSG_HIRE)}
 const WA_HELP_URL = `https://wa.me/${PHONE}?text=${encodeURIComponent(MSG_HELP)}`;
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Simbi — Gestão simples para pequenos negócios" },
+      { name: "description", content: "Controle estoque, vendas, compras e clientes de forma simples e rápida com a Simbi." },
+      { property: "og:title", content: "Simbi — Gestão simples para pequenos negócios" },
+      { property: "og:description", content: "Controle estoque, vendas, compras e clientes de forma simples e rápida com a Simbi." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Landing,
 });
 

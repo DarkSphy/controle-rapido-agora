@@ -9,6 +9,14 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/categories")({
+  head: () => ({ meta: [
+    { title: "Categorias — Simbi" },
+    { name: "description", content: "Organize seus produtos por categorias." },
+    { property: "og:title", content: "Categorias — Simbi" },
+    { property: "og:description", content: "Organize seus produtos por categorias." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: CategoriesPage,
 });
 

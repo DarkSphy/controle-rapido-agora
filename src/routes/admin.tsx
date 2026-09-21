@@ -16,6 +16,14 @@ import { Trash2, Edit, Plus, Users, Search, AlertCircle, LogOut } from "lucide-r
 import { format, differenceInDays } from "date-fns";
 
 export const Route = createFileRoute("/admin")({
+  head: () => ({ meta: [
+    { title: "Administração — Simbi" },
+    { name: "description", content: "Administração de contas da Simbi." },
+    { property: "og:title", content: "Administração — Simbi" },
+    { property: "og:description", content: "Administração de contas da Simbi." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AdminPage,
 });
 

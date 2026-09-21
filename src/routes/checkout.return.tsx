@@ -9,7 +9,14 @@ export const Route = createFileRoute("/checkout/return")({
   validateSearch: (s: Record<string, unknown>): { session_id?: string } => ({
     session_id: typeof s.session_id === "string" ? s.session_id : undefined,
   }),
-  head: () => ({ meta: [{ title: "Pagamento concluído — Simbi" }] }),
+  head: () => ({ meta: [
+    { title: "Pagamento concluído — Simbi" },
+    { name: "description", content: "Confirmação da assinatura Simbi." },
+    { property: "og:title", content: "Pagamento concluído — Simbi" },
+    { property: "og:description", content: "Confirmação da assinatura Simbi." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ReturnPage,
 });
 

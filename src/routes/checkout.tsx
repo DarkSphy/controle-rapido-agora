@@ -10,7 +10,14 @@ import { Logo } from "@/components/Logo";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [{ title: "Finalizar assinatura — Simbi" }] }),
+  head: () => ({ meta: [
+    { title: "Finalizar assinatura — Simbi" },
+    { name: "description", content: "Conclua a ativação da sua conta Simbi." },
+    { property: "og:title", content: "Finalizar assinatura — Simbi" },
+    { property: "og:description", content: "Conclua a ativação da sua conta Simbi." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: CheckoutPage,
 });
 
