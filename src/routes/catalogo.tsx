@@ -18,6 +18,10 @@ export const Route = createFileRoute("/catalogo")({
     meta: [
       { title: "Catálogo Online — Simbi" },
       { name: "description", content: "Gerencie sua vitrine online, kits e receba pedidos no WhatsApp." },
+      { property: "og:title", content: "Catálogo Online — Simbi" },
+      { property: "og:description", content: "Gerencie sua vitrine online, kits e receba pedidos no WhatsApp." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: CatalogoPage,

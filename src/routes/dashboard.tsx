@@ -16,6 +16,10 @@ export const Route = createFileRoute("/dashboard")({
     meta: [
       { title: "Resumo do dia — Simbi" },
       { name: "description", content: "Visão rápida do dia: entradas, saídas, estoque crítico." },
+      { property: "og:title", content: "Resumo do dia — Simbi" },
+      { property: "og:description", content: "Visão rápida do dia: entradas, saídas, estoque crítico." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Dashboard,

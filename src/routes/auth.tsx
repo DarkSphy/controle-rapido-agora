@@ -16,6 +16,10 @@ export const Route = createFileRoute("/auth")({
     meta: [
       { title: "Entrar — Simbi" },
       { name: "description", content: "Acesse sua conta Simbi." },
+      { property: "og:title", content: "Entrar — Simbi" },
+      { property: "og:description", content: "Acesse sua conta Simbi." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,

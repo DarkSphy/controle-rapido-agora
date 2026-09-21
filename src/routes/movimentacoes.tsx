@@ -9,6 +9,10 @@ export const Route = createFileRoute("/movimentacoes")({
     meta: [
       { title: "Movimentações — Simbi" },
       { name: "description", content: "Histórico de entradas e saídas de estoque." },
+      { property: "og:title", content: "Movimentações — Simbi" },
+      { property: "og:description", content: "Histórico de entradas e saídas de estoque." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: MovementsPage,

@@ -11,6 +11,10 @@ export const Route = createFileRoute("/servicos")({
     meta: [
       { title: "Serviços — Simbi" },
       { name: "description", content: "Cadastre e edite os serviços prestados." },
+      { property: "og:title", content: "Serviços — Simbi" },
+      { property: "og:description", content: "Cadastre e edite os serviços prestados." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ServicesPage,

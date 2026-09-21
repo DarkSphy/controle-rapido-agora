@@ -9,6 +9,10 @@ export const Route = createFileRoute("/financeiro")({
     meta: [
       { title: "Financeiro — Simbi" },
       { name: "description", content: "Visão básica de entradas, saídas e lucro." },
+      { property: "og:title", content: "Financeiro — Simbi" },
+      { property: "og:description", content: "Visão básica de entradas, saídas e lucro." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: FinanceiroPage,

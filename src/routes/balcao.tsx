@@ -12,6 +12,10 @@ export const Route = createFileRoute("/balcao")({
     meta: [
       { title: "Balcão — Simbi" },
       { name: "description", content: "Modo balcão: busca rápida, preço e estoque na mão." },
+      { property: "og:title", content: "Balcão — Simbi" },
+      { property: "og:description", content: "Modo balcão: busca rápida, preço e estoque na mão." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: BalcaoPage,

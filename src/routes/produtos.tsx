@@ -13,6 +13,10 @@ export const Route = createFileRoute("/produtos")({
     meta: [
       { title: "Produtos — Simbi" },
       { name: "description", content: "Cadastre, edite e movimente produtos do seu estoque." },
+      { property: "og:title", content: "Produtos — Simbi" },
+      { property: "og:description", content: "Cadastre, edite e movimente produtos do seu estoque." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ProductsPage,
