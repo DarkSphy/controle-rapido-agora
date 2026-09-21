@@ -1,3 +1,3 @@
 # Roadmap
 
-- [ ] Concluir substituição integral da marca por Simbi.
+- [x] Concluir substituição integral da marca por Simbi.
