@@ -9,7 +9,7 @@ export const Route = createFileRoute("/checkout/return")({
   validateSearch: (s: Record<string, unknown>): { session_id?: string } => ({
     session_id: typeof s.session_id === "string" ? s.session_id : undefined,
   }),
-  head: () => ({ meta: [{ title: "Pagamento concluído — ControleJá" }] }),
+  head: () => ({ meta: [{ title: "Pagamento concluído — Simbi" }] }),
   component: ReturnPage,
 });
 

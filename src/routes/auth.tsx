@@ -14,8 +14,8 @@ export const Route = createFileRoute("/auth")({
   validateSearch: () => ({}),
   head: () => ({
     meta: [
-      { title: "Entrar — ControleJá" },
-      { name: "description", content: "Acesse sua conta ControleJá." },
+      { title: "Entrar — Simbi" },
+      { name: "description", content: "Acesse sua conta Simbi." },
     ],
   }),
   component: AuthPage,
@@ -69,7 +69,7 @@ function AuthPage() {
             Cadastre, movimente e venda — tudo com poucos cliques.
           </p>
         </div>
-        <p className="text-xs text-primary-foreground/60">© {new Date().getFullYear()} ControleJá</p>
+        <p className="text-xs text-primary-foreground/60">© {new Date().getFullYear()} Simbi</p>
       </div>
 
       {/* Right form panel */}

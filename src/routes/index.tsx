@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { LogoTicker, AnimatedCounters, BeforeAfterSlider, BentoGrid, GlowingCard } from "@/components/landing/LandingEffects";
 
 const PHONE = "5531973175882";
-const MSG_HIRE = "Gostaria de contratar o controle já.";
+const MSG_HIRE = "Gostaria de contratar a Simbi.";
 const MSG_HELP = "Gostaria de tirar dúvidas sobre o produto.";
 
 const WA_HIRE_URL = `https://wa.me/${PHONE}?text=${encodeURIComponent(MSG_HIRE)}`;
@@ -76,7 +76,7 @@ function Landing() {
               Gestão simples para <span className="text-brand">vender mais</span> e cuidar menos do estoque.
             </h1>
             <p className="mt-6 text-lg text-slate-600 max-w-lg leading-relaxed">
-              O ControleJá organiza seu estoque, suas vendas, compras e clientes — sem complicação, sem mensalidade surpresa, sem treinamento longo.
+              A Simbi organiza seu estoque, suas vendas, compras e clientes — sem complicação, sem mensalidade surpresa, sem treinamento longo.
             </p>
             
             <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-3 text-sm font-bold text-brand">
@@ -137,7 +137,7 @@ function Landing() {
       <section className="px-5 md:px-10 py-12 bg-[#f8f9fc]">
         <div className="max-w-[1000px] mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-brand font-extrabold tracking-widest text-xs uppercase">Por que ControleJá</span>
+            <span className="text-brand font-extrabold tracking-widest text-xs uppercase">Por que Simbi</span>
             <h2 className="text-3xl md:text-[2.5rem] font-extrabold tracking-tight mt-3 text-slate-900 leading-tight">
               Simples por escolha. Não por falta de recurso.
             </h2>
@@ -168,7 +168,7 @@ function Landing() {
             </div>
 
             <div className="bg-[#eef5ff] p-10 md:p-14 relative rounded-b-[2rem] md:rounded-b-none md:rounded-r-[2rem]">
-              <h3 className="font-extrabold text-xl mb-8 text-center text-brand">ControleJá</h3>
+              <h3 className="font-extrabold text-xl mb-8 text-center text-brand">Simbi</h3>
               <ul className="space-y-5 text-sm font-bold text-slate-800">
                 {[
                   "Cadastro em 4 campos: nome, preço, estoque, foto",
@@ -201,7 +201,7 @@ function Landing() {
             
             <div className="space-y-6">
               <TestimonialCard 
-                quote="O ControleJá mudou a forma como eu gerencio minha loja. Simples, rápido e funciona de verdade!"
+                quote="A Simbi mudou a forma como eu gerencio minha loja. Simples, rápida e funciona de verdade!"
                 name="Juliana Santos"
                 biz="Loja de Roupas"
               />
@@ -278,7 +278,7 @@ function Landing() {
           </div>
         </div>
         <div className="max-w-[1200px] mx-auto mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/40 font-medium">
-          <div>© {new Date().getFullYear()} ControleJá. Todos os direitos reservados.</div>
+          <div>© {new Date().getFullYear()} Simbi. Todos os direitos reservados.</div>
           <div className="flex items-center gap-4">
             <a href="#" className="hover:text-white">Termos de uso</a>
             <a href="#" className="hover:text-white">Política de privacidade</a>
@@ -348,7 +348,7 @@ function MockChrome({ children, label }: { children: React.ReactNode; label: str
 
 function DashboardMockup() {
   return (
-    <MockChrome label="controleja.app — Dashboard">
+    <MockChrome label="Simbi — Dashboard">
       <div className="flex h-[550px] w-full max-w-[950px] bg-slate-50 text-left relative overflow-hidden">
         {/* Fake Sidebar */}
         <div className="w-48 bg-white border-r border-slate-100 flex flex-col p-4 shrink-0 hidden md:flex">
@@ -356,7 +356,7 @@ function DashboardMockup() {
             <div className="h-6 w-6 rounded bg-brand flex items-center justify-center">
               <Package className="h-3 w-3 text-white" />
             </div>
-            <div className="font-extrabold text-sm text-slate-800 tracking-tight">ControleJá</div>
+            <div className="font-extrabold text-sm text-slate-800 tracking-tight">Simbi</div>
           </div>
           <div className="space-y-1">
             <div className="h-8 rounded-lg bg-brand/10 border border-brand/20 flex items-center px-3 gap-2">
@@ -472,7 +472,7 @@ function DashboardMockup() {
 
 function SalesMockup() {
   return (
-    <MockChrome label="controleja.app — Nova venda">
+    <MockChrome label="Simbi — Nova venda">
       <div className="p-5 grid grid-cols-1 gap-4 bg-white">
         <div className="rounded-lg border border-slate-200 px-3 py-2.5 flex items-center gap-2 text-sm bg-slate-50">
           <span className="text-slate-400">Buscar produto…</span>

@@ -13,10 +13,10 @@ export const Route = createFileRoute("/reset-password")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Criar nova senha — ControleJá" },
-      { name: "description", content: "Defina uma nova senha de acesso para sua conta ControleJá." },
-      { property: "og:title", content: "Criar nova senha — ControleJá" },
-      { property: "og:description", content: "Defina uma nova senha de acesso para sua conta ControleJá." },
+      { title: "Criar nova senha — Simbi" },
+      { name: "description", content: "Defina uma nova senha de acesso para sua conta Simbi." },
+      { property: "og:title", content: "Criar nova senha — Simbi" },
+      { property: "og:description", content: "Defina uma nova senha de acesso para sua conta Simbi." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

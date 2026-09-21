@@ -10,7 +10,7 @@ import { Logo } from "@/components/Logo";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [{ title: "Finalizar assinatura — ControleJá" }] }),
+  head: () => ({ meta: [{ title: "Finalizar assinatura — Simbi" }] }),
   component: CheckoutPage,
 });
 
@@ -63,7 +63,7 @@ function CheckoutPage() {
       </header>
       <main className="max-w-3xl mx-auto px-4 py-8">
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Ative sua conta ControleJá</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Ative sua conta Simbi</h1>
           <p className="text-muted-foreground mt-2 text-sm">
             Primeiro mês <strong>R$ 139,90</strong> (R$ 39,90 + R$ 100,00 ativação) · Depois <strong>R$ 39,90/mês</strong>
           </p>

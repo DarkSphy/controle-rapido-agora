@@ -22,7 +22,8 @@ export function AssistantChat() {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { products, sales } = useStore();
+  const products = useStore((state) => state.products);
+  const sales = useStore((state) => state.sales);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

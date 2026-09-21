@@ -577,7 +577,7 @@ function CatalogPage() {
             {settings.address && <p className="text-sm text-muted-foreground max-w-sm">{settings.address}</p>}
           </div>
           <div className="text-xs text-muted-foreground flex flex-col items-center md:items-end gap-1">
-            <span>Catálogo gerado por ControleJá</span>
+            <span>Catálogo gerado pela Simbi</span>
             <span>&copy; {new Date().getFullYear()} Todos os direitos reservados.</span>
           </div>
         </div>
