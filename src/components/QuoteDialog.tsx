@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useStore, actions, Quote, QuoteItem, formatBRL, priceFromCostMargin } from "@/lib/store";
 import { toast } from "sonner";
 import { SearchBar, searchProducts } from "@/components/SearchBar";
-import { Plus, Minus, Trash2, UserPlus, Info, PlusCircle } from "lucide-react";
+import { Plus, Minus, Trash2, UserPlus, Info, PlusCircle, Package } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
 type Draft = {
@@ -52,6 +52,8 @@ export function QuoteDialog({
   onOpenChange: (v: boolean) => void;
 }) {
   const products = useStore((s) => s.products);
+  const kits = useStore((s) => s.kits);
+  const kitItems = useStore((s) => s.kitItems);
   const customers = useStore((s) => s.customers);
   const quoteItems = useStore((s) => s.quoteItems);
 
@@ -176,6 +178,51 @@ export function QuoteDialog({
   }, [open, storageKey, readyKey, isApproved, d, items, manualName, manualPrice, newCustomerName]);
 
   const filtered = useMemo(() => searchProducts(products, q), [products, q]);
+  const filteredKits = useMemo(() => {
+    const query = q.trim().toLocaleLowerCase("pt-BR");
+    if (!query) return [];
+    return kits.filter(kit => kit.name.toLocaleLowerCase("pt-BR").includes(query)).map(kit => {
+      const components = kitItems.filter(item => item.kitId === kit.id);
+      const entries: DraftItem[] = [];
+      let error = components.length === 0 ? "Este kit não possui produtos cadastrados." : "";
+      for (const component of components) {
+        const product = products.find(p => p.id === component.productId);
+        const variation = product?.variations.find(v => v.id === component.variationId);
+        if (!product || (component.variationId && !variation)) {
+          error = "Este kit contém produto ou variação removida. Revise o cadastro do kit.";
+          break;
+        }
+        if (!Number.isInteger(component.quantity) || component.quantity < 1) {
+          error = "Este kit contém uma quantidade inválida. Revise o cadastro do kit.";
+          break;
+        }
+        const source = variation ?? product;
+        entries.push({
+          cartItemId: variation ? `${product.id}-${variation.id}` : product.id,
+          productId: product.id,
+          variationId: variation?.id,
+          name: variation ? `${product.name} — ${variation.name}` : product.name,
+          quantity: component.quantity,
+          price: String(priceFromCostMargin(source.cost, source.margin)),
+          isService: Boolean(product.isService),
+        });
+      }
+      return { ...kit, entries, error, total: entries.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0) };
+    });
+  }, [kits, kitItems, products, q]);
+
+  function addKit(kit: (typeof filteredKits)[number]) {
+    if (isApproved || savingRef.current) return;
+    if (kit.error) return toast.error(kit.error);
+    setItems(previous => kit.entries.reduce((next, item) => {
+      const existing = next.find(i => i.productId === item.productId && i.variationId === item.variationId);
+      return existing
+        ? next.map(i => i.cartItemId === existing.cartItemId ? { ...i, quantity: i.quantity + item.quantity } : i)
+        : [...next, item];
+    }, previous));
+    setQ("");
+    toast.success(`Itens do kit ${kit.name} adicionados ao orçamento.`);
+  }
 
   function addProductOrService(p: any, v?: any) {
     if (isApproved) return;
@@ -420,9 +467,28 @@ export function QuoteDialog({
               {!isApproved && (
                 <div className="space-y-2">
                   <div className="relative">
-                    <SearchBar value={q} onChange={setQ} placeholder="Buscar produto ou serviço do sistema..." />
-                    {q && filtered.length > 0 && (
+                    <SearchBar value={q} onChange={setQ} placeholder="Buscar produto, serviço ou kit..." />
+                    {q && (filtered.length > 0 || filteredKits.length > 0) && (
                       <div className="absolute z-20 left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1 max-h-60 overflow-y-auto">
+                        {filteredKits.map(kit => (
+                          <button
+                            type="button"
+                            key={`kit-${kit.id}`}
+                            onClick={() => addKit(kit)}
+                            className="w-full flex items-center justify-between gap-3 p-3 bg-brand/5 hover:bg-brand/10 transition-colors border-b border-border last:border-0"
+                          >
+                            <div className="text-left flex items-center gap-2 min-w-0">
+                              <Package className="h-4 w-4 text-brand shrink-0" />
+                              <div>
+                                <div className="font-medium text-brand">Kit: {kit.name}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {kit.error || `${kit.entries.length} itens — adicionar ao orçamento`}
+                                </div>
+                              </div>
+                            </div>
+                            {!kit.error && <div className="font-bold text-brand shrink-0">{formatBRL(kit.total)}</div>}
+                          </button>
+                        ))}
                         {filtered.flatMap(p => {
                           if (p.variations && p.variations.length > 0) {
                             return p.variations.map(v => (
@@ -456,6 +522,7 @@ export function QuoteDialog({
                       </div>
                     )}
                   </div>
+                  <p className="text-xs text-muted-foreground">Busque um kit pelo nome para adicionar seus produtos com as quantidades cadastradas.</p>
                   
                   <div className="flex gap-2 pt-2 items-center">
                     <span className="text-xs font-semibold uppercase text-muted-foreground">Ou adicione manual:</span>
