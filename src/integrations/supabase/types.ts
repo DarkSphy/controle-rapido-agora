@@ -523,6 +523,7 @@ export type Database = {
           is_service: boolean | null
           manual_name: string | null
           product_id: string | null
+          position: number | null
           quantity: number
           quote_id: string | null
           unit_price: number
@@ -533,6 +534,7 @@ export type Database = {
           is_service?: boolean | null
           manual_name?: string | null
           product_id?: string | null
+          position?: number | null
           quantity: number
           quote_id?: string | null
           unit_price: number
@@ -543,6 +545,7 @@ export type Database = {
           is_service?: boolean | null
           manual_name?: string | null
           product_id?: string | null
+          position?: number | null
           quantity?: number
           quote_id?: string | null
           unit_price?: number
@@ -1120,6 +1123,10 @@ export type Database = {
       }
     }
     Functions: {
+      save_quote: {
+        Args: { p_quote_id: string; p_quote: Json; p_items?: Json }
+        Returns: Json
+      }
       admin_delete_client: {
         Args: { target_user_id: string }
         Returns: undefined

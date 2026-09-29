@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { useStore, actions, Quote, QuoteItem, formatBRL, priceFromCostMargin } f
 import { toast } from "sonner";
 import { SearchBar, searchProducts } from "@/components/SearchBar";
 import { Plus, Minus, Trash2, UserPlus, Info, PlusCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth";
 
 type Draft = {
   customerId: string;
@@ -64,9 +64,42 @@ export function QuoteDialog({
   const [manualName, setManualName] = useState("");
   const [manualPrice, setManualPrice] = useState("");
 
+  const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
+  const initialized = useRef<string | null>(null);
+  const [readyKey, setReadyKey] = useState<string | null>(null);
+  const draftId = useRef("");
+  const storageKey = user ? `simbi:quote-draft:${user.id}:${quote?.id ?? "new"}` : null;
   const isApproved = quote?.status === "Aprovado";
 
+  function clearDraft() {
+    if (storageKey) {
+      try { sessionStorage.removeItem(storageKey); } catch { /* Storage may be unavailable. */ }
+    }
+    setReadyKey(null);
+  }
+
+  function requestClose(nextOpen: boolean) {
+    if (savingRef.current) return;
+    onOpenChange(nextOpen);
+  }
+
+  function discardDraft() {
+    if (savingRef.current || !confirm("Descartar as alterações não salvas deste orçamento?")) return;
+    clearDraft();
+    onOpenChange(false);
+  }
+
   useEffect(() => {
+    if (!open) {
+      initialized.current = null;
+      setReadyKey(null);
+      return;
+    }
+    if (!storageKey || initialized.current === storageKey) return;
+    initialized.current = storageKey;
+    draftId.current = quote?.id ?? crypto.randomUUID();
     if (open) {
       if (quote) {
         setD({
@@ -111,8 +144,36 @@ export function QuoteDialog({
       setShowNewCustomer(false);
       setManualName("");
       setManualPrice("");
+      setNewCustomerName("");
+      // Restore only this user's draft for this quote, in this browser tab.
+      if (!isApproved) {
+        try {
+          const raw = sessionStorage.getItem(storageKey);
+          const saved = raw ? JSON.parse(raw) : null;
+          if (saved?.version === 1 && saved.d && Array.isArray(saved.items) && typeof saved.id === "string") {
+            setD({ ...empty, ...saved.d });
+            setItems(saved.items);
+            setManualName(saved.manualName ?? "");
+            setManualPrice(saved.manualPrice ?? "");
+            setNewCustomerName(saved.newCustomerName ?? "");
+            setShowNewCustomer(Boolean(saved.newCustomerName));
+            draftId.current = saved.id;
+            toast.info("Rascunho recuperado nesta aba.");
+          }
+        } catch { /* A blocked or invalid draft must not prevent editing. */ }
+      }
+      setReadyKey(storageKey);
     }
-  }, [open, quote, quoteItems, products]);
+  }, [open, quote, quoteItems, products, storageKey, isApproved]);
+
+  useEffect(() => {
+    if (!open || !storageKey || readyKey !== storageKey || isApproved || savingRef.current) return;
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify({
+        version: 1, id: draftId.current, d, items, manualName, manualPrice, newCustomerName,
+      }));
+    } catch { /* Saving to the server still works when browser storage is blocked. */ }
+  }, [open, storageKey, readyKey, isApproved, d, items, manualName, manualPrice, newCustomerName]);
 
   const filtered = useMemo(() => searchProducts(products, q), [products, q]);
 
@@ -124,9 +185,9 @@ export function QuoteDialog({
     const cartItemId = variationId ? `${p.id}-${variationId}` : p.id;
 
     setItems(prev => {
-      const existing = prev.find(i => i.cartItemId === cartItemId);
+      const existing = prev.find(i => i.productId === p.id && i.variationId === variationId);
       if (existing) {
-        return prev.map(i => i.cartItemId === cartItemId ? { ...i, quantity: i.quantity + 1 } : i);
+        return prev.map(i => i.cartItemId === existing.cartItemId ? { ...i, quantity: i.quantity + 1 } : i);
       }
       return [...prev, { cartItemId, productId: p.id, variationId, name, quantity: 1, price: String(price), isService: p.isService }];
     });
@@ -139,7 +200,7 @@ export function QuoteDialog({
     const p = parseFloat(manualPrice) || 0;
     
     setItems(prev => [...prev, { 
-      cartItemId: `manual-${Date.now()}`, 
+      cartItemId: crypto.randomUUID(),
       name: manualName, 
       quantity: 1, 
       price: String(p), 
@@ -177,48 +238,67 @@ export function QuoteDialog({
   }
 
   async function save() {
-    const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity, 0);
-    const labor = parseFloat(d.laborValue) || 0;
-    const discount = parseFloat(d.discount) || 0;
-    const total = subtotal + labor - discount;
-
-    const payloadItems = items.map(i => ({
-      productId: i.productId,
-      variationId: i.variationId,
-      manualName: !i.productId ? i.name : undefined,
-      quantity: i.quantity,
-      unitPrice: parseFloat(i.price) || 0,
-      isService: i.isService
-    }));
-
-    if (quote) {
-      await actions.updateQuote(quote.id, {
-        customerId: d.customerId || undefined,
-        status: d.status,
-        laborValue: labor,
-        laborLabel: d.laborLabel,
-        subtotal,
-        discount,
-        total,
-        validityDate: d.validityDate,
-        notes: d.notes,
-        paymentConditions: d.paymentConditions,
-      }, payloadItems);
-    } else {
-      await actions.addQuote({
-        customerId: d.customerId || undefined,
-        status: d.status,
-        laborValue: labor,
-        laborLabel: d.laborLabel,
-        subtotal,
-        discount,
-        total,
-        validityDate: d.validityDate,
-        notes: d.notes,
-        paymentConditions: d.paymentConditions,
-      }, payloadItems);
+    if (savingRef.current || isApproved) return;
+    if (manualName.trim() || manualPrice.trim()) {
+      toast.error("Adicione o item manual à lista ou limpe seus campos antes de salvar.");
+      return;
     }
-    onOpenChange(false);
+    if (items.some(i => !Number.isFinite(Number(i.price)) || Number(i.price) < 0 || !Number.isInteger(i.quantity) || i.quantity < 1)) {
+      toast.error("Verifique os preços e as quantidades dos itens.");
+      return;
+    }
+    savingRef.current = true;
+    setSaving(true);
+    try {
+      const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity, 0);
+      const labor = parseFloat(d.laborValue) || 0;
+      const discount = parseFloat(d.discount) || 0;
+      const total = subtotal + labor - discount;
+
+      const payloadItems = items.map(i => ({
+        productId: i.productId,
+        variationId: i.variationId,
+        manualName: !i.productId ? i.name : undefined,
+        quantity: i.quantity,
+        unitPrice: parseFloat(i.price) || 0,
+        isService: i.isService
+      }));
+
+      if (quote) {
+        await actions.updateQuote(quote.id, {
+          customerId: d.customerId || undefined,
+          status: d.status,
+          laborValue: labor,
+          laborLabel: d.laborLabel,
+          subtotal,
+          discount,
+          total,
+          validityDate: d.validityDate,
+          notes: d.notes,
+          paymentConditions: d.paymentConditions,
+        }, payloadItems);
+      } else {
+        await actions.addQuote({
+          customerId: d.customerId || undefined,
+          status: d.status,
+          laborValue: labor,
+          laborLabel: d.laborLabel,
+          subtotal,
+          discount,
+          total,
+          validityDate: d.validityDate,
+          notes: d.notes,
+          paymentConditions: d.paymentConditions,
+        }, payloadItems, draftId.current);
+      }
+      clearDraft();
+      onOpenChange(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? `Não foi possível salvar: ${error.message}` : "Não foi possível salvar. Seu preenchimento foi mantido.");
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
+    }
   }
 
   const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity, 0);
@@ -227,16 +307,16 @@ export function QuoteDialog({
   const totalAmount = subtotal + labor - discount;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[95vh] flex flex-col p-0 overflow-hidden gap-0">
+    <Dialog open={open} onOpenChange={requestClose}>
+      <DialogContent onPointerDownOutside={e => e.preventDefault()} onInteractOutside={e => e.preventDefault()} onEscapeKeyDown={e => e.preventDefault()} className="max-w-4xl max-h-[95vh] flex flex-col p-0 overflow-hidden gap-0">
         <DialogHeader className="px-6 py-4 border-b border-border bg-muted/20">
           <DialogTitle>{quote ? `Orçamento #${quote.id.slice(0,6)}` : "Novo Orçamento"}</DialogTitle>
           <DialogDescription>
-            Crie um orçamento personalizado sem alterar seu estoque ou financeiro.
+            Crie um orçamento sem alterar seu estoque ou financeiro. O rascunho fica nesta aba até salvar ou descartar.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        <fieldset disabled={saving} className="flex-1 min-h-0 min-w-0 overflow-y-auto px-6 py-4">
           {isApproved && (
             <div className="mb-6 p-4 rounded-xl bg-success/10 border border-success/20 text-success text-sm flex gap-3 items-start">
               <Info className="h-5 w-5 shrink-0 mt-0.5" />
@@ -392,7 +472,7 @@ export function QuoteDialog({
                       value={manualPrice} 
                       onChange={e => setManualPrice(e.target.value)} 
                     />
-                    <Button size="sm" variant="secondary" className="h-8 px-2" onClick={addManualItem}>
+                    <Button aria-label="Adicionar item manual" size="sm" variant="secondary" className="h-8 px-2" onClick={addManualItem}>
                       <PlusCircle className="h-4 w-4" />
                     </Button>
                   </div>
@@ -515,17 +595,19 @@ export function QuoteDialog({
               </div>
             </div>
           </div>
-        </div>
+        </fieldset>
 
-        <DialogFooter className="px-6 py-4 border-t border-border flex-row justify-between sm:justify-between items-center bg-muted/20">
+        <DialogFooter className="px-6 py-4 border-t border-border flex-col gap-3 sm:flex-row sm:justify-between items-center bg-muted/20">
           {quote && !isApproved ? (
             <Button
               variant="ghost"
               className="text-destructive hover:text-destructive"
+              disabled={saving}
               onClick={() => {
                 if (confirm("Tem certeza que deseja excluir este orçamento?")) {
-                  actions.deleteQuote(quote.id);
-                  onOpenChange(false);
+                  void actions.deleteQuote(quote.id).then(deleted => {
+                    if (deleted === true) { clearDraft(); onOpenChange(false); }
+                  });
                 }
               }}
             >
@@ -534,14 +616,15 @@ export function QuoteDialog({
           ) : (
             <span />
           )}
-          
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>
-              {isApproved ? "Fechar" : "Cancelar"}
+
+          <div className="flex flex-wrap gap-2">
+            {!isApproved && <Button variant="ghost" disabled={saving} onClick={discardDraft}>Descartar rascunho</Button>}
+            <Button variant="ghost" disabled={saving} onClick={() => requestClose(false)}>
+              Fechar
             </Button>
             {!isApproved && (
-              <Button onClick={save}>
-                {quote ? "Salvar alterações" : "Criar Orçamento"}
+              <Button onClick={save} disabled={saving}>
+                {saving ? "Salvando..." : quote ? "Salvar alterações" : "Criar Orçamento"}
               </Button>
             )}
           </div>

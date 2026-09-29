@@ -161,6 +161,7 @@ export type Quote = {
 };
 
 export type QuoteItem = {
+  position?: number;
   id: string;
   quoteId: string;
   productId?: string;
@@ -507,6 +508,7 @@ function rowToQuoteItem(qi: any): QuoteItem {
   return {
     id: qi.id,
     quoteId: qi.quote_id,
+    position: qi.position ?? undefined,
     productId: qi.product_id ?? undefined,
     variationId: qi.variation_id ?? undefined,
     manualName: qi.manual_name ?? undefined,
@@ -514,6 +516,44 @@ function rowToQuoteItem(qi: any): QuoteItem {
     unitPrice: Number(qi.unit_price),
     isService: qi.is_service ?? false,
   };
+}
+
+async function persistQuote(
+  id: string,
+  patch: Partial<Omit<Quote, "id" | "createdAt" | "status">> & { status?: string },
+  items?: Omit<QuoteItem, "id" | "quoteId">[],
+): Promise<Quote> {
+  const fields: Record<string, unknown> = {};
+  const names = {
+    customerId: "customer_id", status: "status", subtotal: "subtotal",
+    laborValue: "labor_value", laborLabel: "labor_label", discount: "discount",
+    total: "total", validityDate: "validity_date", notes: "notes",
+    paymentConditions: "payment_conditions",
+  } as const;
+  for (const [key, column] of Object.entries(names)) {
+    if (Object.prototype.hasOwnProperty.call(patch, key)) {
+      fields[column] = patch[key as keyof typeof names] ?? null;
+    }
+  }
+  const { data, error } = await supabase.rpc("save_quote", {
+    p_quote_id: id,
+    p_quote: fields,
+    p_items: items?.map(i => ({
+      product_id: i.productId || null, variation_id: i.variationId || null,
+      manual_name: i.manualName || null, quantity: i.quantity,
+      unit_price: i.unitPrice, is_service: i.isService,
+    })) ?? null,
+  });
+  if (error) throw new Error(error.message);
+  if (!data?.quote || !Array.isArray(data.items)) throw new Error("Não foi possível confirmar o salvamento.");
+  const quote = rowToQuote(data.quote);
+  setState({
+    quotes: state.quotes.some(q => q.id === id)
+      ? state.quotes.map(q => q.id === id ? quote : q)
+      : [quote, ...state.quotes],
+    quoteItems: [...state.quoteItems.filter(i => i.quoteId !== id), ...data.items.map(rowToQuoteItem)],
+  });
+  return quote;
 }
 
 export const actions = {
@@ -569,7 +609,7 @@ export const actions = {
       fetchTable("service_orders", supabase.from("service_orders").select("*").order("created_at", { ascending: false })),
       fetchTable("service_order_items"),
       fetchTable("quotes", supabase.from("quotes").select("*").order("created_at", { ascending: false })),
-      fetchTable("quote_items"),
+      fetchTable("quote_items", supabase.from("quote_items").select("*").order("position", { ascending: true, nullsFirst: false }).order("id")),
       fetchTable("business_settings", supabase.from("business_settings").select("*").limit(1)),
       fetchTable("catalog_settings", supabase.from("catalog_settings").select("*").eq("id", user?.id).maybeSingle()),
     ]);
@@ -1357,96 +1397,17 @@ export const actions = {
     toast.success("Ordem de serviço excluída");
   },
 
-  // Quote CRUD
-  async addQuote(q: Omit<Quote, "id" | "createdAt" | "status"> & { status?: string }, items: Omit<QuoteItem, "id" | "quoteId">[]) {
-    const { data: user } = await supabase.auth.getUser();
-    if (!user.user) return;
-
-    const { data: row, error } = await supabase.from("quotes").insert({
-      user_id: user.user.id,
-      customer_id: q.customerId || null,
-      status: q.status || "Pendente",
-      subtotal: q.subtotal,
-      labor_value: q.laborValue,
-      labor_label: q.laborLabel || "Mão de Obra",
-      discount: q.discount,
-      total: q.total,
-      validity_date: q.validityDate || null,
-      notes: q.notes || null,
-      payment_conditions: q.paymentConditions || null,
-    }).select().single();
-
-    if (error || !row) return toast.error(error?.message ?? "Erro ao salvar Orçamento");
-
-    let qItems: any[] = [];
-    if (items.length > 0) {
-      const itemRows = items.map(i => ({
-        quote_id: row.id,
-        product_id: i.productId || null,
-        variation_id: i.variationId || null,
-        manual_name: i.manualName || null,
-        quantity: i.quantity,
-        unit_price: i.unitPrice,
-        is_service: i.isService
-      }));
-      const { data: iRows } = await supabase.from("quote_items").insert(itemRows).select();
-      qItems = iRows || [];
-    }
-
-    const quote = rowToQuote(row);
-    setState({
-      quotes: [quote, ...state.quotes],
-      quoteItems: [...qItems.map(rowToQuoteItem), ...state.quoteItems],
-    });
+  // A single RPC commits the quote and its ordered items together.
+  async addQuote(q: Omit<Quote, "id" | "createdAt" | "status"> & { status?: string }, items: Omit<QuoteItem, "id" | "quoteId">[], id: string = crypto.randomUUID()) {
+    const result = await persistQuote(id, q, items);
     toast.success("Orçamento criado");
-    return quote;
+    return result;
   },
 
   async updateQuote(id: string, patch: Partial<Omit<Quote, "id" | "createdAt">>, items?: Omit<QuoteItem, "id" | "quoteId">[]) {
-    const quote = state.quotes.find(q => q.id === id);
-    if (!quote) return;
-
-    const update: any = {};
-    if (patch.customerId !== undefined) update.customer_id = patch.customerId || null;
-    if (patch.status !== undefined) update.status = patch.status;
-    if (patch.subtotal !== undefined) update.subtotal = patch.subtotal;
-    if (patch.laborValue !== undefined) update.labor_value = patch.laborValue;
-    if (patch.discount !== undefined) update.discount = patch.discount;
-    if (patch.total !== undefined) update.total = patch.total;
-    if (patch.validityDate !== undefined) update.validity_date = patch.validityDate || null;
-    if (patch.notes !== undefined) update.notes = patch.notes || null;
-    if (patch.paymentConditions !== undefined) update.payment_conditions = patch.paymentConditions || null;
-
-    if (Object.keys(update).length > 0) {
-      const { error } = await supabase.from("quotes").update(update).eq("id", id);
-      if (error) return toast.error(error.message);
-    }
-
-    let newItems = state.quoteItems;
-    if (items !== undefined) {
-      await supabase.from("quote_items").delete().eq("quote_id", id);
-      let qItems: any[] = [];
-      if (items.length > 0) {
-        const itemRows = items.map(i => ({
-          quote_id: id,
-          product_id: i.productId || null,
-          variation_id: i.variationId || null,
-          manual_name: i.manualName || null,
-          quantity: i.quantity,
-          unit_price: i.unitPrice,
-          is_service: i.isService
-        }));
-        const { data: iRows } = await supabase.from("quote_items").insert(itemRows).select();
-        qItems = iRows || [];
-      }
-      newItems = [...state.quoteItems.filter(i => i.quoteId !== id), ...qItems.map(rowToQuoteItem)];
-    }
-
-    setState({
-      quotes: state.quotes.map(q => q.id === id ? { ...q, ...patch } : q),
-      quoteItems: newItems
-    });
+    const result = await persistQuote(id, patch, items);
     toast.success("Orçamento atualizado");
+    return result;
   },
 
   async deleteQuote(id: string) {
@@ -1457,6 +1418,7 @@ export const actions = {
       quoteItems: state.quoteItems.filter((i) => i.quoteId !== id)
     });
     toast.success("Orçamento excluído");
+    return true;
   },
 
   async convertQuoteToSale(id: string) {
