@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Product, Variation, CatalogSettings, formatBRL } from "@/lib/store";
 import { ShoppingCart, Plus, Minus, X, Store, MapPin, MessageCircle, Info, Search } from "lucide-react";
@@ -121,7 +121,20 @@ function CatalogPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const productsSectionRef = useRef<HTMLDivElement>(null);
   const [descExpanded, setDescExpanded] = useState(false);
+
+  function selectCategory(categoryId: string | null) {
+    setSelectedCategory(categoryId);
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      requestAnimationFrame(() => {
+        productsSectionRef.current?.scrollIntoView({
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+          block: "start",
+        });
+      });
+    }
+  }
 
   // Checkout Form State
   const [name, setName] = useState("");
@@ -230,7 +243,7 @@ function CatalogPage() {
       <style dangerouslySetInnerHTML={{ __html: themeStyles }} />
       
       {/* HEADER / NAVIGATION */}
-      <header className="px-5 py-4 border-b border-border/50 bg-card/80 backdrop-blur-lg shadow-sm sticky top-0 z-40 transition-all duration-300">
+      <header className="px-5 py-4 border-b border-border/50 bg-card/80 backdrop-blur-lg shadow-sm relative md:sticky md:top-0 z-40 transition-all duration-300">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             {logoUrl ? (
@@ -385,8 +398,8 @@ function CatalogPage() {
         </div>
       </header>
 
-      {/* STICKY SEARCH BAR */}
-      <div className="sticky top-[73px] md:top-[81px] z-30 bg-background/95 backdrop-blur-md px-4 py-3 border-b border-border/50 shadow-sm">
+      {/* On mobile, the search scrolls away with the store header. */}
+      <div className="relative md:sticky md:top-[81px] z-30 bg-background/95 backdrop-blur-md px-4 py-3 border-b border-border/50 shadow-sm">
         <div className="max-w-6xl mx-auto relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input 
@@ -420,10 +433,10 @@ function CatalogPage() {
       
       {/* CATEGORIES BAR */}
       {categories.length > 0 && (
-        <div className="bg-background border-b border-border/50 sticky top-[145px] md:top-[153px] z-20">
+        <div className="bg-background border-b border-border/50 relative md:sticky md:top-[153px] z-20">
           <div className="max-w-6xl mx-auto px-5 py-2 flex overflow-x-auto gap-2 scrollbar-none snap-x">
             <button
-              onClick={() => setSelectedCategory(null)}
+              onClick={() => selectCategory(null)}
               className={cn(
                 "snap-start whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors border",
                 selectedCategory === null 
@@ -436,7 +449,7 @@ function CatalogPage() {
             {categories.map((c: any) => (
               <button
                 key={c.id}
-                onClick={() => setSelectedCategory(c.id)}
+                onClick={() => selectCategory(c.id)}
                 className={cn(
                   "snap-start whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors border",
                   selectedCategory === c.id 
@@ -461,7 +474,7 @@ function CatalogPage() {
         )}
 
         {/* PRODUCTS GRID */}
-        <div>
+        <div ref={productsSectionRef} className="scroll-mt-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <h3 className="text-xl font-bold flex items-center gap-2">
               <Store className="h-5 w-5 text-brand" /> Todos os Produtos
